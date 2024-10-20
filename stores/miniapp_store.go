@@ -3,7 +3,7 @@ package stores
 import (
 	"PerkHub/model"
 	"PerkHub/request"
-	"PerkHub/response"
+	"PerkHub/responses"
 	"PerkHub/utils"
 	"database/sql"
 	"fmt"
@@ -42,7 +42,7 @@ func (s *MiniAppStore) GetAllMiniApps() (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	res := response.NewMiniAppRes()
+	res := responses.NewMiniAppRes()
 
 	result, err := res.BindMultipleUsers(data)
 	if err != nil {
@@ -60,7 +60,7 @@ func (s *MiniAppStore) GetMiniAppsBycategoryID(id string) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	res := response.NewMiniAppRes()
+	res := responses.NewMiniAppRes()
 
 	result, err := res.BindMultipleUsers(data)
 	if err != nil {
@@ -78,7 +78,7 @@ func (s *MiniAppStore) SearchMiniApps(req *request.MiniAppSearchReq) (interface{
 	if err != nil {
 		return nil, err
 	}
-	res := response.NewMiniAppRes()
+	res := responses.NewMiniAppRes()
 	if len(data) == 0 {
 		return data, nil
 	}

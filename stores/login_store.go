@@ -3,7 +3,7 @@ package stores
 import (
 	"PerkHub/model"
 	"PerkHub/request"
-	"PerkHub/response"
+	"PerkHub/responses"
 	"PerkHub/utils"
 	"database/sql"
 	"errors"
@@ -53,7 +53,7 @@ func (s *LoginStore) VerifyOTP(login *request.LoginRequest) (interface{}, error)
 	if err != nil {
 		return nil, err
 	}
-	token := response.Token{}
+	token := responses.Token{}
 	res, err := utils.GenerateJWTToken(userDetail.User_id.String)
 	if err != nil {
 
@@ -80,7 +80,7 @@ func (s *LoginStore) GetUserDetail(user_id string) (interface{}, error) {
 		return nil, err
 	}
 
-	res := response.NewUserDetailRes()
+	res := responses.NewUserDetailRes()
 
 	if err := res.ResponsesBind(data); err != nil {
 		return nil, err
@@ -97,7 +97,7 @@ func (s *LoginStore) GetAllUserDetail() (interface{}, error) {
 		return nil, err
 	}
 
-	res := response.NewUserDetailRes()
+	res := responses.NewUserDetailRes()
 
 	result, err := res.BindMultipleUsers(data)
 	if err != nil {

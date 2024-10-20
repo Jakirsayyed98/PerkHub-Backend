@@ -1,8 +1,10 @@
 package services
 
 import (
+	"PerkHub/responses"
 	"PerkHub/settings"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 )
@@ -31,5 +33,12 @@ func (s *GamesService) GetAllgames() (interface{}, error) {
 		return nil, errors.New("unkown Error")
 	}
 
-	return string(body), nil
+	res := responses.NewGameResponse()
+
+	result, err := res.Unmarshal(body)
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
+	return result, nil
 }

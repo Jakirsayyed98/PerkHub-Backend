@@ -2,7 +2,7 @@ package stores
 
 import (
 	"PerkHub/model"
-	"PerkHub/response"
+	"PerkHub/responses"
 	"database/sql"
 )
 
@@ -42,13 +42,13 @@ func (s *HomePageStore) GetHomePagedata() (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	categoriesres := response.NewCategoryRes()
+	categoriesres := responses.NewCategoryRes()
 	categories, err := categoriesres.BindMultipleUsers(categoryHomePage)
 	if err != nil {
 		return nil, err
 	}
 
-	finalCategory := []response.CategoryResponse{}
+	finalCategory := []responses.CategoryResponse{}
 	for _, categorys := range categories {
 		miniApps, err := model.GetMiniAppsByCategoryID(s.db, categorys.ID)
 		if err != nil {
@@ -73,7 +73,7 @@ func (s *HomePageStore) GetHomePagedata() (interface{}, error) {
 		return nil, err
 	}
 
-	res := response.NewHomePagedata()
+	res := responses.NewHomePagedata()
 
 	data, err := res.Bind(category, banner1, banner2, banner3, popular, trending, topcashback, finalCategory)
 	if err != nil {
