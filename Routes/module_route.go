@@ -4,6 +4,7 @@ import (
 	"PerkHub/module/affiliates"
 	"PerkHub/module/banner"
 	"PerkHub/module/category"
+	"PerkHub/module/games"
 	miniapp "PerkHub/module/miniApp"
 	"PerkHub/module/mobile"
 	reglogin "PerkHub/module/reg_login"
@@ -24,6 +25,7 @@ func Endpoints(app *gin.Engine) {
 		mobile.Routes(api)
 		affiliates.Routes(api)
 		transactions.Routes(api)
+		games.Routes(api)
 
 	}
 

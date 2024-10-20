@@ -1,4 +1,4 @@
-package transactions
+package games
 
 import (
 	"PerkHub/middlewear"
@@ -6,11 +6,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Routes(api *gin.RouterGroup) {
+func Routes(api *gin.RouterGroup){
 	app := api.Group("/")
 
 	app.Use(middlewear.UserMiddleware())
-
-	app.GET("/getTxnList", GetMiniAppTransaction)
-
+{
+	app.GET("getgames",GetGames)
+}
 }
