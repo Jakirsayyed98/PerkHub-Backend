@@ -1,7 +1,7 @@
 package services
 
 import (
-	"PerkHub/responses"
+	"PerkHub/request"
 	"PerkHub/settings"
 	"errors"
 	"fmt"
@@ -19,21 +19,26 @@ func NewGameService() *GamesService {
 	}
 }
 
-func (s *GamesService) GetAllgames() (interface{}, error) {
+func (s *GamesService) GetAllgames() ([]request.GameResponse, error) {
 
 	response, err := s.service.Get("", nil)
 	if err != nil {
+		fmt.Println(err.Error())
 		return nil, err
 	}
 
 	defer response.Body.Close()
 	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
 
 	if response.StatusCode != http.StatusOK {
 		return nil, errors.New("unkown Error")
 	}
 
-	res := responses.NewGameResponse()
+	res := request.NewGameResponse()
 
 	result, err := res.Unmarshal(body)
 	if err != nil {
