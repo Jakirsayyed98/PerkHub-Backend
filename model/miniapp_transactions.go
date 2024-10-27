@@ -9,6 +9,13 @@ import (
 	"github.com/google/uuid"
 )
 
+type MiniAppTransactionData struct {
+	Pending    string                `json:"pending"`
+	Verified   string                `json:"verified"`
+	Rejected   string                `json:"rejected"`
+	Withdrawal string                `json:"withdrawal"`
+	Data       []MiniAppTransactions `json:"Data"`
+}
 type MiniAppTransactions struct {
 	Id                   uuid.UUID `json:"id"`
 	CampaignID           string    `json:"campaign_id"`
@@ -163,7 +170,7 @@ func UpdateMiniAppTransaction(db *sql.DB, req *request.CueLinkCallBackRequest) e
 
 func InsertMiniAppTransaction(db *sql.DB, req *MiniAppTransactions) error {
 	sqlQuery := `INSERT INTO miniapp_transactions ( campaign_id, commission, user_commission, user_id,order_id, reference_id, sale_amount, status, subid, subid1, subid2,miniapp_id, commission_percentage, transaction_date, transaction_id, created_at, updated_at )
-	 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,17)`
+	 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`
 
 	status := "0"
 	if req.Status == "Pending" || req.Status == "pending" {

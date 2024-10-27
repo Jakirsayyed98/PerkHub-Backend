@@ -26,21 +26,10 @@ CREATE TABLE games_data (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 
-COMMENT ON COLUMN games_data.status IS '0 means pending, 1 means verified, 2 means rejected';
+COMMENT ON COLUMN games_data.status IS '1 means Active, 0 means Inactive';
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
 DROP TABLE IF EXISTS games_data;
 -- +goose StatementEnd
-
-
-func InsertGames(db *sql.DB, item *request.Category) error {
-	query := `
-		INSERT INTO games_data ( code, url, name, isPortrait, description, gamePreviewsV, assets,category_id,colorMuted,colorVibrant,status,privateAllowed,rating,numberOfRatings,gamePlays,hasIntegratedAds,width,height,created_at,updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
-	`
-
-	_, err := db.Exec(query, item.Name, item.Description, item.Image, "1", "0", time.Now(), time.Now())
-	return err
-}

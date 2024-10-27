@@ -7,11 +7,14 @@ import (
 )
 
 func Routes(api *gin.RouterGroup) {
-	app := api.Group("/")
-
-	app.Use(middlewear.UserMiddleware())
+	app := api.Group("/admin")
+	app.GET("refresh-games", RefreshGames)
+	app.GET("refresh-games-categories", RefreshGameCategories)
+	api.Use(middlewear.UserMiddleware())
 	{
-		api.GET("refresh-games", RefreshGames)
-		app.GET("getgames", GetGames)
+		api.GET("getgames-categories", GetGameCategories)
+		api.GET("getgames", GetGames)
+		api.POST("getgames-bycategory", GameByCategory)
+
 	}
 }

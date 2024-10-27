@@ -27,7 +27,7 @@ func (s *AffiliatesStore) CueLinkCallBack(req *request.CueLinkCallBackRequest) (
 		}
 		UserCommisionPercentage := "70"
 
-		commission, err := strconv.Atoi(req.Commission)
+		commission, err := strconv.ParseFloat(req.Commission, 64)
 		if err != nil {
 			fmt.Println("Error converting commission:", err)
 			return nil, err
@@ -39,13 +39,13 @@ func (s *AffiliatesStore) CueLinkCallBack(req *request.CueLinkCallBackRequest) (
 			return nil, err
 		}
 
-		usercommision := (int(commission) / 100) * userCommissionPercentageInt
+		usercommision := (commission / 100) * float64(userCommissionPercentageInt)
 
 		request := model.NewMiniAppTransaction()
-		if err := request.Bind(req, fmt.Sprintf("%d", usercommision)); err != nil {
+		if err := request.Bind(req, fmt.Sprintf("%.2f", usercommision)); err != nil {
 			return nil, err
 		}
-		req.CommissionPercentage = UserCommisionPercentage
+		request.CommissionPercentage = UserCommisionPercentage
 		err = model.InsertMiniAppTransaction(s.db, request)
 		if err != nil {
 			fmt.Println("UserComision :- ", err.Error())

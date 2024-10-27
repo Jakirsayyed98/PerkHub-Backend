@@ -3,6 +3,7 @@ package transactions
 import (
 	"PerkHub/settings"
 	"PerkHub/stores"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,7 +22,7 @@ func GetMiniAppTransaction(c *gin.Context) {
 		settings.StatusBadRequest(c, err, "")
 		return
 	}
-
-	settings.StatusOk(c, result, "Transaction Get Successfully", "")
+	c.JSON(http.StatusOK, result)
+	// settings.StatusOk(c, result, "Transaction Get Successfully", "")
 
 }

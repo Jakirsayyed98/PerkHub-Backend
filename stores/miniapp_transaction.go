@@ -3,6 +3,11 @@ package stores
 import (
 	"PerkHub/model"
 	"database/sql"
+	"fmt"
+	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 type MiniAppTransactionStore struct {
@@ -21,7 +26,38 @@ func (s *MiniAppTransactionStore) GetMiniAppTransaction(userId string) (interfac
 	if err != nil {
 		return nil, err
 	}
+	pending := 0.0
+	verified := 0.0
+	rejected := 0.0
+	withdrawal := 0.0
 
-	return transaction, nil
+	for _, v := range transaction {
+		switch v.Status {
+		case "0":
+			amt, _ := strconv.ParseFloat(v.UserCommission, 64)
+			pending += amt
+		case "1":
+			amt, _ := strconv.ParseFloat(v.UserCommission, 64)
+			verified += amt
+		case "2":
+			amt, _ := strconv.ParseFloat(v.UserCommission, 64)
+			rejected += amt
+		case "3":
+			amt, _ := strconv.ParseFloat(v.UserCommission, 64)
+			withdrawal += amt
+		}
+
+	}
+
+	return gin.H{
+		"pending":    fmt.Sprintf("%.2f", pending),
+		"verified":   fmt.Sprintf("%.2f", verified),
+		"rejected":   fmt.Sprintf("%.2f", rejected),
+		"withdrawal": fmt.Sprintf("%.2f", withdrawal),
+
+		"status":  http.StatusOK,
+		"message": "Transaction list",
+		"data":    transaction,
+	}, nil
 
 }

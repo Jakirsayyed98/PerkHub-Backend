@@ -21,6 +21,18 @@ func NewGameStore(db *sql.DB) *GamesStore {
 	}
 }
 
+func (s *GamesStore) GetGameCategories() (interface{}, error) {
+
+	data, err := model.GetGameCategories(s.db)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
+
+	return data, nil
+}
+
 func (s *GamesStore) GetGames() (interface{}, error) {
 
 	data, err := model.GetAllGames(s.db)
@@ -33,6 +45,45 @@ func (s *GamesStore) GetGames() (interface{}, error) {
 	return data, nil
 }
 
+func (s *GamesStore) GetGamesByCategory(category_id string) (interface{}, error) {
+
+	data, err := model.GetAllGamesBycategory(s.db, category_id)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
+
+	return data, nil
+}
+
+func (s *GamesStore) Refreshcategory() error {
+	data, err := s.gameservice.GetAllgames()
+
+	if err != nil {
+		return err
+	}
+	for _, v := range data {
+		for _, cat := range v.Categories.EN {
+			_, err = model.NewGameCategory().FindGameCategoryByNameOrId(s.db, "", cat)
+
+			if err != nil {
+				fmt.Println(err.Error())
+				if err == sql.ErrNoRows {
+					model.InsertGamesCategory(s.db, cat, "")
+				}
+			}
+
+			if err == nil {
+				fmt.Println("already Exist Category :- ", cat)
+			}
+		}
+
+	}
+
+	return nil
+}
+
 func (s *GamesStore) RefreshGames() (interface{}, error) {
 
 	data, err := s.gameservice.GetAllgames()
@@ -43,23 +94,19 @@ func (s *GamesStore) RefreshGames() (interface{}, error) {
 	}
 	resu := []model.GamesResponse{}
 	for _, v := range data {
-
+		categorydata, err := model.NewGameCategory().FindGameCategoryByNameOrId(s.db, "", v.Categories.EN[0])
 		gamedata, err := model.NewGamesResponse().FindGameByCode(s.db, v.Code)
 		if err != nil {
-			fmt.Println("already Exist Code 1:- ", err.Error())
 			if err == sql.ErrNoRows {
-				fmt.Println("already Exist Code 2:- ", err.Error())
 				res := model.NewGamesResponse()
-				if err := res.Bind(v); err != nil {
+
+				if err := res.Bind(v, categorydata.Id.String()); err != nil {
 					fmt.Println("Error:= ", err.Error())
 				}
-
-				// if err == nil {
 				resu = append(resu, *res)
 				if err := res.InsertGames(s.db, res, "testID"); err != nil {
 					fmt.Println("Error:= ", err.Error())
 				}
-				// }
 			}
 		}
 
