@@ -15,6 +15,8 @@ CREATE TABLE games_data (
     colorMuted VARCHAR(25),
     colorVibrant VARCHAR(25),
     status TEXT DEFAULT '1',
+    popular BOOLEAN DEFAULT FALSE,
+    trending BOOLEAN DEFAULT FALSE,
     privateAllowed BOOLEAN,
     rating VARCHAR(255),
     numberOfRatings VARCHAR(25),

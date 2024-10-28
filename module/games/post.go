@@ -33,3 +33,28 @@ func GameByCategory(c *gin.Context) {
 
 	settings.StatusOk(c, result, "Game Get Successfully", "")
 }
+
+func GameSearch(c *gin.Context) {
+
+	store, err := stores.GetStores(c)
+
+	if err != nil {
+		settings.StatusBadRequest(c, err.Error(), "")
+		return
+	}
+
+	req := model.NewGameSearch()
+
+	if err := c.ShouldBind(&req); err != nil {
+		settings.StatusBadRequest(c, err.Error(), "")
+		return
+	}
+
+	result, err := store.GamesStore.GameSearch(req.Name)
+	if err != nil {
+		settings.StatusBadRequest(c, err.Error(), "")
+		return
+	}
+
+	settings.StatusOk(c, result, "Game Get Successfully", "")
+}

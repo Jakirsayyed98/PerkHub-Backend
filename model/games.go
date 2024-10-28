@@ -29,6 +29,8 @@ type GamesResponse struct {
 	HasIntegratedAds bool      `json:"hasIntegratedAds"`
 	Width            string    `json:"width"`
 	Height           string    `json:"height"`
+	Trending         string    `json:"trending"`
+	Popular          string    `json:"popular"`
 }
 
 type Assets struct {
@@ -44,6 +46,14 @@ type Assets struct {
 
 func NewGamesResponse() *GamesResponse {
 	return &GamesResponse{}
+}
+
+type GameSearch struct {
+	Name string `json:"name"`
+}
+
+func NewGameSearch() *GameSearch {
+	return &GameSearch{}
 }
 
 func (s *GamesResponse) Bind(data request.GameResponse, categoryId string) error {
@@ -142,7 +152,7 @@ func (s *GamesResponse) FindGameByCode(db *sql.DB, code string) (*GamesResponse,
 }
 
 func GetAllGames(db *sql.DB) ([]GamesResponse, error) {
-	query := `SELECT id, code, url, name, isPortrait, description, gamePreviewsV, assets, category_id, colorMuted, colorVibrant, status, privateAllowed, rating, numberOfRatings, gamePlays, hasIntegratedAds, width, height FROM games_data WHERE status='1'`
+	query := `SELECT id, code, url, name, isPortrait, description, gamePreviewsV, assets, category_id, colorMuted, colorVibrant, status, privateAllowed, rating, numberOfRatings, gamePlays, hasIntegratedAds, width, height,trending,popular FROM games_data WHERE status='1'`
 
 	rows, err := db.Query(query)
 	if err != nil {
@@ -175,6 +185,116 @@ func GetAllGames(db *sql.DB) ([]GamesResponse, error) {
 			&game.HasIntegratedAds,
 			&game.Width,
 			&game.Height,
+			&game.Trending,
+			&game.Popular,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("row scan failed: %w", err)
+		}
+		err = json.Unmarshal([]byte(assetsJSON), &game.Assets)
+		if err != nil {
+			return nil, fmt.Errorf("row scan failed: %w", err)
+		}
+		games = append(games, game)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	return games, nil
+}
+
+func GetPopularGames(db *sql.DB) ([]GamesResponse, error) {
+	query := `SELECT id, code, url, name, isPortrait, description, gamePreviewsV, assets, category_id, colorMuted, colorVibrant, status, privateAllowed, rating, numberOfRatings, gamePlays, hasIntegratedAds, width, height,trending,popular FROM games_data WHERE status='1' AND popular='true'`
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("query failed: %w", err)
+	}
+	defer rows.Close()
+
+	var games []GamesResponse
+
+	for rows.Next() {
+		var game GamesResponse
+		var assetsJSON string
+		err := rows.Scan(
+			&game.Id,
+			&game.Code,
+			&game.URL,
+			&game.Name,
+			&game.IsPortrait,
+			&game.Description,
+			&game.GamePreviewsV,
+			&assetsJSON,
+			&game.Categories,
+			&game.ColorsM,
+			&game.ColorsV,
+			&game.Status,
+			&game.PrivateAllowed,
+			&game.Rating,
+			&game.NumberOfRatings,
+			&game.GamePlays,
+			&game.HasIntegratedAds,
+			&game.Width,
+			&game.Height,
+			&game.Trending,
+			&game.Popular,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("row scan failed: %w", err)
+		}
+		err = json.Unmarshal([]byte(assetsJSON), &game.Assets)
+		if err != nil {
+			return nil, fmt.Errorf("row scan failed: %w", err)
+		}
+		games = append(games, game)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	return games, nil
+}
+
+func GetTrendingGames(db *sql.DB) ([]GamesResponse, error) {
+	query := `SELECT id, code, url, name, isPortrait, description, gamePreviewsV, assets, category_id, colorMuted, colorVibrant, status, privateAllowed, rating, numberOfRatings, gamePlays, hasIntegratedAds, width, height,trending,popular FROM games_data WHERE status='1' AND trending='true'`
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("query failed: %w", err)
+	}
+	defer rows.Close()
+
+	var games []GamesResponse
+
+	for rows.Next() {
+		var game GamesResponse
+		var assetsJSON string
+		err := rows.Scan(
+			&game.Id,
+			&game.Code,
+			&game.URL,
+			&game.Name,
+			&game.IsPortrait,
+			&game.Description,
+			&game.GamePreviewsV,
+			&assetsJSON,
+			&game.Categories,
+			&game.ColorsM,
+			&game.ColorsV,
+			&game.Status,
+			&game.PrivateAllowed,
+			&game.Rating,
+			&game.NumberOfRatings,
+			&game.GamePlays,
+			&game.HasIntegratedAds,
+			&game.Width,
+			&game.Height,
+			&game.Trending,
+			&game.Popular,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("row scan failed: %w", err)
@@ -194,7 +314,7 @@ func GetAllGames(db *sql.DB) ([]GamesResponse, error) {
 }
 
 func GetAllGamesBycategory(db *sql.DB, category_id string) ([]GamesResponse, error) {
-	query := `SELECT id, code, url, name, isPortrait, description, gamePreviewsV, assets, category_id, colorMuted, colorVibrant, status, privateAllowed, rating, numberOfRatings, gamePlays, hasIntegratedAds, width, height FROM games_data WHERE status='1' AND category_id=$1;`
+	query := `SELECT id, code, url, name, isPortrait, description, gamePreviewsV, assets, category_id, colorMuted, colorVibrant, status, privateAllowed, rating, numberOfRatings, gamePlays, hasIntegratedAds, width, height,trending,popular FROM games_data WHERE status='1' AND category_id=$1;`
 
 	rows, err := db.Query(query, category_id)
 	if err != nil {
@@ -227,6 +347,62 @@ func GetAllGamesBycategory(db *sql.DB, category_id string) ([]GamesResponse, err
 			&game.HasIntegratedAds,
 			&game.Width,
 			&game.Height,
+			&game.Trending,
+			&game.Popular,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("row scan failed: %w", err)
+		}
+		err = json.Unmarshal([]byte(assetsJSON), &game.Assets)
+		if err != nil {
+			return nil, fmt.Errorf("row scan failed: %w", err)
+		}
+		games = append(games, game)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	return games, nil
+}
+
+func GetGameSearch(db *sql.DB, search string) ([]GamesResponse, error) {
+	query := `SELECT id, code, url, name, isPortrait, description, gamePreviewsV, assets, category_id, colorMuted, colorVibrant, status, privateAllowed, rating, numberOfRatings, gamePlays, hasIntegratedAds, width, height,trending,popular FROM games_data WHERE status='1' AND (name ILIKE '%' || $1 || '%' OR name ILIKE $1);`
+
+	rows, err := db.Query(query, search)
+	if err != nil {
+		return nil, fmt.Errorf("query failed: %w", err)
+	}
+	defer rows.Close()
+
+	var games []GamesResponse
+
+	for rows.Next() {
+		var game GamesResponse
+		var assetsJSON string
+		err := rows.Scan(
+			&game.Id,
+			&game.Code,
+			&game.URL,
+			&game.Name,
+			&game.IsPortrait,
+			&game.Description,
+			&game.GamePreviewsV,
+			&assetsJSON,
+			&game.Categories,
+			&game.ColorsM,
+			&game.ColorsV,
+			&game.Status,
+			&game.PrivateAllowed,
+			&game.Rating,
+			&game.NumberOfRatings,
+			&game.GamePlays,
+			&game.HasIntegratedAds,
+			&game.Width,
+			&game.Height,
+			&game.Trending,
+			&game.Popular,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("row scan failed: %w", err)

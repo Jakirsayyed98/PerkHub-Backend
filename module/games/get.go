@@ -41,6 +41,40 @@ func GetGames(c *gin.Context) {
 	settings.StatusOk(c, result, "Successfully get games", "")
 }
 
+func GetPopulargames(c *gin.Context) {
+	store, err := stores.GetStores(c)
+
+	if err != nil {
+		settings.StatusBadRequest(c, err, "")
+		return
+	}
+
+	result, err := store.GamesStore.GetPopularGames()
+	if err != nil {
+		settings.StatusBadRequest(c, err, "")
+		return
+	}
+
+	settings.StatusOk(c, result, "Successfully get games", "")
+}
+
+func GetTrendingGames(c *gin.Context) {
+	store, err := stores.GetStores(c)
+
+	if err != nil {
+		settings.StatusBadRequest(c, err, "")
+		return
+	}
+
+	result, err := store.GamesStore.GetTrendingGames()
+	if err != nil {
+		settings.StatusBadRequest(c, err, "")
+		return
+	}
+
+	settings.StatusOk(c, result, "Successfully get games", "")
+}
+
 func RefreshGameCategories(c *gin.Context) {
 	store, err := stores.GetStores(c)
 

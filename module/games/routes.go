@@ -15,6 +15,9 @@ func Routes(api *gin.RouterGroup) {
 		api.GET("getgames-categories", GetGameCategories)
 		api.GET("getgames", GetGames)
 		api.POST("getgames-bycategory", GameByCategory)
+		api.POST("search-game", GameSearch)
+		api.GET("get-popular-games", GetPopulargames)
+		api.GET("get-trending-games", GetTrendingGames)
 
 	}
 }

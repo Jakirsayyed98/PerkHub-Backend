@@ -45,9 +45,45 @@ func (s *GamesStore) GetGames() (interface{}, error) {
 	return data, nil
 }
 
+func (s *GamesStore) GetPopularGames() (interface{}, error) {
+
+	data, err := model.GetPopularGames(s.db)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
+
+	return data, nil
+}
+
+func (s *GamesStore) GetTrendingGames() (interface{}, error) {
+
+	data, err := model.GetTrendingGames(s.db)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
+
+	return data, nil
+}
+
 func (s *GamesStore) GetGamesByCategory(category_id string) (interface{}, error) {
 
 	data, err := model.GetAllGamesBycategory(s.db, category_id)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
+
+	return data, nil
+}
+
+func (s *GamesStore) GameSearch(search string) (interface{}, error) {
+
+	data, err := model.GetGameSearch(s.db, search)
 
 	if err != nil {
 		fmt.Println(err.Error())
