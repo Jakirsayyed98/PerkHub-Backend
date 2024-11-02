@@ -9,6 +9,7 @@ import (
 	"PerkHub/module/mobile"
 	reglogin "PerkHub/module/reg_login"
 	"PerkHub/module/transactions"
+	"PerkHub/module/withdrawal"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,7 +27,7 @@ func Endpoints(app *gin.Engine) {
 		affiliates.Routes(api)
 		transactions.Routes(api)
 		games.Routes(api)
-
+		withdrawal.Routes(api)
 	}
 
 }

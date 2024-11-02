@@ -16,6 +16,7 @@ type Stores struct {
 	AffiliatesStore         *AffiliatesStore
 	MiniAppTransactionStore *MiniAppTransactionStore
 	GamesStore              *GamesStore
+	Withdrawal              *WithdrawalStore
 }
 
 func NewStores(db *sql.DB) *Stores {
@@ -28,6 +29,7 @@ func NewStores(db *sql.DB) *Stores {
 		AffiliatesStore:         NewAffiliatesStore(db),
 		MiniAppTransactionStore: NewMiniAppTransactionStore(db),
 		GamesStore:              NewGameStore(db),
+		Withdrawal:              NewWithdrawalStore(db),
 	}
 }
 
@@ -41,6 +43,7 @@ func (s *Stores) BindStore() gin.HandlerFunc {
 		ctx.Set("affiliates_store", s.AffiliatesStore)
 		ctx.Set("miniapptransaction_store", s.MiniAppTransactionStore)
 		ctx.Set("games_store", s.GamesStore)
+		ctx.Set("withdrawal_store", s.Withdrawal)
 		ctx.Next()
 	}
 }
@@ -88,7 +91,12 @@ func GetStores(c *gin.Context) (*Stores, error) {
 
 	gamestore, gameok := c.MustGet("games_store").(*GamesStore)
 	if !gameok {
-		return nil, errors.New("MiniApp Transaction Store Error")
+		return nil, errors.New("Games Store Error")
+	}
+
+	withdrawalStore, err := c.MustGet("withdrawal_store").(*WithdrawalStore)
+	if !err {
+		return nil, errors.New("Withdrawal Store Error")
 	}
 
 	return &Stores{
@@ -100,5 +108,6 @@ func GetStores(c *gin.Context) (*Stores, error) {
 		AffiliatesStore:         affiliates_store,
 		MiniAppTransactionStore: miniapptransaction_store,
 		GamesStore:              gamestore,
+		Withdrawal:              withdrawalStore,
 	}, nil
 }

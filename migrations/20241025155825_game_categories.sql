@@ -18,4 +18,3 @@ COMMENT ON COLUMN game_categories.status IS '1 means Active, 0 means Inactive';
 -- +goose StatementBegin
 DROP TABLE IF EXISTS game_categories;
 -- +goose StatementEnd
-
