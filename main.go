@@ -8,6 +8,7 @@ import (
 	"PerkHub/stores"
 	"context"
 	"fmt"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -35,6 +36,13 @@ func main() {
 
 	app.Use(store.BindStore())
 	routes.Endpoints(app)
+
+	// Serve the files directory as a static file server
+	fs := http.FileServer(http.Dir("./files"))
+
+	// Define the route for serving files
+	// This will map /files/* to the files directory in your project
+	http.Handle("/files/", http.StripPrefix("/files/", fs))
 
 	app.Run(fmt.Sprintf("localhost:%d", constants.Port))
 
