@@ -57,7 +57,7 @@ func (category *Category) Bind(c *gin.Context) error {
 }
 
 type CategoryID struct {
-	Id string `json:"id"`
+	CategoryId string `json:"category_id"`
 }
 
 func NewCategoryID() *CategoryID {

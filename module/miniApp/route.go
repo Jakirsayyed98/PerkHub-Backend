@@ -9,7 +9,7 @@ import (
 func Routes(api *gin.RouterGroup) {
 	user := api.Group("/")
 	user.Use(middlewear.UserMiddleware())
-	user.POST("/search-miniapp", SearchMiniApp)
+	user.POST("/searchMiniApps", SearchMiniApp)
 	user.POST("/getMiniAppByCategory", GetMiniAppBycategory)
 	user.POST("/genrateSubID", GenrateSubid)
 

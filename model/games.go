@@ -16,7 +16,7 @@ type GamesResponse struct {
 	Name             string    `json:"name"`
 	IsPortrait       bool      `json:"isPortrait"`
 	Description      string    `json:"description"`
-	GamePreviewsV    string    `json:"gamePreviewsV"`
+	GamePreviews     string    `json:"gamePreviews"`
 	Assets           Assets    `json:"assets"`
 	Categories       string    `json:"category_id"`
 	ColorsM          string    `json:"colorMuted"`
@@ -29,8 +29,8 @@ type GamesResponse struct {
 	HasIntegratedAds bool      `json:"hasIntegratedAds"`
 	Width            string    `json:"width"`
 	Height           string    `json:"height"`
-	Trending         string    `json:"trending"`
-	Popular          string    `json:"popular"`
+	Trending         bool      `json:"trending"`
+	Popular          bool      `json:"popular"`
 }
 
 type Assets struct {
@@ -62,7 +62,7 @@ func (s *GamesResponse) Bind(data request.GameResponse, categoryId string) error
 	s.Name = data.Name.EN
 	s.IsPortrait = data.IsPortrait
 	s.Description = data.Description.EN
-	s.GamePreviewsV = data.GamePreviews.EN
+	s.GamePreviews = data.GamePreviews.EN
 	s.Assets = Assets(data.Assets)
 	s.ColorsM = data.ColorsM
 	s.ColorsV = data.Colors
@@ -80,7 +80,7 @@ func (s *GamesResponse) Bind(data request.GameResponse, categoryId string) error
 func (s *GamesResponse) InsertGames(db *sql.DB, item *GamesResponse, category_id string) error {
 	datas, err := json.Marshal(item.Assets)
 	query := `
-		INSERT INTO games_data (code, url, name, isPortrait, description, gamePreviewsV, assets, category_id, colorMuted, colorVibrant, status, privateAllowed, rating, numberOfRatings, gamePlays, hasIntegratedAds, width, height, created_at, updated_at)
+		INSERT INTO games_data (code, url, name, isPortrait, description, gamePreviews, assets, category_id, colorMuted, colorVibrant, status, privateAllowed, rating, numberOfRatings, gamePlays, hasIntegratedAds, width, height, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, now(), now())
 	`
 	fmt.Println(string(datas))
@@ -90,7 +90,7 @@ func (s *GamesResponse) InsertGames(db *sql.DB, item *GamesResponse, category_id
 		item.Name,             // $3
 		item.IsPortrait,       // $4 (assuming this is a boolean)
 		item.Description,      // $5
-		item.GamePreviewsV,    // $6
+		item.GamePreviews,     // $6
 		datas,                 // $7
 		item.Categories,       // $8
 		item.ColorsM,          // $9
@@ -108,7 +108,7 @@ func (s *GamesResponse) InsertGames(db *sql.DB, item *GamesResponse, category_id
 }
 
 func (s *GamesResponse) FindGameByCode(db *sql.DB, code string) (*GamesResponse, error) {
-	query := `SELECT id, code, url, name, assets, isPortrait, description, gamePreviewsV, category_id, colorMuted, colorVibrant, status, privateAllowed, rating, numberOfRatings, gamePlays, hasIntegratedAds, width, height FROM games_data WHERE code = $1;`
+	query := `SELECT id, code, url, name, assets, isPortrait, description, gamepreviews, category_id, colorMuted, colorVibrant, status, privateAllowed, rating, numberOfRatings, gamePlays, hasIntegratedAds, width, height FROM games_data WHERE code = $1;`
 	row := db.QueryRow(query, code)
 
 	var game GamesResponse
@@ -122,7 +122,7 @@ func (s *GamesResponse) FindGameByCode(db *sql.DB, code string) (*GamesResponse,
 		&assetsJSON,
 		&game.IsPortrait,
 		&game.Description,
-		&game.GamePreviewsV,
+		&game.GamePreviews,
 		&game.Categories,
 		&game.ColorsM,
 		&game.ColorsV,
@@ -152,7 +152,7 @@ func (s *GamesResponse) FindGameByCode(db *sql.DB, code string) (*GamesResponse,
 }
 
 func GetAllGames(db *sql.DB) ([]GamesResponse, error) {
-	query := `SELECT id, code, url, name, isPortrait, description, gamePreviewsV, assets, category_id, colorMuted, colorVibrant, status, privateAllowed, rating, numberOfRatings, gamePlays, hasIntegratedAds, width, height,trending,popular FROM games_data WHERE status='1'`
+	query := `SELECT id, code, url, name, isPortrait, description, gamepreviews, assets, category_id, colorMuted, colorVibrant, status, privateAllowed, rating, numberOfRatings, gamePlays, hasIntegratedAds, width, height,trending,popular FROM games_data WHERE status='1'`
 
 	rows, err := db.Query(query)
 	if err != nil {
@@ -172,7 +172,7 @@ func GetAllGames(db *sql.DB) ([]GamesResponse, error) {
 			&game.Name,
 			&game.IsPortrait,
 			&game.Description,
-			&game.GamePreviewsV,
+			&game.GamePreviews,
 			&assetsJSON,
 			&game.Categories,
 			&game.ColorsM,
@@ -206,7 +206,7 @@ func GetAllGames(db *sql.DB) ([]GamesResponse, error) {
 }
 
 func GetPopularGames(db *sql.DB) ([]GamesResponse, error) {
-	query := `SELECT id, code, url, name, isPortrait, description, gamePreviewsV, assets, category_id, colorMuted, colorVibrant, status, privateAllowed, rating, numberOfRatings, gamePlays, hasIntegratedAds, width, height,trending,popular FROM games_data WHERE status='1' AND popular='true'`
+	query := `SELECT id, code, url, name, isPortrait, description, gamepreviews, assets, category_id, colorMuted, colorVibrant, status, privateAllowed, rating, numberOfRatings, gamePlays, hasIntegratedAds, width, height,trending,popular FROM games_data WHERE status='1' AND popular='true'`
 
 	rows, err := db.Query(query)
 	if err != nil {
@@ -226,7 +226,7 @@ func GetPopularGames(db *sql.DB) ([]GamesResponse, error) {
 			&game.Name,
 			&game.IsPortrait,
 			&game.Description,
-			&game.GamePreviewsV,
+			&game.GamePreviews,
 			&assetsJSON,
 			&game.Categories,
 			&game.ColorsM,
@@ -260,7 +260,7 @@ func GetPopularGames(db *sql.DB) ([]GamesResponse, error) {
 }
 
 func GetTrendingGames(db *sql.DB) ([]GamesResponse, error) {
-	query := `SELECT id, code, url, name, isPortrait, description, gamePreviewsV, assets, category_id, colorMuted, colorVibrant, status, privateAllowed, rating, numberOfRatings, gamePlays, hasIntegratedAds, width, height,trending,popular FROM games_data WHERE status='1' AND trending='true'`
+	query := `SELECT id, code, url, name, isPortrait, description, gamepreviews, assets, category_id, colorMuted, colorVibrant, status, privateAllowed, rating, numberOfRatings, gamePlays, hasIntegratedAds, width, height,trending,popular FROM games_data WHERE status='1' AND trending='true'`
 
 	rows, err := db.Query(query)
 	if err != nil {
@@ -280,7 +280,7 @@ func GetTrendingGames(db *sql.DB) ([]GamesResponse, error) {
 			&game.Name,
 			&game.IsPortrait,
 			&game.Description,
-			&game.GamePreviewsV,
+			&game.GamePreviews,
 			&assetsJSON,
 			&game.Categories,
 			&game.ColorsM,
@@ -314,7 +314,7 @@ func GetTrendingGames(db *sql.DB) ([]GamesResponse, error) {
 }
 
 func GetAllGamesBycategory(db *sql.DB, category_id string) ([]GamesResponse, error) {
-	query := `SELECT id, code, url, name, isPortrait, description, gamePreviewsV, assets, category_id, colorMuted, colorVibrant, status, privateAllowed, rating, numberOfRatings, gamePlays, hasIntegratedAds, width, height,trending,popular FROM games_data WHERE status='1' AND category_id=$1;`
+	query := `SELECT id, code, url, name, isPortrait, description, gamepreviews, assets, category_id, colorMuted, colorVibrant, status, privateAllowed, rating, numberOfRatings, gamePlays, hasIntegratedAds, width, height,trending,popular FROM games_data WHERE status='1' AND category_id=$1;`
 
 	rows, err := db.Query(query, category_id)
 	if err != nil {
@@ -334,7 +334,7 @@ func GetAllGamesBycategory(db *sql.DB, category_id string) ([]GamesResponse, err
 			&game.Name,
 			&game.IsPortrait,
 			&game.Description,
-			&game.GamePreviewsV,
+			&game.GamePreviews,
 			&assetsJSON,
 			&game.Categories,
 			&game.ColorsM,
@@ -368,7 +368,7 @@ func GetAllGamesBycategory(db *sql.DB, category_id string) ([]GamesResponse, err
 }
 
 func GetGameSearch(db *sql.DB, search string) ([]GamesResponse, error) {
-	query := `SELECT id, code, url, name, isPortrait, description, gamePreviewsV, assets, category_id, colorMuted, colorVibrant, status, privateAllowed, rating, numberOfRatings, gamePlays, hasIntegratedAds, width, height,trending,popular FROM games_data WHERE status='1' AND (name ILIKE '%' || $1 || '%' OR name ILIKE $1);`
+	query := `SELECT id, code, url, name, isPortrait, description, gamepreviews, assets, category_id, colorMuted, colorVibrant, status, privateAllowed, rating, numberOfRatings, gamePlays, hasIntegratedAds, width, height,trending,popular FROM games_data WHERE status='1' AND (name ILIKE '%' || $1 || '%' OR name ILIKE $1);`
 
 	rows, err := db.Query(query, search)
 	if err != nil {
@@ -388,7 +388,7 @@ func GetGameSearch(db *sql.DB, search string) ([]GamesResponse, error) {
 			&game.Name,
 			&game.IsPortrait,
 			&game.Description,
-			&game.GamePreviewsV,
+			&game.GamePreviews,
 			&assetsJSON,
 			&game.Categories,
 			&game.ColorsM,

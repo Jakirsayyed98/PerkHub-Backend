@@ -9,7 +9,7 @@ CREATE TABLE games_data (
     name VARCHAR(50),
     isPortrait BOOLEAN,
     description VARCHAR(255),
-    gamePreviewsV VARCHAR(50),
+    gamePreviews VARCHAR(50),
     assets VARCHAR,
     category_id VARCHAR(50),
     colorMuted VARCHAR(25),

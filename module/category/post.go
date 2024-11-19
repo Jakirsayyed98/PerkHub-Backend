@@ -68,7 +68,7 @@ func DeleteCategory(c *gin.Context) {
 		return
 	}
 
-	result, err := store.CategoryStore.DeleteCategory(data.Id)
+	result, err := store.CategoryStore.DeleteCategory(data.CategoryId)
 	if err != nil {
 		settings.StatusBadRequest(c, err, "")
 	}

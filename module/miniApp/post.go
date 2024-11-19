@@ -134,9 +134,10 @@ func GetMiniAppBycategory(c *gin.Context) {
 		return
 	}
 
-	result, err := store.MiniAppStore.GetMiniAppsBycategoryID(data.Id)
+	result, err := store.MiniAppStore.GetMiniAppsBycategoryID(data.CategoryId)
 	if err != nil {
 		settings.StatusBadRequest(c, err, "")
+		return
 	}
 	settings.StatusOk(c, result, "Get MiniApp Successfully", "")
 
@@ -160,7 +161,8 @@ func GenrateSubid(c *gin.Context) {
 
 	result, err := store.MiniAppStore.GenrateSubid(request.MiniAppId, userId)
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		settings.StatusBadRequest(c, err.Error(), "")
+		return
 	}
 	settings.StatusOk(c, result, "Generate SubID Successfully", "")
 }

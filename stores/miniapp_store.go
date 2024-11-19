@@ -6,6 +6,7 @@ import (
 	"PerkHub/responses"
 	"PerkHub/utils"
 	"database/sql"
+	"errors"
 	"fmt"
 )
 
@@ -53,9 +54,9 @@ func (s *MiniAppStore) GetAllMiniApps() (interface{}, error) {
 
 }
 
-func (s *MiniAppStore) GetMiniAppsBycategoryID(id string) (interface{}, error) {
+func (s *MiniAppStore) GetMiniAppsBycategoryID(category_id string) (interface{}, error) {
 
-	data, err := model.GetMiniAppsByCategoryID(s.db, id)
+	data, err := model.GetMiniAppsByCategoryID(s.db, category_id)
 
 	if err != nil {
 		return nil, err
@@ -105,7 +106,13 @@ func (s *MiniAppStore) GenrateSubid(miniapp_id, userID string) (interface{}, err
 	if err != nil {
 		return nil, err
 	}
+	if data == nil {
+		return nil, errors.New("App not found")
+	}
 	subid1, err := utils.GenerateRandomUUID(20)
+	if err != nil {
+		return nil, err
+	}
 	subid2 := userID
 	subid3 := miniapp_id
 	url := fmt.Sprintf("%s&subid=%s&subid2=%s&subid3=%s", data[0].Url, subid1, subid2, subid3)

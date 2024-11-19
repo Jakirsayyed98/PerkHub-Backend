@@ -55,7 +55,7 @@ func StatusBadRequest(c *gin.Context, err interface{}, token string) {
 		http.StatusOK,
 		gin.H{
 			"status":  http.StatusBadRequest,
-			"message": "Bad Request",
+			"message": err,
 			"error":   err,
 		},
 	)

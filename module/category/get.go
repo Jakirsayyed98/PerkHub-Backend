@@ -18,6 +18,7 @@ func GetAllCategory(c *gin.Context) {
 	result, err := store.CategoryStore.GetAllCategory()
 	if err != nil {
 		settings.StatusBadRequest(c, err, "")
+		return
 	}
 	settings.StatusOk(c, result, "Category fetched Successfully", "")
 }

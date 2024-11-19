@@ -13,7 +13,7 @@ func Routes(api *gin.RouterGroup) {
 	api.Use(middlewear.UserMiddleware())
 	{
 		api.GET("getgames-categories", GetGameCategories)
-		api.GET("getgames", GetGames)
+		api.GET("/getAllGames", GetGames)
 		api.POST("getgames-bycategory", GameByCategory)
 		api.POST("search-game", GameSearch)
 		api.GET("get-popular-games", GetPopulargames)

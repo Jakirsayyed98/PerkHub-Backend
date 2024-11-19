@@ -138,7 +138,7 @@ func NewDeleteMiniApp() *DeleteMiniApp {
 }
 
 type GenrateMiniAppSubId struct {
-	MiniAppId string `json:"id"`
+	MiniAppId string `json:"id"  binding:"required"`
 }
 
 func NewGenrateMiniAppSubId() *GenrateMiniAppSubId {

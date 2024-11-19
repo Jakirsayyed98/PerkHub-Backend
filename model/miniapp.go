@@ -38,7 +38,7 @@ type MiniApp struct {
 
 type GenerateSubId struct {
 	ID        uuid.UUID `db:"id" json:"id"`
-	StoreID   string    `db:"store_id" json:"store_id"`
+	StoreID   string    `db:"miniapp_id" json:"miniapp_id"`
 	UserID    string    `db:"user_id" json:"user_id"`
 	SubID1    string    `db:"subid1" json:"subid1"`
 	SubID2    string    `db:"subid2" json:"subid2"`
@@ -50,7 +50,7 @@ func InsertGenratedSubId(db *sql.DB, miniapp_id, userId, subid1, subid2 string) 
 
 	query := `
     INSERT INTO genratedsubid_data (
-        store_id,user_id,subid1,subid2,created_at,updated_at
+        miniapp_id,user_id,subid1,subid2,created_at,updated_at
     ) VALUES (
         $1, $2, $3, $4, $5, $6
     )`
