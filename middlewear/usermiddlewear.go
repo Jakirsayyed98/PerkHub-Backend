@@ -27,7 +27,6 @@ func UserMiddleware() gin.HandlerFunc {
 
 		token := strings.TrimPrefix(authorizationHeader, "Bearer ")
 		tokenData, err := utils.VerifyJwt(token, "eWA1KTkOjDw03TyQuyxQv1KTq+X+KoDY3ejg8iaas")
-
 		if err != nil {
 			fmt.Println("Token verification error:", err)
 			settings.StatusUnauthorized(ctx, err)

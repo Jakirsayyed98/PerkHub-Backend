@@ -29,12 +29,13 @@ type MiniAppTransactions struct {
 	SubID                string    `json:"subid"`
 	SubID1               string    `json:"subid1"`
 	SubID2               string    `json:"subid2"`
-	MiniAppId            string    `json:"miniapp_id"`
+	MiniAppName          string    `json:"miniapp_name"`
 	CommissionPercentage string    `json:"commission_percentage"`
 	TransactionDate      string    `json:"transaction_date"`
 	TransactionID        string    `json:"transaction_id"`
 	CreatedAt            string    `json:"created_at"`
 	UpdatedAt            string    `json:"updated_at"`
+	MiniApp              []MiniApp `json:"miniApp"`
 }
 
 func NewMiniAppTransaction() *MiniAppTransactions {
@@ -54,7 +55,7 @@ func (s *MiniAppTransactions) Bind(req *request.CueLinkCallBackRequest, userComm
 	s.SubID = req.SubID
 	s.SubID1 = req.SubID1
 	s.SubID2 = req.SubID2
-	s.MiniAppId = req.SubID3
+	s.MiniAppName = req.SubID3
 	s.CommissionPercentage = req.CommissionPercentage
 	s.TransactionDate = req.TransactionDate
 	s.TransactionID = req.TransactionID
@@ -87,7 +88,7 @@ func FindMiniAppTransactionByUserID(db *sql.DB, userId string) ([]MiniAppTransac
 			&transaction.SubID,
 			&transaction.SubID1,
 			&transaction.SubID2,
-			&transaction.MiniAppId,
+			&transaction.MiniAppName,
 			&transaction.CommissionPercentage,
 			&transaction.TransactionDate,
 			&transaction.TransactionID,
@@ -97,7 +98,9 @@ func FindMiniAppTransactionByUserID(db *sql.DB, userId string) ([]MiniAppTransac
 		if err != nil {
 			return nil, err
 		}
+		miniApp, err := SearchMiniApps(db, transaction.MiniAppName)
 
+		transaction.MiniApp = miniApp
 		transactions = append(transactions, transaction)
 	}
 
@@ -128,7 +131,7 @@ func FindMiniAppTransactionBySubID(db *sql.DB, req *request.CueLinkCallBackReque
 		&transaction.SubID,
 		&transaction.SubID1,
 		&transaction.SubID2,
-		&transaction.MiniAppId,
+		&transaction.MiniAppName,
 		&transaction.CommissionPercentage,
 		&transaction.TransactionDate,
 		&transaction.TransactionID,
@@ -184,7 +187,7 @@ func InsertMiniAppTransaction(db *sql.DB, req *MiniAppTransactions) error {
 	} else {
 		status = "0"
 	}
-	_, err := db.Exec(sqlQuery, req.CampaignID, req.Commission, req.UserCommission, req.UserId, req.OrderID, req.ReferenceID, req.SaleAmount, status, req.SubID, req.SubID1, req.SubID2, req.MiniAppId, req.CommissionPercentage, req.TransactionDate, req.TransactionID, time.Now(), time.Now())
+	_, err := db.Exec(sqlQuery, req.CampaignID, req.Commission, req.UserCommission, req.UserId, req.OrderID, req.ReferenceID, req.SaleAmount, status, req.SubID, req.SubID1, req.SubID2, req.MiniAppName, req.CommissionPercentage, req.TransactionDate, req.TransactionID, time.Now(), time.Now())
 
 	return err
 }

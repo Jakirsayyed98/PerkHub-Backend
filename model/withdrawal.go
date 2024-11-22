@@ -16,6 +16,8 @@ type UserCashWithdrawal struct {
 	Reason        string    `json:"reason"`
 	VPA_ID        string    `json:"VPA_ID"`
 	Status        string    `json:"status"`
+	TxnId         string    `json:"txn_id"`
+	TxnTime       string    `json:"txn_time"`
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
 }

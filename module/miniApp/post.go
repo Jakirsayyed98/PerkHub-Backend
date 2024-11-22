@@ -159,7 +159,7 @@ func GenrateSubid(c *gin.Context) {
 
 	userId := c.MustGet("user_id").(string)
 
-	result, err := store.MiniAppStore.GenrateSubid(request.MiniAppId, userId)
+	result, err := store.MiniAppStore.GenrateSubid(request.MiniAppName, userId)
 	if err != nil {
 		settings.StatusBadRequest(c, err.Error(), "")
 		return

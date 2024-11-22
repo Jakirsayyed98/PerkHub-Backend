@@ -100,8 +100,8 @@ func (s *MiniAppStore) DeletMniApp(id string) (interface{}, error) {
 	return nil, nil
 }
 
-func (s *MiniAppStore) GenrateSubid(miniapp_id, userID string) (interface{}, error) {
-	data, err := model.SearchMiniApps(s.db, miniapp_id)
+func (s *MiniAppStore) GenrateSubid(miniAppName, userID string) (interface{}, error) {
+	data, err := model.SearchMiniApps(s.db, miniAppName)
 
 	if err != nil {
 		return nil, err
@@ -114,10 +114,10 @@ func (s *MiniAppStore) GenrateSubid(miniapp_id, userID string) (interface{}, err
 		return nil, err
 	}
 	subid2 := userID
-	subid3 := data[0].ID
+	subid3 := data[0].Name
 	url := fmt.Sprintf("%s&subid=%s&subid2=%s&subid3=%s", data[0].Url, subid1, subid2, subid3)
 
-	err = model.InsertGenratedSubId(s.db, miniapp_id, userID, subid1, subid2)
+	err = model.InsertGenratedSubId(s.db, miniAppName, userID, subid1, subid2)
 	if err != nil {
 		return nil, err
 	}
