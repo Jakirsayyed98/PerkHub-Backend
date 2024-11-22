@@ -114,7 +114,7 @@ func (s *MiniAppStore) GenrateSubid(miniapp_id, userID string) (interface{}, err
 		return nil, err
 	}
 	subid2 := userID
-	subid3 := miniapp_id
+	subid3 := data[0].ID
 	url := fmt.Sprintf("%s&subid=%s&subid2=%s&subid3=%s", data[0].Url, subid1, subid2, subid3)
 
 	err = model.InsertGenratedSubId(s.db, miniapp_id, userID, subid1, subid2)

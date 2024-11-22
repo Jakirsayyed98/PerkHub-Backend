@@ -54,7 +54,7 @@ func (s *MiniAppTransactions) Bind(req *request.CueLinkCallBackRequest, userComm
 	s.SubID = req.SubID
 	s.SubID1 = req.SubID1
 	s.SubID2 = req.SubID2
-	s.MiniAppId = req.SubID2
+	s.MiniAppId = req.SubID3
 	s.CommissionPercentage = req.CommissionPercentage
 	s.TransactionDate = req.TransactionDate
 	s.TransactionID = req.TransactionID
