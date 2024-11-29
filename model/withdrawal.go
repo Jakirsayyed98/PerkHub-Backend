@@ -14,7 +14,7 @@ type UserCashWithdrawal struct {
 	Requested_Amt string    `json:"requested_amt"`
 	UserId        string    `json:"user_id"`
 	Reason        string    `json:"reason"`
-	VPA_ID        string    `json:"VPA_ID"`
+	VPA_ID        string    `json:"vpa_id"`
 	Status        string    `json:"status"`
 	TxnId         string    `json:"txn_id"`
 	TxnTime       string    `json:"txn_time"`
@@ -38,7 +38,52 @@ func InserWithdrawalRequest(sql *sql.DB, req request.WithdrawalRequest, userId s
 
 func WithdrawalTxnList(db *sql.DB, userId string) ([]UserCashWithdrawal, error) {
 	var reason sql.NullString
-	query := "SELECT id,requested_amt,user_id, reason, VPA_ID,status, created_at, updated_at FROM user_cash_withdrawal WHERE user_id = $1"
+	query := "SELECT id,requested_amt,user_id, reason, vpa_id,status,txn_id,txn_time, created_at, updated_at FROM user_cash_withdrawal WHERE user_id = $1"
+
+	rows, err := db.Query(query, userId)
+	defer rows.Close()
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("transaction not found")
+		}
+		return nil, err
+	}
+
+	var transactions []UserCashWithdrawal
+
+	for rows.Next() {
+		var transaction UserCashWithdrawal
+
+		err := rows.Scan(
+			&transaction.Id,
+			&transaction.Requested_Amt,
+			&transaction.UserId,
+			&reason,
+			&transaction.VPA_ID,
+			&transaction.Status,
+			&transaction.TxnId,
+			&transaction.TxnTime,
+			&transaction.CreatedAt,
+			&transaction.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		if reason.Valid {
+			transaction.Reason = reason.String
+		} else {
+			transaction.Reason = ""
+		}
+		transactions = append(transactions, transaction)
+	}
+
+	return transactions, nil
+}
+
+func WithdrawalCompletedTxnList(db *sql.DB, userId string) ([]UserCashWithdrawal, error) {
+	var reason sql.NullString
+	query := "SELECT id,requested_amt,user_id, reason, vpa_id,status, created_at, updated_at FROM user_cash_withdrawal WHERE user_id = $1 AND status='1'"
 
 	rows, err := db.Query(query, userId)
 	defer rows.Close()

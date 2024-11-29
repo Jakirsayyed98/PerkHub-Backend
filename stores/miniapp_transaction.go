@@ -49,9 +49,17 @@ func (s *MiniAppTransactionStore) GetMiniAppTransaction(userId string) (interfac
 
 	}
 
+	withdrawalList, err := model.WithdrawalCompletedTxnList(s.db, userId)
+	if err != nil {
+		return nil, err
+	}
+	for _, v := range withdrawalList {
+		amt, _ := strconv.ParseFloat(v.Requested_Amt, 64)
+		withdrawal += amt
+	}
 	return gin.H{
 		"pending":    fmt.Sprintf("%.2f", pending),
-		"verified":   fmt.Sprintf("%.2f", verified),
+		"verified":   fmt.Sprintf("%.2f", (verified - withdrawal)),
 		"rejected":   fmt.Sprintf("%.2f", rejected),
 		"withdrawal": fmt.Sprintf("%.2f", withdrawal),
 

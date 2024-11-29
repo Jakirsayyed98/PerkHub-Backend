@@ -4,6 +4,8 @@ import (
 	"PerkHub/model"
 	"PerkHub/request"
 	"database/sql"
+	"errors"
+	"strconv"
 )
 
 type WithdrawalStore struct {
@@ -17,6 +19,10 @@ func NewWithdrawalStore(dbs *sql.DB) *WithdrawalStore {
 }
 
 func (s *WithdrawalStore) RequestWithdrawal(req *request.WithdrawalRequest, userId string) (interface{}, error) {
+	amt, _ := strconv.ParseFloat(req.RequestedAmt, 64)
+	if amt < 100 {
+		return nil, errors.New("amount should be greater then 100")
+	}
 	if err := model.InserWithdrawalRequest(s.db, *req, userId); err != nil {
 		return nil, err
 	}

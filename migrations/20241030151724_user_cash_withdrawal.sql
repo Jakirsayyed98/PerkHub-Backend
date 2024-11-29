@@ -9,6 +9,8 @@ CREATE TABLE user_cash_withdrawal (
     reason VARCHAR(255),
     VPA_ID VARCHAR(55),
     status TEXT DEFAULT '0',
+    txn_id VARCHAR(55),
+    txn_time VARCHAR(55),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
