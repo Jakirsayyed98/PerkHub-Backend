@@ -1,7 +1,8 @@
 package request
 
 import (
-	"PerkHub/utils"
+	"PerkHub/connection"
+	"PerkHub/constants"
 	"fmt"
 	"strings"
 	"time"
@@ -24,7 +25,7 @@ func NewCategory() *Category {
 	return &Category{}
 }
 
-func (category *Category) Bind(c *gin.Context) error {
+func (category *Category) Bind(c *gin.Context, awsInstance *connection.Aws) error {
 	if !strings.Contains(c.Request.Header.Get("Content-Type"), "multipart/form-data") {
 		return fmt.Errorf("content type not supported %s", c.Request.Header.Get("Content-Type"))
 	}
@@ -34,11 +35,18 @@ func (category *Category) Bind(c *gin.Context) error {
 	}
 	image := ""
 	files := form.File["image"]
+
 	if len(files) > 0 {
 
-		file := files[0]
+		fileHeader := files[0]
+		f, err := fileHeader.Open()
+		if err != nil {
+			return err
+		}
+		defer f.Close()
 
-		image, err = utils.SaveFile(c, file)
+		image, err = awsInstance.UploadFile(f, fileHeader.Filename, constants.AWSBucketName, constants.AWSSecretAccessKey, constants.AWSCloudFrontURL)
+		// image, err = utils.SaveFile(c, file)
 		if err != nil {
 			return err
 		}

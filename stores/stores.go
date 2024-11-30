@@ -1,8 +1,10 @@
 package stores
 
 import (
+	"PerkHub/connection"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,7 +35,7 @@ func NewStores(db *sql.DB) *Stores {
 	}
 }
 
-func (s *Stores) BindStore() gin.HandlerFunc {
+func (s *Stores) BindStore(awsIstance *connection.Aws) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		ctx.Set("login_store", s.LoginStore)
 		ctx.Set("category_store", s.CategoryStore)
@@ -44,6 +46,7 @@ func (s *Stores) BindStore() gin.HandlerFunc {
 		ctx.Set("miniapptransaction_store", s.MiniAppTransactionStore)
 		ctx.Set("games_store", s.GamesStore)
 		ctx.Set("withdrawal_store", s.Withdrawal)
+		ctx.Set("aws_instance", awsIstance)
 		ctx.Next()
 	}
 }
@@ -110,4 +113,14 @@ func GetStores(c *gin.Context) (*Stores, error) {
 		GamesStore:              gamestore,
 		Withdrawal:              withdrawalStore,
 	}, nil
+}
+
+func GetAwsInstance(ctx *gin.Context) (*connection.Aws, error) {
+	awsInstance, aOk := ctx.MustGet("aws_instance").(*connection.Aws)
+
+	if !aOk {
+		return nil, fmt.Errorf("aws instance not found")
+	}
+
+	return awsInstance, nil
 }

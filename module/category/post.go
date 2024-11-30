@@ -18,7 +18,16 @@ func CreateCategory(c *gin.Context) {
 
 	data := request.NewCategory()
 
-	if err := data.Bind(c); err != nil {
+	// if err := data.Bind(c); err != nil {
+	// 	settings.StatusBadRequest(c, err, "")
+	// 	return
+	// }
+	awsInstance, err := stores.GetAwsInstance(c)
+	if err != nil {
+		settings.StatusBadRequest(c, err, "")
+		return
+	}
+	if err := data.Bind(c, awsInstance); err != nil {
 		settings.StatusBadRequest(c, err, "")
 		return
 	}
@@ -39,8 +48,12 @@ func UpdateCategory(c *gin.Context) {
 	}
 
 	data := request.NewCategory()
-
-	if err := data.Bind(c); err != nil {
+	awsInstance, err := stores.GetAwsInstance(c)
+	if err != nil {
+		settings.StatusBadRequest(c, err, "")
+		return
+	}
+	if err := data.Bind(c, awsInstance); err != nil {
 		settings.StatusBadRequest(c, err, "")
 		return
 	}

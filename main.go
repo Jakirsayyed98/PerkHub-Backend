@@ -3,6 +3,7 @@ package main
 import (
 	routes "PerkHub/Routes"
 	"PerkHub/connection"
+	amazon "PerkHub/connection"
 	"PerkHub/constants"
 	"PerkHub/settings"
 	"PerkHub/stores"
@@ -25,6 +26,22 @@ func main() {
 
 	app := gin.Default()
 
+	awsKeyId := constants.AWSAccessKeyID
+	awsSecretKey := constants.AWSSecretAccessKey
+	awsRegion := constants.AWSRegion
+
+	awsInstance, err := amazon.NewAws(
+		awsRegion,
+		awsKeyId,
+		awsSecretKey,
+		constants.AWSBucketName,
+		constants.AWSCloudFrontURL,
+	)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println("S3 Connected Successfully")
 	db, err := connection.MakePotgressConn()
 
 	if err != nil {
@@ -34,7 +51,7 @@ func main() {
 	defer db.Close()
 	store := stores.NewStores(db)
 
-	app.Use(store.BindStore())
+	app.Use(store.BindStore(awsInstance))
 	routes.Endpoints(app)
 
 	// Serve the files directory as a static file server

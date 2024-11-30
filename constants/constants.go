@@ -34,11 +34,35 @@ func getPostgresDatabase() string {
 	return settings.Config("POSTGRES_DATABASE")
 }
 
+func getAwsRegion() string {
+	return settings.Config("AWS_REGION")
+}
+
+func getAwsAccessID() string {
+	return settings.Config("AWS_ACCESS_KEY_ID")
+}
+func getAwsSecretAccessKey() string {
+	return settings.Config("AWS_SECRET_ACCESS_KEY")
+}
+
+func getAwsBucketName() string {
+	return settings.Config("AWS_BUCKET_NAME")
+}
+
+func getAWSCloudFrontURL() string {
+	return settings.Config("AWS_CLOUDFRONT_URL")
+}
+
 var (
-	Port             = GetPortNumber()
-	PostgresHost     = getPostgresHost()
-	PostgresPort     = getPostgresPort()
-	PostgresUsername = getPostgresUserName()
-	PostgresPassword = getPostgresPassword()
-	PostgresDatabase = getPostgresDatabase()
+	Port               = GetPortNumber()
+	PostgresHost       = getPostgresHost()
+	PostgresPort       = getPostgresPort()
+	PostgresUsername   = getPostgresUserName()
+	PostgresPassword   = getPostgresPassword()
+	PostgresDatabase   = getPostgresDatabase()
+	AWSAccessKeyID     = getAwsAccessID()
+	AWSSecretAccessKey = getAwsSecretAccessKey()
+	AWSRegion          = getAwsRegion()
+	AWSBucketName      = getAwsBucketName()
+	AWSCloudFrontURL   = getAWSCloudFrontURL()
 )

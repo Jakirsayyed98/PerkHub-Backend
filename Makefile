@@ -12,7 +12,7 @@ build:
 # $(MAKE) build-upload
 
 build-upload:
-	sudo scp -i ~/Desktop/Workspace/paydoh/aws-ec2/paydoh-key.pem ./bankapi ubuntu@ec2-13-200-72-93.ap-south-1.compute.amazonaws.com:~/bankapi
+	sudo scp -i ~/F:\PerkHub_Go\perkhub.pem ./perkhub ubuntu@ec2-13-200-72-93.ap-south-1.compute.amazonaws.com:~/perkhub
 
 upload-migration:
 	sudo scp -i ~/Desktop/Workspace/paydoh/aws-ec2/paydoh-key.pem -r ./migrations ubuntu@ec2-13-200-72-93.ap-south-1.compute.amazonaws.com:~/bankapi/
