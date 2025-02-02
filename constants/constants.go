@@ -15,6 +15,10 @@ func getPostgresHost() string {
 	return settings.Config("POSTGRES_HOST")
 }
 
+func getJWT_KEY() string {
+	return settings.Config("JWT_KEY")
+}
+
 func getPostgresPort() int {
 	postgresPORT := settings.Config("POSTGRES_PORT")
 
@@ -53,6 +57,10 @@ func getAWSCloudFrontURL() string {
 	return settings.Config("AWS_CLOUDFRONT_URL")
 }
 
+func getBaseUrl() string {
+	return settings.Config("BASE_URL")
+}
+
 var (
 	Port               = GetPortNumber()
 	PostgresHost       = getPostgresHost()
@@ -65,4 +73,6 @@ var (
 	AWSRegion          = getAwsRegion()
 	AWSBucketName      = getAwsBucketName()
 	AWSCloudFrontURL   = getAWSCloudFrontURL()
+	JWT_KEY            = getJWT_KEY()
+	BASE_URL           = getBaseUrl()
 )

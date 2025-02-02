@@ -11,7 +11,7 @@ import (
 var DB *sql.DB
 
 func MakePotgressConn() (*sql.DB, error) {
-	db, err := sql.Open("postgres", "postgres://postgres:root@localhost:5433/postgres?sslmode=disable")
+	db, err := sql.Open("postgres", "postgres://postgres:1234@localhost:5432/postgres?sslmode=disable")
 	if err != nil {
 		return nil, err // Return error instead of logging and exiting
 	}

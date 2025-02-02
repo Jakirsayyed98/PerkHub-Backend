@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"PerkHub/module/admin"
 	"PerkHub/module/affiliates"
 	"PerkHub/module/banner"
 	"PerkHub/module/category"
@@ -18,6 +19,7 @@ func Endpoints(app *gin.Engine) {
 
 	api := app.Group("/api")
 	{
+		admin.Routes(api)
 		reglogin.Routes(api)
 		category.Routes(api)
 		miniapp.Routes(api)
@@ -28,6 +30,7 @@ func Endpoints(app *gin.Engine) {
 		transactions.Routes(api)
 		games.Routes(api)
 		withdrawal.Routes(api)
+
 	}
 
 }

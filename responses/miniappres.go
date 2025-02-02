@@ -42,6 +42,10 @@ func NewMiniAppRes() *MiniAppRes {
 func (u *MiniAppRes) BindMultipleUsers(miniapps []model.MiniApp) ([]MiniAppRes, error) {
 	var responses []MiniAppRes
 
+	if len(miniapps) == 0 {
+		return responses, nil
+	}
+
 	for _, dbUser := range miniapps {
 		var response MiniAppRes
 		err := response.ResponsesBind(dbUser)

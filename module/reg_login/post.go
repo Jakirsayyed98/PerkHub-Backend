@@ -89,17 +89,3 @@ func GetUserDetail(c *gin.Context) {
 
 	settings.StatusOk(c, result, "Successfully get User Detail", "")
 }
-
-func GetAllUsers(c *gin.Context) {
-	store, err := stores.GetStores(c)
-	if err != nil {
-		settings.StatusBadRequest(c, err.Error(), "")
-	}
-
-	result, err := store.LoginStore.GetAllUserDetail()
-	if err != nil {
-		settings.StatusBadRequest(c, err.Error(), "")
-	}
-
-	settings.StatusOk(c, result, "Successfully get User Detail", "")
-}

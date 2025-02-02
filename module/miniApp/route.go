@@ -14,6 +14,7 @@ func Routes(api *gin.RouterGroup) {
 	user.POST("/genrateSubID", GenrateSubid)
 
 	app := api.Group("/admin")
+	app.Use(middlewear.UserMiddleware())
 	{
 		app.POST("/create-miniapp", CreateMiniApp)
 		app.POST("/active-deactive-miniapp", UpdateActivateAndDeactive)

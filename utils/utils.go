@@ -1,9 +1,14 @@
 package utils
 
 import (
+	"PerkHub/constants"
+	"crypto/aes"
+	"crypto/cipher"
 	"crypto/rand"
+	"encoding/base64"
 	"errors"
 	"fmt"
+	"io"
 	mathRand "math/rand"
 	"mime/multipart"
 	"path/filepath"
@@ -81,11 +86,11 @@ type SecretClaims struct {
 }
 
 func GenerateJWTToken(user_id string) (string, error) {
-	secretKey := []byte("eWA1KTkOjDw03TyQuyxQv1KTq+X+KoDY3ejg8iaas")
+	secretKey := []byte(constants.JWT_KEY)
 	claims := jwt.MapClaims{
 		"user_id": fmt.Sprintf("%s|%s", user_id, string(secretKey)),
 		"iss":     "perkhub",
-		"exp":     time.Now().Add(time.Hour * 720).Unix(),
+		"exp":     time.Now().Add(time.Minute * 10).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -144,4 +149,50 @@ func SaveFile(c *gin.Context, file *multipart.FileHeader) (string, error) {
 	imageURL := filename
 
 	return imageURL, nil
+}
+
+// Encrypt encrypts plain text using AES
+func Encrypt(plainText string) (string, error) {
+	block, err := aes.NewCipher([]byte(constants.JWT_KEY))
+	if err != nil {
+		return "", err
+	}
+
+	cipherText := make([]byte, aes.BlockSize+len(plainText))
+	iv := cipherText[:aes.BlockSize]
+
+	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
+		return "", err
+	}
+
+	stream := cipher.NewCFBEncrypter(block, iv)
+	stream.XORKeyStream(cipherText[aes.BlockSize:], []byte(plainText))
+
+	// Return as base64 encoded string
+	return base64.URLEncoding.EncodeToString(cipherText), nil
+}
+
+// Decrypt decrypts AES-encrypted text
+func Decrypt(encryptedText string) (string, error) {
+	cipherText, err := base64.URLEncoding.DecodeString(encryptedText)
+	if err != nil {
+		return "", err
+	}
+
+	block, err := aes.NewCipher([]byte(constants.JWT_KEY))
+	if err != nil {
+		return "", err
+	}
+
+	if len(cipherText) < aes.BlockSize {
+		return "", errors.New("ciphertext too short")
+	}
+
+	iv := cipherText[:aes.BlockSize]
+	cipherText = cipherText[aes.BlockSize:]
+
+	stream := cipher.NewCFBDecrypter(block, iv)
+	stream.XORKeyStream(cipherText, cipherText)
+
+	return string(cipherText), nil
 }

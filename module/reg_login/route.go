@@ -15,8 +15,4 @@ func Routes(api *gin.RouterGroup) {
 	app.POST("/savedetail", SaveUserDetail)
 	app.GET("/getUserDetail", GetUserDetail)
 
-	admin := api.Group("/admin")
-
-	admin.GET("userlist",)
-
 }
