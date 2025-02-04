@@ -209,7 +209,6 @@ func GetAllMiniApps(db *sql.DB) ([]MiniApp, error) {
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
-
 	return miniApps, nil
 }
 

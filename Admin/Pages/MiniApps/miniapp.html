@@ -34,7 +34,7 @@
             <!-- Search Bar and Add Brand Button -->
             <div class="search-container">
                 <input type="text" id="searchInput" class="search-bar" onkeyup="searchUsers()" placeholder="Search for users...">
-                <button id="addBrandBtn" class="btn btn-primary" href="AddAndEditMiniApp.html">Add Brand</button>
+                <button id="addBrandBtn" class="btn btn-primary" onclick="window.location.href='AddAndEditMiniApp.html'">Add Brand</button>
             </div>
             
             <!-- User Table -->
@@ -43,10 +43,8 @@
                     <tr>
                         <th>ID</th>
                         <th>Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Gender</th>
-                        <th>Verified</th>
+                        <th>Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody id="MiniAppTableBody">

@@ -1,9 +1,9 @@
 const rowsPerPage = 10;
 let currentPage = 1;
-let users = [];
-let filteredUsers = [];
+let miniapps = []; // This holds all the miniapps
+let filteredUsers = []; // This is for the filtered miniapps based on search
 
-// Function to fetch users from the API
+// Function to fetch miniapps from the API
 async function fetchMiniApps() {
     try {
         const token = localStorage.getItem('token'); // Get the token from localStorage
@@ -21,16 +21,19 @@ async function fetchMiniApps() {
         }
 
         const data = await response.json();
-        miniapps = data.data; 
-        filteredUsers = [...miniapps]; 
+        
+        // Ensure that data.data is an array before using it
+        miniapps = Array.isArray(data.data) ? data.data : [];
+        filteredUsers = [...miniapps];  // Copy data to filteredUsers for later manipulation
         alert('Miniapps fetched successfully');
         displayMiniApps();
     } catch (error) {
         console.error('Error fetching miniapps:', error);
-        alert('Error fetching miniapps'+error.message);
+        alert('Error fetching miniapps: ' + error.message);
     }
 }
 
+// Function to display miniapps in the table
 function displayMiniApps() {
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
@@ -42,17 +45,25 @@ function displayMiniApps() {
     miniappsToDisplay.forEach(miniapp => {
         const row = document.createElement('tr');
         row.innerHTML = `
+            <td>${miniapp.id}</td>
             <td>${miniapp.name}</td>
-            <td>${miniapp.name}</td>
-            <td>${miniapp.email}</td>
-            <td>${miniapp.number}</td>
-            <td>${miniapp.gender}</td>
-            <td>${miniapp.verified == '1' ? 'Verified' : 'Unverified'}</td>
+            <td>${miniapp.status === '1' ? 'Active' : 'InActive'}</td>
+            <td>
+            <button onclick="updateItem(${miniapp.id}, '${encodeURIComponent(miniapp.name)}', '${encodeURIComponent(miniapp.status)}')">Update</button>
+            <button onclick="updateItem(${miniapp.id}, '${encodeURIComponent(miniapp.name)}', '${encodeURIComponent(miniapp.status)}')">Delete</button>
+            </td>
         `;
         tbody.appendChild(row);
     });
 
     createPagination();
+}
+
+// Store the item data in localStorage and navigate to page2.html for update
+function updateItem(id, name, status) {
+    const itemData = { id, name: decodeURIComponent(name), status: decodeURIComponent(status) };
+    localStorage.setItem('itemData', JSON.stringify(itemData));
+    window.location.href = 'AddAndEditMiniApp.html';
 }
 
 // Function to create pagination buttons
@@ -103,19 +114,19 @@ function createPagination() {
 // Function to filter users based on search input
 function searchUsers() {
     const input = document.getElementById('searchInput').value.toLowerCase();
-    filteredUsers = users.filter(user => {
+    filteredUsers = miniapps.filter(user => {
         return (
             user.name.toLowerCase().includes(input) ||
             user.email.toLowerCase().includes(input) ||
             user.phone.includes(input)
         );
     });
-    currentPage = 1; // Reset to the first page
+    currentPage = 1; // Reset to the first page after filtering
     displayMiniApps();
 }
 
 // Event listener for search input
 document.getElementById('searchInput').addEventListener('input', searchUsers);
 
-// Initial fetch of user data when the script is loaded
+// Initial fetch of miniapp data when the script is loaded
 fetchMiniApps();

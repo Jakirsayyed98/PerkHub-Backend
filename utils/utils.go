@@ -90,7 +90,7 @@ func GenerateJWTToken(user_id string) (string, error) {
 	claims := jwt.MapClaims{
 		"user_id": fmt.Sprintf("%s|%s", user_id, string(secretKey)),
 		"iss":     "perkhub",
-		"exp":     time.Now().Add(time.Minute * 10).Unix(),
+		"exp":     time.Now().Add(time.Hour * 10).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

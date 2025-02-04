@@ -10,13 +10,15 @@
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700" rel="stylesheet">
     <link rel="stylesheet" href="Admin/assets/pages/waves/css/waves.min.css" type="text/css" media="all">
     <link rel="stylesheet" type="text/css" href="Admin/assets/css/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="Admin/assets/pages/waves/css/waves.min.css" type="text/css" media="all">
     <link rel="stylesheet" type="text/css" href="Admin/assets/icon/themify-icons/themify-icons.css">
     <link rel="stylesheet" type="text/css" href="Admin/assets/css/font-awesome-n.min.css">
     <link rel="stylesheet" type="text/css" href="Admin/assets/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="Admin/assets/css/jquery.mCustomScrollbar.css">
-    <link rel="stylesheet" type="text/css" href="Admin/css/userlist.css"> <!-- Link to the external CSS file -->
-    
+    <link rel="stylesheet" type="text/css" href="Admin/css/userlist.css">
+    <link rel="stylesheet" type="text/css" href="Admin/css/MinisEditPage.css">
+
+      <!-- Bootstrap CSS Link -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEJ3QahC3XJdQx5OhtgJWwJ94z3SO+QfeCkgFqCwQ4GVqA91ovj7Zb3sV6a7g" crossorigin="anonymous">
 </head>
 <body>
     <div class="dashboard-container">
@@ -28,109 +30,250 @@
             <div id="navbar-placeholder"></div>
         </aside>
 
-        <div class="container">
-            <h1>Add My Mini App</h1>
-            
-            <form action="submit_miniapp.php" method="POST" enctype="multipart/form-data">
-                
-                <!-- Mini App Information -->
-                <div class="form-group">
-                    <label for="name">Mini App Name</label>
-                    <input type="text" id="name" name="name" required placeholder="Enter the name of your mini app">
-                </div>
-                
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <textarea id="description" name="description" rows="4" required placeholder="Enter the description of your mini app"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="cashback_terms">Cashback Terms</label>
-                    <textarea id="cashback_terms" name="cashback_terms" rows="4" required placeholder="Enter cashback terms"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="cashback_rates">Cashback Rates (%)</label>
-                    <input type="number" id="cashback_rates" name="cashback_rates" min="0" max="100" required placeholder="Enter cashback percentage (0-100)">
-                </div>
-                
-                <div class="form-group">
-                    <label for="url">URL</label>
-                    <input type="url" id="url" name="url" required placeholder="Enter the URL of your mini app">
-                </div>
-                
-                <!-- Checkbox Fields -->
-                <div class="form-group">
-                    <label for="cb_active" class="checkbox-label">
-                        <input type="checkbox" id="cb_active" name="cb_active" value="1"> Cashback Active
-                    </label>
-                </div>
-                
-                <div class="form-group">
-                    <label for="popular" class="checkbox-label">
-                        <input type="checkbox" id="popular" name="popular" value="1"> Popular
-                    </label>
-                </div>
-                
-                <div class="form-group">
-                    <label for="trending" class="checkbox-label">
-                        <input type="checkbox" id="trending" name="trending" value="1"> Trending
-                    </label>
-                </div>
-                
-                <div class="form-group">
-                    <label for="top_cashback" class="checkbox-label">
-                        <input type="checkbox" id="top_cashback" name="top_cashback" value="1"> Top Cashback
-                    </label>
-                </div>
-                
-                <div class="form-group">
-                    <label for="about">About the Mini App</label>
-                    <textarea id="about" name="about" rows="4" required placeholder="Enter about the mini app"></textarea>
-                </div>
-                
-                <div class="form-group">
-                    <label for="howitswork">How It Works</label>
-                    <textarea id="howitswork" name="howitswork" rows="4" required placeholder="Enter how the mini app works"></textarea>
-                </div>
-                
-                <!-- Image Upload -->
-                <div class="form-group">
-                    <label for="logo">Upload Logo</label>
-                    <input type="file" id="logo" name="logo" accept="image/*">
-                </div>
-                
-                <div class="form-group">
-                    <label for="icon">Upload Icon</label>
-                    <input type="file" id="icon" name="icon" accept="image/*">
-                </div>
-                
-                <div class="form-group">
-                    <label for="banner">Upload Banner</label>
-                    <input type="file" id="banner" name="banner" accept="image/*">
-                </div>
-                
-                <!-- Publisher Information -->
-                <div class="form-group">
-                    <label for="macro_publisher">Macro Publisher</label>
-                    <input type="text" id="macro_publisher" name="macro_publisher" required placeholder="Enter macro publisher name">
-                </div>
-                
-                <div class="form-group">
-                    <label for="label">Label</label>
-                    <input type="text" id="label" name="label" placeholder="Enter any label for your mini app">
-                </div>
-                
-                <!-- Submit Button -->
-                <button type="submit" class="btn-submit">Submit Mini App</button>
-            </form>
+        <div class="container mt-5">
+          <h1 class="text-center mb-4">Add New MiniApp</h1>
+  
+        <!-- MiniApp Form -->
+<form id="miniAppForm" method="POST" enctype="multipart/form-data">
+  <div class="row">
+      <!-- MiniApp Name -->
+      <div class="col-md-6">
+          <div class="mb-3">
+              <label for="name" class="form-label">MiniApp Name</label>
+              <input type="text" id="name" name="name" class="form-control" required>
+          </div>
+      </div>
+
+      <!-- Category ID (Dropdown) -->
+      <div class="col-md-6">
+          <div class="mb-3">
+              <label for="miniapp_category_id" class="form-label">MiniApp Category ID</label>
+              <select id="miniapp_category_id" name="miniapp_category_id" class="form-control" required>
+                  <option value="">Select Category</option>
+                  <!-- Dynamic Category Options -->
+                  <option value="1">Category 1</option>
+                  <option value="2">Category 2</option>
+                  <option value="3">Category 3</option>
+              </select>
+          </div>
+      </div>
+  </div>
+
+  <div class="row">
+      <!-- Subcategory ID (Dropdown) -->
+      <div class="col-md-6">
+          <div class="mb-3">
+              <label for="miniapp_subcategory_id" class="form-label">MiniApp Subcategory ID</label>
+              <select id="miniapp_subcategory_id" name="miniapp_subcategory_id" class="form-control" required>
+                  <option value="">Select Subcategory</option>
+                  <!-- Dynamic Subcategory Options -->
+                  <option value="1">Subcategory 1</option>
+                  <option value="2">Subcategory 2</option>
+                  <option value="3">Subcategory 3</option>
+              </select>
+          </div>
+      </div>
+
+      <!-- Icon -->
+      <div class="col-md-6">
+          <div class="mb-3">
+              <label for="icon" class="form-label">Icon</label>
+              <input type="file" id="icon" name="icon" class="form-control" accept="image/*" onchange="previewImage(event, 'iconPreview')">
+              <img id="iconPreview" style="display:none; margin-top: 10px; max-width: 100%; max-height: 150px;" />
+          </div>
+      </div>
+  </div>
+
+  <div class="row">
+      <!-- Description -->
+      <div class="col-md-12">
+          <div class="mb-3">
+              <label for="description" class="form-label">Description</label>
+              <textarea id="description" name="description" class="form-control"></textarea>
+          </div>
+      </div>
+  </div>
+
+  <div class="row">
+      <!-- Cashback Terms -->
+      <div class="col-md-6">
+          <div class="mb-3">
+              <label for="cashback_terms" class="form-label">Cashback Terms</label>
+              <textarea id="cashback_terms" name="cashback_terms" class="form-control"></textarea>
+          </div>
+      </div>
+
+      <!-- Cashback Rates -->
+      <div class="col-md-6">
+          <div class="mb-3">
+              <label for="cashback_rates" class="form-label">Cashback Rates</label>
+              <input type="text" id="cashback_rates" name="cashback_rates" class="form-control">
+          </div>
+      </div>
+  </div>
+
+  <div class="row">
+      <!-- Status (Dropdown) -->
+      <div class="col-md-6">
+          <div class="mb-3">
+              <label for="status" class="form-label">Status</label>
+              <select id="status" name="status" class="form-control" required>
+                  <option value="1">Active</option>
+                  <option value="0">Inactive</option>
+              </select>
+          </div>
+      </div>
+
+      <!-- URL Type -->
+      <div class="col-md-6">
+          <div class="mb-3">
+              <label for="url_type" class="form-label">URL Type</label>
+              <input type="text" id="url_type" name="url_type" class="form-control">
+          </div>
+      </div>
+  </div>
+
+  <div class="row">
+      <!-- Cashback Active (Dropdown) -->
+      <div class="col-md-6">
+          <div class="mb-3">
+              <label for="cb_active" class="form-label">Cashback Active</label>
+              <select id="cb_active" name="cb_active" class="form-control" required>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+              </select>
+          </div>
+      </div>
+
+      <!-- Cashback Percentage -->
+      <div class="col-md-6">
+          <div class="mb-3">
+              <label for="cb_percentage" class="form-label">Cashback Percentage</label>
+              <input type="text" id="cb_percentage" name="cb_percentage" class="form-control">
+          </div>
+      </div>
+  </div>
+
+  <div class="row">
+      <!-- MiniApp URL -->
+      <div class="col-md-6">
+          <div class="mb-3">
+              <label for="url" class="form-label">MiniApp URL</label>
+              <input type="text" id="url" name="url" class="form-control" required>
+          </div>
+      </div>
+
+      <!-- Label -->
+      <div class="col-md-6">
+          <div class="mb-3">
+              <label for="label" class="form-label">Label</label>
+              <input type="text" id="label" name="label" class="form-control">
+          </div>
+      </div>
+  </div>
+
+  <div class="row">
+      <!-- Banner -->
+      <div class="col-md-6">
+          <div class="mb-3">
+              <label for="banner" class="form-label">Banner</label>
+              <input type="file" id="banner" name="banner" class="form-control" accept="image/*" onchange="previewImage(event, 'bannerPreview')">
+              <img id="bannerPreview" style="display:none; margin-top: 10px; max-width: 100%; max-height: 150px;" />
+          </div>
+      </div>
+
+      <!-- Logo -->
+      <div class="col-md-6">
+          <div class="mb-3">
+              <label for="logo" class="form-label">Logo</label>
+              <input type="file" id="logo" name="logo" class="form-control" accept="image/*" onchange="previewImage(event, 'logoPreview')">
+              <img id="logoPreview" style="display:none; margin-top: 10px; max-width: 100%; max-height: 150px;" />
+          </div>
+      </div>
+  </div>
+
+  <div class="row">
+      <!-- Affiliate Partner (Dropdown) -->
+      <div class="col-md-6">
+          <div class="mb-3">
+              <label for="affiliate" class="form-label">Affiliate Partner</label>
+              <select id="affiliate" name="affiliate" class="form-control" required>
+                  <option value="">Select Affiliate Partner</option>
+                  <option value="CueLink">CueLink</option>
+                  <option value="Admita">Admita</option>
+              </select>
+          </div>
+      </div>
+
+      <!-- Popular (Dropdown) -->
+      <div class="col-md-6">
+          <div class="mb-3">
+              <label for="popular" class="form-label">Popular</label>
+              <select id="popular" name="popular" class="form-control" required>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+              </select>
+          </div>
+      </div>
+  </div>
+
+  <div class="row">
+      <!-- Trending (Dropdown) -->
+      <div class="col-md-6">
+          <div class="mb-3">
+              <label for="trending" class="form-label">Trending</label>
+              <select id="trending" name="trending" class="form-control" required>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+              </select>
+          </div>
+      </div>
+
+      <!-- Top Cashback (Dropdown) -->
+      <div class="col-md-6">
+          <div class="mb-3">
+              <label for="top_cashback" class="form-label">Top Cashback</label>
+              <select id="top_cashback" name="top_cashback" class="form-control" required>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+              </select>
+          </div>
+      </div>
+  </div>
+
+  <div class="text-center">
+      <button type="submit" class="btn btn-primary">Submit</button>
+  </div>
+</form>
+
         </div>
-    
     </div>
 
     <script src="../Admin/js/load-nav.js"></script>
     <script src="../Admin/js/auth.js"></script>
     <script src="../Admin/js/dashboard.js"></script>
+     <!-- Bootstrap JS & Popper -->
+     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybI7QYp4pKjWL2d4pHkfrP28HOd7a9zP3QboJIt4fP1QJpFiJ" crossorigin="anonymous"></script>
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" integrity="sha384-pzjw8f+ua7Kw1TIq0clnm6azle4FN6uXy6Cj+fRGoPUxIh5rns68NrjF4ESbXy6Sv" crossorigin="anonymous"></script>
+ 
+     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+     <script>
+      function previewImage(event, previewId) {
+          const file = event.target.files[0];
+          const preview = document.getElementById(previewId);
+  
+          if (file) {
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                  preview.src = e.target.result;
+                  preview.style.display = 'block';
+              };
+              reader.readAsDataURL(file);
+          } else {
+              preview.style.display = 'none';
+          }
+      }
+  </script>
     <script>
         if (!validateToken()) {
             alert('You are not logged in or your session has expired. Redirecting to login page...');
@@ -150,6 +293,40 @@
         });
     </script>
 
-    <script src="../Admin/js/miniapplist.js"></script>
+<script>
+  // Retrieve the item data from localStorage (if any)
+  const itemData = JSON.parse(localStorage.getItem('itemData'));
+
+  // If there's item data, we are in "Update" mode
+  if (itemData) {
+      document.getElementById('formTitle').innerText = 'Update Item';
+      document.getElementById('itemId').value = itemData.id;
+      document.getElementById('itemName').value = itemData.title;
+      document.getElementById('itemDescription').value = itemData.description;
+  } else {
+      // Otherwise, it's "Add Item" mode
+      document.getElementById('formTitle').innerText = 'Add Item';
+  }
+
+  // Handle form submission
+  document.getElementById('itemForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      
+      const itemId = document.getElementById('itemId').value;
+      const itemName = document.getElementById('itemName').value;
+      const itemDescription = document.getElementById('itemDescription').value;
+
+      // For now, just log the data
+      console.log('Form Submitted:', { id: itemId, name: itemName, description: itemDescription });
+
+      // Here you could send data to a server or update the list
+
+      // After submission, clear localStorage and redirect back to the list page
+      localStorage.removeItem('itemData');
+      window.location.href = 'miniapp.html';
+  });
+</script>
+
+    <script src="../Admin/js/MiniAppaddAndUpdate.js"></script>
 </body>
 </html>
