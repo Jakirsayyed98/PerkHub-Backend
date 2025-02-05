@@ -9,9 +9,6 @@ import (
 	"PerkHub/stores"
 	"context"
 	"fmt"
-	"html/template"
-	"log"
-	"net/http"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -49,45 +46,6 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	// CORS configuration for frontend
-	app.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173"},                         // Allow React app's domain
-		AllowMethods:     []string{"POST", "GET", "OPTIONS"},                        // Allow POST, GET, OPTIONS
-		AllowHeaders:     []string{"Content-Type", "Authorization", "X-Request-Id"}, // Allow x-request-id
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-	}))
-
-	// Serve static files for Admin assets
-	app.Static("/Admin", "./Admin")
-
-	// Parse templates
-	// tmpl := template.Must(template.ParseFiles("Admin/index.html", "Admin/component/navbar.html"))
-	tmpl, err := template.New("base").ParseFiles(
-		// "Admin/login.html",
-		"Admin/index.html",
-		"Admin/login.html",
-		"Admin/Pages/userlist.html",
-		"Admin/Pages/MiniApps/miniapp.html",
-		"Admin/Pages/MiniApps/AddAndEditMiniApp.html",
-		"Admin/component/navbar.html",
-	)
-	if err != nil {
-		log.Fatal("Error parsing templates:", err)
-	}
-
-	app.GET("/:page", func(c *gin.Context) {
-		// Get the page name from the URL parameter
-		page := c.Param("page")
-
-		// Try to render the specific template (e.g. login, about, contact, etc.)
-		err := tmpl.ExecuteTemplate(c.Writer, page, nil)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			log.Println("Error rendering template:", err)
-		}
-	})
 
 	// Connect to the database
 	fmt.Println("S3 Connected Successfully")
