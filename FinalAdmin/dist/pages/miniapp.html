@@ -80,11 +80,11 @@
         <div class="container-fluid">
           <!--begin::Row-->
           <div class="row">
-            <div class="col-sm-6"><h3 class="mb-0">Games List</h3></div>
+            <div class="col-sm-6"><h3 class="mb-0">MiniApp List</h3></div>
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-end">
                 <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Games List</li>
+                <li class="breadcrumb-item active" aria-current="page">MiniApp List</li>
               </ol>
             </div>
           </div>
@@ -112,7 +112,7 @@
     <div class="col-lg-6 col-6">
       <div class="d-flex justify-content-end align-items-center">
         <!-- Search Bar -->
-        <input type="text" id="searchInput" class="search-bar" onkeyup="searchUsers()" placeholder="Search for games...">
+        <input type="text" id="searchInput" class="search-bar" onkeyup="searchUsers()" placeholder="Search for miniapps...">
         
         <!-- Search Button -->
         <button id="searchBtn" class="btn btn-primary ml-2" onclick="searchGames()">Search</button>
@@ -133,13 +133,12 @@
                 <thead>
                   <tr>
                     <th style="width: 10px">Sr.</th>
-                    <th>Icon</th>
                     <th>Name</th>
                     <th>Status</th>
                     <th style="width: 250px">Action</th>
                   </tr>
                 </thead>
-                <tbody id="GameTableBody">
+                <tbody id="MiniAppTableBody">
                   <!-- Dynamic rows will be added here -->
               </tbody>
               </table>
@@ -199,7 +198,7 @@
     ></script>
     <!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
     <!-- <script src="../../dist/js/adminlte.js"></script> -->
-    <script src="dist/js/dashboard/dashboard.js"></script>
+    <script src="dist/js/MiniApp/miniapp.js"></script>
     <!-- <script src="FinalAdmin/dist/js/dashboard/dashboard.js"></script> -->
     <!--end::Required Plugin(AdminLTE)--><!--begin::OverlayScrollbars Configure-->
     <script>
@@ -443,7 +442,7 @@
  });
  </script>
 
-<script src="./dist/js/Games/games.js"></script>
+<script src="dist/js/MiniApp/miniapp.js"></script>
 
     <!--end::Script-->
   </body>

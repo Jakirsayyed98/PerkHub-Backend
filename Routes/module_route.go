@@ -45,6 +45,7 @@ func Endpoints(app *gin.Engine) {
 		tmpl, err := template.New("base").ParseFiles(
 			"FinalAdmin/dist/pages/login/login.html",
 			"FinalAdmin/dist/pages/gameslist.html",
+			"FinalAdmin/dist/pages/miniapp.html",
 			"FinalAdmin/dist/pages/index.html",
 			"FinalAdmin/dist/component/navbar.html",
 			"FinalAdmin/dist/component/sidenavbar.html",
