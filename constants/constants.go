@@ -61,6 +61,10 @@ func getBaseUrl() string {
 	return settings.Config("BASE_URL")
 }
 
+func getAdminBaseUrl() string {
+	return settings.Config("ADMIN_BASE_URL")
+}
+
 var (
 	Port               = GetPortNumber()
 	PostgresHost       = getPostgresHost()
@@ -75,4 +79,5 @@ var (
 	AWSCloudFrontURL   = getAWSCloudFrontURL()
 	JWT_KEY            = getJWT_KEY()
 	BASE_URL           = getBaseUrl()
+	ADMIN_BASE_URL     = getAdminBaseUrl()
 )

@@ -45,12 +45,12 @@ function displayGames() {
     gamesToDisplay.forEach(game => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${game.id}</td>
+            <td>${game.index}</td>
             <td>${game.name}</td>
             <td>${game.status === '1' ? 'Active' : 'InActive'}</td>
             <td>
-                <button onclick="updateItem(${game.id}, '${encodeURIComponent(game.name)}', '${encodeURIComponent(game.status)}')">Update</button>
-                <button onclick="updateItem(${game.id}, '${encodeURIComponent(game.name)}', '${encodeURIComponent(game.status)}')">Delete</button>
+                <button id="addBrandBtn" class="btn btn-primary" onclick="window.location.href='AddAndEditMiniApp.html'">Update</button>
+                <button id="addBrandBtn" class="btn btn-primary" onclick="window.location.href='AddAndEditMiniApp.html'">Delete</button>
             </td>
         `;
         tbody.appendChild(row);
@@ -122,7 +122,7 @@ function createPagination() {
 }
 
 // Function to filter users based on search input
-function searchUsers() {
+function searchGames() {
     const input = document.getElementById('searchInput').value.toLowerCase();
     filteredUsers = games.filter(user => {
         return (
