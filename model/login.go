@@ -16,7 +16,7 @@ type UserDetail struct {
 	Gender    sql.NullString `json:"gender" db:"gender"`
 	Dob       sql.NullString `json:"dob" db:"dob"`
 	FCMToken  sql.NullString `json:"fcm_token" db:"fcm_token"`
-	Verified  sql.NullString `json:"verified" db:"verified"`
+	Verified  bool           `json:"verified" db:"verified"`
 	CreatedAt sql.NullString `json:"created_at" db:"created_at"`
 	UpdatedAt sql.NullString `json:"updated_at" db:"updated_at"`
 }
@@ -30,7 +30,7 @@ func InsertLoginData(db *sql.DB, number, otp string) error {
 	if err != nil {
 		return err
 	}
-	_, err = db.Exec("INSERT INTO users (number, otp, user_id, verified) VALUES ($1, $2, $3, 0) ON CONFLICT ( number ) DO UPDATE SET otp = EXCLUDED.otp, verified = 0 ", number, otp, userId)
+	_, err = db.Exec("INSERT INTO users (number, otp, user_id, verified) VALUES ($1, $2, $3, 0) ON CONFLICT ( number ) DO UPDATE SET otp = EXCLUDED.otp, verified = true ", number, otp, userId)
 	return err
 }
 
@@ -55,7 +55,7 @@ func VerifyOtp(db *sql.DB, mobileNumber, otp string) (bool, error) {
 
 	if storedOTP == otp {
 		query := "UPDATE users SET verified = $1 WHERE number = $2"
-		_, err := db.Exec(query, "1", mobileNumber)
+		_, err := db.Exec(query, true, mobileNumber)
 		if err != nil {
 			return false, err
 		}

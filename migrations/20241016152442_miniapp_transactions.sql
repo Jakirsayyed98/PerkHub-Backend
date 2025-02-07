@@ -11,7 +11,7 @@ CREATE TABLE miniapp_transactions (
     order_id VARCHAR(50),
     reference_id VARCHAR(50) NOT NULL,
     sale_amount DECIMAL(10, 2),
-    status VARCHAR(50),
+    status BOOLEAN DEFAULT FALSE,
     subid VARCHAR(255),
     subid1 VARCHAR(255),
     subid2 VARCHAR(255),

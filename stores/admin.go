@@ -6,7 +6,6 @@ import (
 	"PerkHub/responses"
 	"database/sql"
 	"errors"
-	"fmt"
 )
 
 type AdminStore struct {
@@ -42,9 +41,7 @@ func (s *AdminStore) AdminLogin(request *request.AdminLoginRequest) (*model.Admi
 }
 
 func (s *AdminStore) AdminRegister(request *request.AdminRegister) (interface{}, error) {
-	fmt.Println("request", request.Email)
-	fmt.Println("request", request.Name)
-	fmt.Println("request", request.Password)
+
 	if request.Email == "" && request.Password == "" {
 		return nil, errors.New("Invalid username or password")
 	}

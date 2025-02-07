@@ -12,7 +12,7 @@ type Banner struct {
 	BannerId  string    `json:"banner_id"`  // Name of the item
 	Image     string    `json:"image"`      // URL or path to the item's image
 	Url       string    `json:"url"`        // URL or path to the item's url
-	Status    string    `json:"status"`     // Status of the item (e.g., active, inactive)
+	Status    bool      `json:"status"`     // Status of the item (e.g., active, inactive)
 	CreatedAt time.Time `json:"created_at"` // Timestamp when the item was created
 	UpdatedAt time.Time `json:"updated_at"` // Timestamp when the item was last updated
 }
@@ -26,7 +26,7 @@ func InsertBanner(db *sql.DB, item *request.Banner) error {
 		INSERT INTO banner_data ( name, banner_id, image, url, status, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 	`
-	_, err := db.Exec(query, item.Name, item.BannerId, item.Image, item.Url, "1", time.Now(), time.Now())
+	_, err := db.Exec(query, item.Name, item.BannerId, item.Image, item.Url, true, time.Now(), time.Now())
 	return err
 }
 

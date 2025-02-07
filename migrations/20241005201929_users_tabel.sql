@@ -12,7 +12,7 @@ CREATE TABLE users (
     gender VARCHAR(100),  -- Gender
     dob DATE,  -- Changed to DATE for better type handling
     fcm_token VARCHAR(500),  -- Use snake_case for column names
-    verified SMALLINT DEFAULT 0,  -- Use SMALLINT for status flags
+    verified BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),  -- Use now() for default timestamp
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()  -- Use now() for default timestamp
 );

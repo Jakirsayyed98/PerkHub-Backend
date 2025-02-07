@@ -3,6 +3,31 @@ let currentPage = 1;
 let games = []; // This holds all the games
 let filteredGames = []; // This is for the filtered games based on search
 
+async function ActiveAndDeactive(credentials) {
+    try {
+        const token = localStorage.getItem('token'); // Get the token from localStorage
+
+        const response = await fetch('http://localhost:4215/api/activeAndDeactiveGames', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, 
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(credentials),
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch games');
+        }
+
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching games:', error);
+        alert('Error fetching games: ' + error.message);
+    }
+}
+
 // Function to fetch games from the API
 async function fetchGames() {
     try {
@@ -52,7 +77,7 @@ function displayGames() {
             <td>${game.status === '1' ? 'Active' : 'InActive'}</td>
             <td>
               
-                 <button id="addBrandBtn" class="btn btn-primary" onclick="window.location.href='AddAndEditMiniApp.html'">Update</button>
+                 <button id="addBrandBtn" class="btn btn-primary" onclick="ActiveAndDeactive()">Update</button>
                  <button id="addBrandBtn" class="btn btn-danger" onclick="window.location.href='AddAndEditMiniApp.html'">Delete</button>
             </td>
         `;

@@ -8,7 +8,7 @@ CREATE TABLE banner_data (
     banner_id VARCHAR(255) NOT NULL,   -- banner id of the item
     image VARCHAR(500),            -- image or path to the item's image
     url VARCHAR(255) NOT NULL,   -- url of the item
-    status TEXT DEFAULT '1',       -- 0 means inactive, 1 means active
+    status BOOLEAN DEFAULT FALSE,       -- 0 means inactive, 1 means active
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(), -- Creation timestamp
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()  -- Last update timestamp
 );

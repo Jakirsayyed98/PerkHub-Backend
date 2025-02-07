@@ -15,7 +15,7 @@ type Category struct {
 	Name            string    `json:"name"`             // Name of the item
 	Description     string    `json:"description"`      // Description of the item
 	Image           string    `json:"image"`            // URL or path to the item's image
-	Status          string    `json:"status"`           // Status of the item (e.g., active, inactive)
+	Status          bool      `json:"status"`           // Status of the item (e.g., active, inactive)
 	HomepageVisible bool      `json:"homepage_visible"` // Visibility on the homepage
 	CreatedAt       time.Time `json:"created_at"`       // Timestamp when the item was created
 	UpdatedAt       time.Time `json:"updated_at"`       // Timestamp when the item was last updated
@@ -55,7 +55,7 @@ func (category *Category) Bind(c *gin.Context, awsInstance *connection.Aws) erro
 	category.ID = c.PostForm("id")
 	category.Name = c.PostForm("name")
 	category.Description = c.PostForm("description")
-	category.Status = c.PostForm("status")
+	category.Status = false
 	category.HomepageVisible = false
 	category.Image = image
 	category.CreatedAt = time.Now()
