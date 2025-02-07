@@ -58,6 +58,49 @@ async function fetchGames() {
     }
 }
 
+
+async function RefreshGames() {
+    try {
+        const token = localStorage.getItem('token'); // Get the token from localStorage
+
+        // Add a loading indicator to the UI (optional)
+        // document.getElementById('loadingIndicator').style.display = 'block';  // Example: Show a loading spinner
+        
+        const response = await fetch('http://localhost:4215/api/admin/refresh-games', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to refresh games');
+        }
+
+        const data = await response.json();
+        
+        // Ensure that data.data is an array before using it
+        games = Array.isArray(data.data) ? data.data : [];
+        filteredGames = [...games];  // Copy data to filteredGames for later manipulation
+        
+        // Refresh the display
+        displayGames();
+        
+        // Hide loading indicator after completion
+        // document.getElementById('loadingIndicator').style.display = 'none';  // Example: Hide the loading spinner
+        
+        alert('Games refreshed successfully!');
+    } catch (error) {
+        console.error('Error fetching games:', error);
+        alert('Error fetching games: ' + error.message);
+        
+        // Hide loading indicator on error
+        // document.getElementById('loadingIndicator').style.display = 'none';
+    }
+}
+
+
 // Function to display games in the table
 function displayGames() {
     const startIndex = (currentPage - 1) * rowsPerPage;
@@ -67,17 +110,17 @@ function displayGames() {
     const tbody = document.getElementById('GameTableBody');
     tbody.innerHTML = ''; // Clear the table body
 
-    gamesToDisplay.forEach(game => {
+    gamesToDisplay.forEach((game,index) => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${game.id}</td>
+            <td>${index+1}</td>
             
             <td><img src="${game.assets.square}" alt="Game Image" width="75" height="75"/></td>
             <td>${game.name}</td>
-            <td>${game.status === '1' ? 'Active' : 'InActive'}</td>
+            <td><button id="addBrandBtn" class="btn btn-primary" onclick="ActiveAndDeactive()">${game.status === true ? 'InActive' : 'Active'}</button></td>
+            <td><button id="addBrandBtn" class="btn btn-primary" onclick="ActiveAndDeactive()">${game.status === true ? 'InActive' : 'Active'}</button></td>
+            <td><button id="addBrandBtn" class="btn btn-primary" onclick="ActiveAndDeactive()">${game.status === true ? 'InActive' : 'Active'}</button></td>
             <td>
-              
-                 <button id="addBrandBtn" class="btn btn-primary" onclick="ActiveAndDeactive()">Update</button>
                  <button id="addBrandBtn" class="btn btn-danger" onclick="window.location.href='AddAndEditMiniApp.html'">Delete</button>
             </td>
         `;
@@ -161,6 +204,7 @@ function searchUsers() {
     currentPage = 1; // Reset to the first page after filtering
     displayGames();
 }
+
 
 // Event listener for search input
 document.getElementById('searchInput').addEventListener('input', searchUsers);
