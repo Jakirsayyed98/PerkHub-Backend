@@ -30,7 +30,7 @@ func InsertLoginData(db *sql.DB, number, otp string) error {
 	if err != nil {
 		return err
 	}
-	_, err = db.Exec("INSERT INTO users (number, otp, user_id, verified) VALUES ($1, $2, $3, 0) ON CONFLICT ( number ) DO UPDATE SET otp = EXCLUDED.otp, verified = true ", number, otp, userId)
+	_, err = db.Exec("INSERT INTO users (number, otp, user_id, verified) VALUES ($1, $2, $3,false) ON CONFLICT ( number ) DO UPDATE SET otp = EXCLUDED.otp, verified = true ", number, otp, userId)
 	return err
 }
 

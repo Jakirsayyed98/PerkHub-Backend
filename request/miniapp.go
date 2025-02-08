@@ -3,6 +3,7 @@ package request
 import (
 	"PerkHub/utils"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -50,6 +51,7 @@ func (req *MiniAppRequest) Bind(c *gin.Context) error {
 	if err != nil {
 		return err
 	}
+
 	logo := ""
 	banner := ""
 	icon := ""
@@ -85,22 +87,52 @@ func (req *MiniAppRequest) Bind(c *gin.Context) error {
 	req.Description = c.PostForm("description")
 	req.CashbackTerms = c.PostForm("cashback_terms")
 	req.CashbackRates = c.PostForm("cashback_rates")
-	// req.Status = c.PostForm("status")
 	req.UrlType = c.PostForm("url_type")
-	// req.CBActive = c.PostForm("cb_active")
 	req.CBPercentage = c.PostForm("cb_percentage")
 	req.Url = c.PostForm("url")
 	req.Label = c.PostForm("label")
 	req.Banner = banner
 	req.Logo = logo
 	req.MacroPublisher = c.PostForm("macro_publisher")
-	// req.Popular = c.PostForm("popular")
-	// req.Trending = c.PostForm("trending")
-	// req.TopCashback = c.PostForm("top_cashback")
 	req.About = c.PostForm("about")
 	req.HowItsWork = c.PostForm("howitswork")
 	req.CreatedAt = time.Now()
 	req.UpdatedAt = time.Now()
+
+	statusStr := c.PostForm("status")
+	status, err := strconv.ParseBool(statusStr)
+	if err != nil {
+		return fmt.Errorf("invalid value for popular: %s", statusStr)
+	}
+	req.Status = status
+
+	top_cashbackStr := c.PostForm("top_cashback")
+	top_cashback, err := strconv.ParseBool(top_cashbackStr)
+	if err != nil {
+		return fmt.Errorf("invalid value for popular: %s", top_cashbackStr)
+	}
+	req.TopCashback = top_cashback
+
+	popularStr := c.PostForm("popular")
+	popular, err := strconv.ParseBool(popularStr)
+	if err != nil {
+		return fmt.Errorf("invalid value for popular: %s", popularStr)
+	}
+	req.Popular = popular
+
+	trendingStr := c.PostForm("trending")
+	trending, err := strconv.ParseBool(trendingStr)
+	if err != nil {
+		return fmt.Errorf("invalid value for trending: %s", trendingStr)
+	}
+	req.Trending = trending
+
+	cbActiveStr := c.PostForm("cb_active")
+	cbActive, err := strconv.ParseBool(cbActiveStr)
+	if err != nil {
+		return fmt.Errorf("invalid value for cb_active: %s", cbActiveStr)
+	}
+	req.CBActive = cbActive
 
 	return nil
 }

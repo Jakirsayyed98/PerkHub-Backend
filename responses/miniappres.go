@@ -1,6 +1,7 @@
 package responses
 
 import (
+	"PerkHub/constants"
 	"PerkHub/model"
 	"fmt"
 	"time"
@@ -63,7 +64,7 @@ func (m *MiniAppRes) ResponsesBind(dbMiniApp model.MiniApp) error {
 	m.MiniAppCategoryID = dbMiniApp.MiniAppCategoryID
 	m.MiniAppSubcategoryID = dbMiniApp.MiniAppSubcategoryID
 	m.Name = dbMiniApp.Name
-	m.Icon = dbMiniApp.Icon
+	m.Icon = constants.IMAGE_BASE_URL + dbMiniApp.Icon
 	m.Description = dbMiniApp.Description
 	m.CashbackTerms = dbMiniApp.CashbackTerms
 	m.CashbackRates = dbMiniApp.CashbackRates
@@ -73,8 +74,8 @@ func (m *MiniAppRes) ResponsesBind(dbMiniApp model.MiniApp) error {
 	m.CBPercentage = dbMiniApp.CBPercentage
 	m.Url = dbMiniApp.Url
 	m.Label = dbMiniApp.Label
-	m.Banner = dbMiniApp.Banner
-	m.Logo = dbMiniApp.Logo
+	m.Banner = constants.IMAGE_BASE_URL + dbMiniApp.Banner
+	m.Logo = constants.IMAGE_BASE_URL + dbMiniApp.Logo
 	m.MacroPublisher = dbMiniApp.MacroPublisher
 	m.Popular = dbMiniApp.Popular
 	m.Trending = dbMiniApp.Trending

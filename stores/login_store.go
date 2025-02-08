@@ -7,6 +7,7 @@ import (
 	"PerkHub/utils"
 	"database/sql"
 	"errors"
+	"fmt"
 )
 
 type LoginStore struct {
@@ -25,10 +26,11 @@ func (s *LoginStore) RegistrationLogin(number string) error {
 	}
 
 	otp := utils.GenerateNumber(5)
-
+	fmt.Println(otp)
 	err := model.InsertLoginData(s.db, number, otp)
 
 	if err != nil {
+		fmt.Println(err.Error())
 		return err
 	}
 

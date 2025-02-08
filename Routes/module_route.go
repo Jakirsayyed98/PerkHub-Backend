@@ -15,6 +15,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -37,6 +38,11 @@ func Endpoints(app *gin.Engine) {
 	}
 	admin := app.Group("/admin")
 	{
+		admin.Use(cors.New(cors.Config{
+			AllowOrigins: []string{"http://localhost", "http://127.0.0.1"},
+			AllowMethods: []string{"GET", "POST", "PUT", "DELETE"},
+			AllowHeaders: []string{"Origin", "Content-Type", "Authorization"},
+		}))
 
 		// Serve static files from the "dist" directory
 		admin.Static("/dist", "./FinalAdmin/dist")
@@ -47,6 +53,7 @@ func Endpoints(app *gin.Engine) {
 			"FinalAdmin/dist/pages/gameslist.html",
 			"FinalAdmin/dist/pages/miniapp.html",
 			"FinalAdmin/dist/pages/index.html",
+			"FinalAdmin/dist/pages/add_update_miniApp.html",
 			"FinalAdmin/dist/component/navbar.html",
 			"FinalAdmin/dist/component/sidenavbar.html",
 		)

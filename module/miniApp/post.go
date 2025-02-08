@@ -4,6 +4,7 @@ import (
 	"PerkHub/request"
 	"PerkHub/settings"
 	"PerkHub/stores"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,6 +20,7 @@ func CreateMiniApp(c *gin.Context) {
 	request := request.NewMiniAppRequest()
 
 	if err := request.Bind(c); err != nil {
+		fmt.Println("req", err.Error())
 		settings.StatusBadRequest(c, err, "")
 		return
 	}
@@ -30,7 +32,7 @@ func CreateMiniApp(c *gin.Context) {
 		return
 	}
 
-	settings.StatusOk(c, result, "MiniApp Created Successfully", "")
+	settings.StatusOk(c, result, "MiniApp Work Successfully", "")
 
 }
 

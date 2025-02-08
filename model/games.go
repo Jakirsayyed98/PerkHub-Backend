@@ -4,7 +4,10 @@ import (
 	"PerkHub/request"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"strconv"
+	"strings"
 
 	"github.com/google/uuid"
 )
@@ -54,6 +57,16 @@ type GameSearch struct {
 
 func NewGameSearch() *GameSearch {
 	return &GameSearch{}
+}
+
+type SetGameStatus struct {
+	Id         string `json:"id"`
+	Status     bool   `json:"status"`
+	StatusType string `json:"StatusType"`
+}
+
+func NewSetGameStatus() *SetGameStatus {
+	return &SetGameStatus{}
 }
 
 func (s *GamesResponse) Bind(data request.GameResponse, categoryId string) error {
@@ -419,4 +432,40 @@ func GetGameSearch(db *sql.DB, search string) ([]GamesResponse, error) {
 	}
 
 	return games, nil
+}
+
+func UpdateGameStatus(db *sql.DB, update *GamesResponse, gameStatusType string) error {
+	var clauses []string
+	var params []interface{}
+
+	if update.Id.String() != "" {
+		clauses = append(clauses, "id = $"+strconv.Itoa(len(clauses)+1))
+		params = append(params, update.Id.String())
+	}
+
+	switch gameStatusType {
+	case "Trending":
+		clauses = append(clauses, "trending = $"+strconv.Itoa(len(clauses)+1))
+		params = append(params, update.Trending)
+	case "Popular":
+		clauses = append(clauses, "popular = $"+strconv.Itoa(len(clauses)+1))
+		params = append(params, update.Popular)
+	case "Status":
+		clauses = append(clauses, "status = $"+strconv.Itoa(len(clauses)+1))
+		params = append(params, update.Status)
+	}
+
+	if len(clauses) > 0 {
+
+		clauses = append(clauses, "updated_at = NOW()")
+		query := "UPDATE games_data SET " + strings.Join(clauses, ", ") + " WHERE id =$" + strconv.Itoa(len(params)+1)
+		params = append(params, update.Id.String())
+		if _, err := db.Exec(query, params...); err != nil {
+			return err
+		}
+
+		return nil
+	}
+
+	return errors.New("nothing to update")
 }

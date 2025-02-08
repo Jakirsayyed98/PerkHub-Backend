@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>AdminLTE v4 | Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="title" content="PerkHub" />
+    <meta name="description" content="AdminLTE is a Free Bootstrap 5 Admin Dashboard." />
+    <!-- Bootstrap Icons Plugin -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <!-- AdminLTE Styles -->
+    <link rel="stylesheet" href="dist/css/adminlte.css" />
+    <style>
+      .form-with-side-margins {
+        margin-left: 20px;
+        margin-right: 20px;
+      }
+      .form-check-inline {
+        margin-right: 20px;
+      }
+    </style>
+  </head>
+  <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+    <div class="app-wrapper">
+      <!-- Navbar and Sidebar Template -->
+      {{ template "navbar" }}
+      {{ template "sidenavbar" }}
+      
+      <!-- Main Content -->
+      <main class="app-main">
+
+    <!-- Content Header -->
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-6"><h3 class="mb-0">MiniApp Details</h3></div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                  <li class="breadcrumb-item"><a href="#">Home</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">MiniApp</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+
+          <!--begin::App Content-->
+  <div class="app-content">
+    <!--begin::Container-->
+    <div class="container-fluid">
+
+        <div class="card">
+    
+        <!-- Form Card -->
+        <div class="card card-primary card-outline mb-4">
+          <div class="card-header">
+            <div class="card-title">Quick Example</div>
+          </div>
+          <form class="form-with-side-margins" id="miniapp-form">
+            <div class="card-body">
+              <!-- Mini App Name -->
+              <div class="mb-3">
+                <label for="name" class="form-label">Mini-App Name</label>
+                <input type="text" class="form-control" id="name" name="name" />
+                <input  class="form-control" id="id" name="id" />
+              </div>
+
+              <!-- Category Dropdown -->
+              <div class="mb-3">
+                <label for="category" class="form-label">Category</label>
+                <select class="form-control" id="miniapp_category_id" name="miniapp_category_id">
+                  <option value="bf40b9e6-d6db-4b22-846b-f8e1896c511d">Category 1</option>
+                  <option value="bf40b9e6-d6db-4b22-846b-f8e1896c5112">Category 2</option>
+                  <option value="bf40b9e6-d6db-4b22-846b-f8e1896c5111">Category 3</option>
+                </select>
+              </div>
+
+              <!-- Sub Category Dropdown -->
+              <div class="mb-3">
+                <label for="subCategory" class="form-label">Sub Category</label>
+                <select class="form-control" id="miniapp_subcategory_id" name="miniapp_subcategory_id">
+                  <option value="1">SubCategory 1</option>
+                  <option value="2">SubCategory 2</option>
+                  <option value="3">SubCategory 3</option>
+                </select>
+              </div>
+
+              <!-- Description -->
+              <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description"></textarea>
+              </div>
+             
+              <!-- Description -->
+              <div class="mb-3">
+                <label for="description" class="form-label">How it's Work</label>
+                <textarea class="form-control" id="howitswork" name="howitswork"></textarea>
+              </div>
+              <!-- Description -->
+              <div class="mb-3">
+                <label for="description" class="form-label">About</label>
+                <textarea class="form-control" id="about" name="about"></textarea>
+              </div>
+
+              <!-- Cashback Terms -->
+              <div class="mb-3">
+                <label for="cashbackTerms" class="form-label">Cashback Terms</label>
+                <textarea class="form-control" id="cashback_terms" name="cashback_terms"></textarea>
+              </div>
+
+              <!-- Cashback Rates -->
+              <div class="mb-3">
+                <label for="cashbackRates" class="form-label">Cashback Rates</label>
+                <input type="text" class="form-control" id="cashback_rates" name="cashback_rates" />
+              </div>
+
+              <!-- URL Type -->
+              <div class="mb-3">
+                <label for="urlType" class="form-label">URL Type</label>
+                <select class="form-control" id="url_type" name="url_type">
+                  <option value="0">Inside</option>
+                  <option value="1">Outside</option>
+                </select>
+              </div>
+
+              <!-- Cashback Percentage -->
+              <div class="mb-3">
+                <label for="cashbackPercentage" class="form-label">Cashback Percentage</label>
+                <input type="text" class="form-control" id="cb_percentage" name="cb_percentage" />
+              </div>
+
+              <!-- URL -->
+              <div class="mb-3">
+                <label for="url" class="form-label">URL</label>
+                <input type="text" class="form-control" id="url" name="url" />
+              </div>
+
+              <!-- Label -->
+              <div class="mb-3">
+                <label for="label" class="form-label">Label</label>
+                <input type="text" class="form-control" id="label" name="label" />
+              </div>
+
+              <!-- Affiliate Provider Dropdown -->
+              <div class="mb-3">
+                <label for="affiliateProvider" class="form-label">Affiliate Provider</label>
+                <select class="form-control" id="macro_publisher" name="macro_publisher">
+                  <option value="CueLink">CueLink</option>
+                  <option value="Admitad">Admitad</option>
+                  <option value="Inr Deals">INR Deals</option>
+                  <option value="earn karo">Earn Karo</option>
+                </select>
+              </div>
+
+              <!-- Active Status & Popular Trending -->
+              <div class="mb-3 form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" id="status" name="status" value=true />
+                <label class="form-check-label" for="status">Active Status</label>
+              </div>
+              
+              <!-- Active Status & Popular Trending -->
+              <div class="mb-3 form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" id="cb_active" name="cb_active" value=true />
+                <label class="form-check-label" for="cb_active">Cashback Active Status</label>
+              </div>
+              
+              <div class="mb-3 form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" id="popular" name="popular" value=true  />
+                <label class="form-check-label" for="popular">Popular</label>
+              </div>
+
+              <div class="mb-3 form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" id="trending" name="trending" value=true  />
+                <label class="form-check-label" for="trending">Trending</label>
+              </div>
+              <div class="mb-3 form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" id="top_cashback" name="top_cashback" value=true  />
+                <label class="form-check-label" for="top_cashback">Top Cashback</label>
+              </div>
+
+
+                <!-- Banner Image Upload -->
+                <div class="mb-3">
+                  <label for="banner" class="form-label">Banner Image</label>
+                  <input type="file" class="form-control" id="banner" name="banner" accept="image/*" onchange="previewImage(event, 'bannerPreview')" />
+                  <img id="bannerPreview" class="img-fluid mt-2" style="max-width: 100px; display: none;" />
+                </div>
+
+                <!-- Logo Image Upload -->
+                <div class="mb-3">
+                  <label for="logo" class="form-label">Logo Image</label>
+                  <input type="file" class="form-control" id="logo" name="logo" accept="image/*" onchange="previewImage(event, 'logoPreview')" />
+                  <img id="logoPreview" class="img-fluid mt-2" style="max-width: 100px; display: none;" />
+                </div>
+
+                <!-- Icon Image Upload -->
+                <div class="mb-3">
+                  <label for="icon" class="form-label">Icon Image</label>
+                  <input type="file" class="form-control" id="icon" name="icon" accept="image/*" onchange="previewImage(event, 'iconPreview')" />
+                  <img id="iconPreview" class="img-fluid mt-2" style="max-width: 100px; display: none;" />
+                </div>
+
+
+            </div>
+            <div class="d-flex justify-content-center mb-3">
+              <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+            </div>
+            
+          </form>
+        </div>
+      </div>
+
+          <!--end::Row-->
+        </div>
+        <!--end::Container-->
+      </div>
+      <!--end::App Content-->
+      </main>
+
+      <!-- Footer -->
+      <footer class="main-footer">
+        <div class="container">
+          <p>&copy; 2025 <strong>JH Infotech</strong></p>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      // Function to preview selected image before uploading
+      function previewImage(event, previewId) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+    
+        reader.onload = function (e) {
+          const preview = document.getElementById(previewId);
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+        };
+    
+        if (file) {
+          reader.readAsDataURL(file);
+        }
+      }
+    </script>
+
+
+<script>
+ const itemData = JSON.parse(localStorage.getItem('itemData'));
+
+// If itemData exists, populate the form with the values
+if (itemData && itemData.data) {
+    const miniapp = itemData.data;
+    
+    // Populate the form fields
+    document.getElementById('name').value = miniapp.name;
+    document.getElementById('id').value = miniapp.id;
+    document.getElementById('miniapp_category_id').value = miniapp.miniapp_category_id;
+    document.getElementById('miniapp_subcategory_id').value = miniapp.miniapp_subcategory_id;
+    document.getElementById('description').value = miniapp.description;
+    document.getElementById('howitswork').value = miniapp.howitswork;
+    document.getElementById('about').value = miniapp.about;
+    document.getElementById('cashback_terms').value = miniapp.cashback_terms;
+    document.getElementById('cashback_rates').value = miniapp.cashback_rates;
+    document.getElementById('cb_percentage').value = miniapp.cb_percentage;
+    document.getElementById('url').value = miniapp.url;
+    document.getElementById('label').value = miniapp.label;
+    document.getElementById('macro_publisher').value = miniapp.macro_publisher;
+
+    // Handle active/inactive states for checkboxes
+    document.getElementById('status').checked = miniapp.status;
+    document.getElementById('cb_active').checked = miniapp.cb_active;
+    document.getElementById('popular').checked = miniapp.popular;
+    document.getElementById('trending').checked = miniapp.trending;
+    document.getElementById('top_cashback').checked = miniapp.top_cashback;
+
+     // Display images if available
+     if (miniapp.banner) {
+        const bannerPreview = document.getElementById('bannerPreview');
+        bannerPreview.src = miniapp.banner;
+        bannerPreview.style.display = 'block';  // Show the image
+    }
+
+    if (miniapp.logo) {
+        const logoPreview = document.getElementById('logoPreview');
+        logoPreview.src = miniapp.logo;
+        logoPreview.style.display = 'block';  // Show the image
+    }
+
+    if (miniapp.icon) {
+        const iconPreview = document.getElementById('iconPreview');
+        iconPreview.src = miniapp.icon;
+        iconPreview.style.display = 'block';  // Show the image
+    }
+    
+    // You can also handle image previews here if needed
+}else{
+  document.getElementById('id').value = "";
+}
+
+</script>
+
+
+    <!-- Required Scripts -->
+    <script src="dist/js/adminlte.js"></script>
+    <script src="dist/js/MiniApp/miniappEdit.js"></script>
+  </body>
+</html>

@@ -3,7 +3,9 @@ package model
 import (
 	"PerkHub/request"
 	"database/sql"
+	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -66,6 +68,8 @@ func InsertGenratedSubId(db *sql.DB, miniapp_id, userId, subid1, subid2 string) 
 
 func InsertMiniAppData(db *sql.DB, req *request.MiniAppRequest) error {
 
+	fmt.Println("\n\n", req, "\n\n")
+
 	query := `
     INSERT INTO miniapp_data (
         miniapp_category_id,
@@ -123,6 +127,169 @@ func InsertMiniAppData(db *sql.DB, req *request.MiniAppRequest) error {
 	)
 
 	return err
+}
+func UpdateMiniAppData(db *sql.DB, update *request.MiniAppRequest) error {
+	var clauses []string
+	var params []interface{}
+	paramIndex := 1 // Start the parameter index from 1
+
+	// Check if any field is being updated and add it to the clauses
+	if update.MiniAppCategoryID != "" {
+		clauses = append(clauses, fmt.Sprintf("miniapp_category_id = $%d", paramIndex))
+		params = append(params, update.MiniAppCategoryID)
+		paramIndex++
+	}
+	if update.MiniAppSubcategoryID != "" {
+		clauses = append(clauses, fmt.Sprintf("miniapp_subcategory_id = $%d", paramIndex))
+		params = append(params, update.MiniAppSubcategoryID)
+		paramIndex++
+	}
+	if update.Name != "" {
+		clauses = append(clauses, fmt.Sprintf("name = $%d", paramIndex))
+		params = append(params, update.Name)
+		paramIndex++
+	}
+	if update.Icon != "" {
+		clauses = append(clauses, fmt.Sprintf("icon = $%d", paramIndex))
+		params = append(params, update.Icon)
+		paramIndex++
+	}
+	if update.Description != "" {
+		clauses = append(clauses, fmt.Sprintf("description = $%d", paramIndex))
+		params = append(params, update.Description)
+		paramIndex++
+	}
+	if update.CashbackTerms != "" {
+		clauses = append(clauses, fmt.Sprintf("cashback_terms = $%d", paramIndex))
+		params = append(params, update.CashbackTerms)
+		paramIndex++
+	}
+	if update.CashbackRates != "" {
+		clauses = append(clauses, fmt.Sprintf("cashback_rates = $%d", paramIndex))
+		params = append(params, update.CashbackRates)
+		paramIndex++
+	}
+	if update.UrlType != "" {
+		clauses = append(clauses, fmt.Sprintf("url_type = $%d", paramIndex))
+		params = append(params, update.UrlType)
+		paramIndex++
+	}
+	if update.CBPercentage != "" {
+		clauses = append(clauses, fmt.Sprintf("cb_percentage = $%d", paramIndex))
+		params = append(params, update.CBPercentage)
+		paramIndex++
+	}
+	if update.Url != "" {
+		clauses = append(clauses, fmt.Sprintf("url = $%d", paramIndex))
+		params = append(params, update.Url)
+		paramIndex++
+	}
+	if update.Label != "" {
+		clauses = append(clauses, fmt.Sprintf("label = $%d", paramIndex))
+		params = append(params, update.Label)
+		paramIndex++
+	}
+	if update.MacroPublisher != "" {
+		clauses = append(clauses, fmt.Sprintf("macro_publisher = $%d", paramIndex))
+		params = append(params, update.MacroPublisher)
+		paramIndex++
+	}
+	if update.Banner != "" {
+		clauses = append(clauses, fmt.Sprintf("banner = $%d", paramIndex))
+		params = append(params, update.Banner)
+		paramIndex++
+	}
+	if update.Logo != "" {
+		clauses = append(clauses, fmt.Sprintf("logo = $%d", paramIndex))
+		params = append(params, update.Logo)
+		paramIndex++
+	}
+	if update.About != "" {
+		clauses = append(clauses, fmt.Sprintf("about = $%d", paramIndex))
+		params = append(params, update.About)
+		paramIndex++
+	}
+	if update.HowItsWork != "" {
+		clauses = append(clauses, fmt.Sprintf("howitswork = $%d", paramIndex))
+		params = append(params, update.HowItsWork)
+		paramIndex++
+	}
+
+	// Add the updated_at timestamp field
+	clauses = append(clauses, fmt.Sprintf("updated_at = $%d", paramIndex))
+	params = append(params, "NOW()")
+	paramIndex++
+
+	// Handle boolean fields properly (Popular, Trending, TopCashback, Status, CBActive)
+	if update.Popular {
+		clauses = append(clauses, fmt.Sprintf("popular = $%d", paramIndex))
+		params = append(params, update.Popular)
+		paramIndex++
+	} else {
+		clauses = append(clauses, fmt.Sprintf("popular = $%d", paramIndex))
+		params = append(params, false)
+		paramIndex++
+	}
+
+	if update.Trending {
+		clauses = append(clauses, fmt.Sprintf("trending = $%d", paramIndex))
+		params = append(params, update.Trending)
+		paramIndex++
+	} else {
+		clauses = append(clauses, fmt.Sprintf("trending = $%d", paramIndex))
+		params = append(params, false)
+		paramIndex++
+	}
+
+	if update.TopCashback {
+		clauses = append(clauses, fmt.Sprintf("top_cashback = $%d", paramIndex))
+		params = append(params, update.TopCashback)
+		paramIndex++
+	} else {
+		clauses = append(clauses, fmt.Sprintf("top_cashback = $%d", paramIndex))
+		params = append(params, false)
+		paramIndex++
+	}
+
+	if update.Status {
+		clauses = append(clauses, fmt.Sprintf("status = $%d", paramIndex))
+		params = append(params, update.Status)
+		paramIndex++
+	} else {
+		clauses = append(clauses, fmt.Sprintf("status = $%d", paramIndex))
+		params = append(params, false)
+		paramIndex++
+	}
+
+	if update.CBActive {
+		clauses = append(clauses, fmt.Sprintf("cb_active = $%d", paramIndex))
+		params = append(params, update.CBActive)
+		paramIndex++
+	} else {
+		clauses = append(clauses, fmt.Sprintf("cb_active = $%d", paramIndex))
+		params = append(params, false)
+		paramIndex++
+	}
+
+	// Ensure that the MiniApp ID is provided for the update query
+	if update.ID.String() == "" {
+		return errors.New("missing MiniApp ID for update")
+	}
+
+	// Append the WHERE clause at the end
+	// clauses = append(clauses, fmt.Sprintf("WHERE id = $%d", paramIndex))
+	// params = append(params, update.ID)
+
+	// Construct the final query
+	query := "UPDATE miniapp_data SET " + strings.Join(clauses, ", ") + " WHERE id = " + "'" + update.ID.String() + "'"
+
+	// Execute the update query
+	_, err := db.Exec(query, params...)
+	if err != nil {
+		return fmt.Errorf("error executing query: %v", err)
+	}
+
+	return nil
 }
 
 func ActivateSomekey(db *sql.DB, key, id, value string) error {

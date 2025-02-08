@@ -42,30 +42,62 @@ function displayMiniApps() {
     const tbody = document.getElementById('MiniAppTableBody');
     tbody.innerHTML = ''; // Clear the table body
 
-    miniappToDisplay.forEach(miniapp => {
+    miniappToDisplay.forEach((miniapp,index) => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${miniapp.id}</td>
-            <td>${miniapp.name}</td>
-            <td>${miniapp.status === '1' ? 'Active' : 'InActive'}</td>
-            <td>
-              
-                 <button id="addBrandBtn" class="btn btn-primary" onclick="window.location.href='AddAndEditMiniApp.html'">Update</button>
-                 <button id="addBrandBtn" class="btn btn-danger" onclick="window.location.href='AddAndEditMiniApp.html'">Delete</button>
+           <td>${index + 1}</td>
+    
+    <td><img src="${miniapp.icon}" alt="Game Image" width="75" height="75"/></td>
+    <td>${miniapp.name}</td>
+    
+    <!-- Button for Popular -->
+    <td>
+        <button class="btn btn-primary" id="Popular" onclick="ActiveAndDeactive('${miniapp.id}', ${miniapp.popular === true ? false : true}, 'Popular')">
+            ${miniapp.popular === true ? 'InActive' : 'Active'}
+        </button>
+    </td>
+
+    <!-- Button for Trending -->
+    <td>
+        <button class="btn btn-primary" id="Trending" onclick="ActiveAndDeactive('${miniapp.id}', ${miniapp.trending === true ? false : true}, 'Trending')">
+            ${miniapp.trending === true ?  'InActive' : 'Active'}
+        </button>
+    </td>
+
+    <!-- Button for Status -->
+    <td>
+        <button class="btn btn-primary" id="Status" onclick="ActiveAndDeactive('${miniapp.id}', ${miniapp.status === true ? false : true}, 'Status')">
+            ${miniapp.status === true ?  'InActive' : 'Active'}
+        </button>
+    </td>
+
+    <!-- Delete Button -->
+    <td>
+                <button class="btn btn-danger" id="update-${miniapp.id}">Update</button>
             </td>
+    <!-- Delete Button -->
+    <td>
+        <button class="btn btn-danger" id="delete" onclick="window.location.href = './add_update_miniApp.html'">Delete</button>
+    </td>
         `;
         tbody.appendChild(row);
+        document.getElementById(`update-${miniapp.id}`).addEventListener('click', function() {
+            updateItem(miniapp);
+        });
     });
 
     createPagination();
 }
 
 // Store the item data in localStorage and navigate to page2.html for update
-function updateItem(id, name, status) {
-    const itemData = { id, name: decodeURIComponent(name), status: decodeURIComponent(status) };
-    localStorage.setItem('itemData', JSON.stringify(itemData));
-    window.location.href = 'AddAndEditMiniApp.html';
+function updateItem(miniapp) {
+    // Directly store the miniapp object in localStorage
+    const itemData = { data: miniapp };  // No need for decodeURIComponent
+    localStorage.setItem('itemData', JSON.stringify(itemData));  // Store as stringified JSON
+    window.location.href = './add_update_miniApp.html';  // Redirect to update page
 }
+
+
 
 // Function to create pagination buttons
 function createPagination() {

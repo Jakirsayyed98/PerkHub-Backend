@@ -99,39 +99,45 @@
         <!--begin::Container-->
         <div class="container-fluid">
          <!--begin::Row-->
-<div class="card">
-  <div class="row">
-    <!--begin::Col for Title-->
-    <div class="col-lg-6 col-6">
-      <div class="card-header">
-        <h3 class="card-title">Bordered Table</h3>
-      </div>
-    </div>
+          <div class="card">
+            <div class="row">
+              <!--begin::Col for Title-->
+              <div class="col-lg-6 col-6">
+                <div class="card-header">
+                  <h3 class="card-title">Bordered Table</h3>
+                </div>
+              </div>
 
-    <!-- Search Bar and Add Brand Button (Aligned to the right)-->
-    <div class="col-lg-6 col-6">
-      <div class="d-flex justify-content-end align-items-center">
-        <!-- Search Bar -->
-        <input type="text" id="searchInput" class="search-bar" onkeyup="searchUsers()" placeholder="Search for miniapps...">
-        
-        <!-- Search Button -->
-        <button id="searchBtn" class="btn btn-primary ml-2" onclick="searchGames()">Search</button>
-        
-        <!-- Add Brand Button (Optional) -->
-        <!-- <button id="addBrandBtn" class="btn btn-primary" onclick="window.location.href='AddAndEditMiniApp.html'">Add Brand</button> -->
-      </div>
-    </div>
-  </div>
-</div>
+              <!-- Search Bar and Add Brand Button (Aligned to the right)-->
+              <div class="col-lg-6 col-6">
+                <div class="d-flex justify-content-end align-items-center">
+                  <!-- Search Bar -->
+                  <input type="text" id="searchInput" class="search-bar" onkeyup="searchUsers()" placeholder="Search for games...">
+                  
+                  <!-- Search Button -->
+                  <button id="searchBtn" class="btn btn-primary ml-2" onclick="searchGames()">Search</button>
+                  <!-- Add a refresh button -->
+                  <button id="refreshBtn" class="btn btn-primary ml-2" onclick="clearStorageAndGoToAdd()">+Add MiniApp</button>
+
+                  
+                  <!-- Add Brand Button (Optional) -->
+                  <!-- <button id="addBrandBtn" class="btn btn-primary" onclick="window.location.href='AddAndEditMiniApp.html'">Add Brand</button> -->
+                </div>
+              </div>
+            </div>
+          </div>
 <!--end::Row-->
             <div class="card-body">
               <table class="table table-bordered">
                 <thead>
                   <tr>
-                    <th style="width: 10px">Sr.</th>
-                    <th>Name</th>
-                    <th>Status</th>
-                    <th style="width: 250px">Action</th>
+                    <th style="width: 50px">Sr.</th>
+                    <th>Icon</th>
+                    <th style="width: 500px">Name</th>
+                    <th>Popular</th>
+                    <th>Trending</th>
+                    <th>Is Active</th>
+                    <th >Action</th>
                   </tr>
                 </thead>
                 <tbody id="MiniAppTableBody">
@@ -439,6 +445,13 @@
  </script>
 
 <script src="dist/js/MiniApp/miniapp.js"></script>
+
+<script>
+  function clearStorageAndGoToAdd() {
+            localStorage.removeItem('itemData'); // Clear any existing data in localStorage
+            window.location.href ='./add_update_miniApp.html' // Redirect to Add Item form
+        }
+</script>
 
     <!--end::Script-->
   </body>

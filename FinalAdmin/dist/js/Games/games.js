@@ -3,25 +3,28 @@ let currentPage = 1;
 let games = []; // This holds all the games
 let filteredGames = []; // This is for the filtered games based on search
 
-async function ActiveAndDeactive(credentials) {
+async function ActiveAndDeactive(gameId, currentStatus,StatusType) {
     try {
+        console.log(`Game ID: ${gameId}, Current Status: ${currentStatus}, Status Type: ${StatusType}`);
         const token = localStorage.getItem('token'); // Get the token from localStorage
-
-        const response = await fetch('http://localhost:4215/api/activeAndDeactiveGames', {
-            method: 'GET',
+        
+        const credentials = { id: gameId, type: 'activate', status: currentStatus,StatusType :StatusType };
+        const response = await fetch('http://localhost:4215/api/admin/set-games-status', {
+            method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`, 
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(credentials),
         });
-        
-        if (!response.ok) {
-            throw new Error('Failed to fetch games');
+
+        if (response.ok) {
+            alert('Status Change successful!');
+            fetchGames();
+        } else {
+            alert(response.message || 'Statuc Change failed. Please check your credentials.');
         }
 
-        const data = await response.json();
-        return data;
     } catch (error) {
         console.error('Error fetching games:', error);
         alert('Error fetching games: ' + error.message);
@@ -113,17 +116,38 @@ function displayGames() {
     gamesToDisplay.forEach((game,index) => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${index+1}</td>
-            
-            <td><img src="${game.assets.square}" alt="Game Image" width="75" height="75"/></td>
-            <td>${game.name}</td>
-            <td><button id="addBrandBtn" class="btn btn-primary" onclick="ActiveAndDeactive()">${game.status === true ? 'InActive' : 'Active'}</button></td>
-            <td><button id="addBrandBtn" class="btn btn-primary" onclick="ActiveAndDeactive()">${game.status === true ? 'InActive' : 'Active'}</button></td>
-            <td><button id="addBrandBtn" class="btn btn-primary" onclick="ActiveAndDeactive()">${game.status === true ? 'InActive' : 'Active'}</button></td>
-            <td>
-                 <button id="addBrandBtn" class="btn btn-danger" onclick="window.location.href='AddAndEditMiniApp.html'">Delete</button>
-            </td>
-        `;
+    <td>${index + 1}</td>
+    
+    <td><img src="${game.assets.square}" alt="Game Image" width="75" height="75"/></td>
+    <td>${game.name}</td>
+    
+    <!-- Button for Popular -->
+    <td>
+        <button class="btn btn-primary" id="Popular" onclick="ActiveAndDeactive('${game.id}', ${game.popular === true ? false : true}, 'Popular')">
+            ${game.popular === true ? 'InActive' : 'Active'}
+        </button>
+    </td>
+
+    <!-- Button for Trending -->
+    <td>
+        <button class="btn btn-primary" id="Trending" onclick="ActiveAndDeactive('${game.id}', ${game.trending === true ? false : true}, 'Trending')">
+            ${game.trending === true ?  'InActive' : 'Active'}
+        </button>
+    </td>
+
+    <!-- Button for Status -->
+    <td>
+        <button class="btn btn-primary" id="Status" onclick="ActiveAndDeactive('${game.id}', ${game.status === true ? false : true}, 'Status')">
+            ${game.status === true ?  'InActive' : 'Active'}
+        </button>
+    </td>
+
+    <!-- Delete Button -->
+    <td>
+        <button class="btn btn-danger" id="delete" onclick="window.location.href='AddAndEditMiniApp.html'">Delete</button>
+    </td>
+`;
+
         tbody.appendChild(row);
     });
 
