@@ -42,7 +42,7 @@ func NewAws(region, accessKeyId, secretKey, bucketName, cloudFrontURL string) (*
 	}, nil
 }
 
-func (awsInstance *Aws) UploadFile(reader io.Reader, fileName string, bucketName string, key string, cloudfrontURL string) (string, error) {
+func (awsInstance *Aws) UploadFile(reader io.Reader, fileName, bucketName, key string) (string, error) {
 	uploader := s3manager.NewUploader(awsInstance.session, func(u *s3manager.Uploader) {
 		u.PartSize = 5 * 1024 * 1024 // The minimum/default allowed part size is 5MB
 		u.Concurrency = 2
@@ -63,5 +63,5 @@ func (awsInstance *Aws) UploadFile(reader io.Reader, fileName string, bucketName
 
 	end := strings.Split(up.Location, ".com/")
 
-	return cloudfrontURL + end[1], nil
+	return end[1], nil
 }

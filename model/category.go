@@ -2,6 +2,7 @@ package model
 
 import (
 	"PerkHub/request"
+	"PerkHub/utils"
 	"database/sql"
 	"time"
 )
@@ -82,6 +83,7 @@ func GetAllCategory(db *sql.DB) ([]*Category, error) {
 			return nil, err
 		}
 
+		categorym.Image = utils.ImageUrlGenerator(categorym.Image)
 		category = append(category, &categorym)
 	}
 

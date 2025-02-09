@@ -2,7 +2,7 @@ package request
 
 import (
 	"PerkHub/connection"
-	"PerkHub/constants"
+	"PerkHub/utils"
 	"fmt"
 	"strings"
 	"time"
@@ -33,23 +33,10 @@ func (category *Category) Bind(c *gin.Context, awsInstance *connection.Aws) erro
 	if err != nil {
 		return err
 	}
-	image := ""
-	files := form.File["image"]
 
-	if len(files) > 0 {
-
-		fileHeader := files[0]
-		f, err := fileHeader.Open()
-		if err != nil {
-			return err
-		}
-		defer f.Close()
-
-		image, err = awsInstance.UploadFile(f, fileHeader.Filename, constants.AWSBucketName, constants.AWSSecretAccessKey, constants.AWSCloudFrontURL)
-		// image, err = utils.SaveFile(c, file)
-		if err != nil {
-			return err
-		}
+	image, err := utils.UploadFileOnServer(form.File["image"], awsInstance)
+	if err != nil {
+		return err
 	}
 
 	category.ID = c.PostForm("id")

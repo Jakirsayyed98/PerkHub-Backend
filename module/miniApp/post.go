@@ -11,7 +11,7 @@ import (
 
 func CreateMiniApp(c *gin.Context) {
 
-	stores, err := stores.GetStores(c)
+	store, err := stores.GetStores(c)
 	if err != nil {
 		settings.StatusBadRequest(c, err, "")
 		return
@@ -19,13 +19,19 @@ func CreateMiniApp(c *gin.Context) {
 
 	request := request.NewMiniAppRequest()
 
-	if err := request.Bind(c); err != nil {
+	awsInstance, err := stores.GetAwsInstance(c)
+	if err != nil {
+		settings.StatusBadRequest(c, err, "")
+		return
+	}
+
+	if err := request.Bind(c, awsInstance); err != nil {
 		fmt.Println("req", err.Error())
 		settings.StatusBadRequest(c, err, "")
 		return
 	}
 
-	result, err := stores.MiniAppStore.CreateMiniApp(&request)
+	result, err := store.MiniAppStore.CreateMiniApp(&request)
 
 	if err != nil {
 		settings.StatusBadRequest(c, err, "")

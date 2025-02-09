@@ -1,6 +1,7 @@
 package request
 
 import (
+	"PerkHub/connection"
 	"PerkHub/utils"
 	"fmt"
 	"strconv"
@@ -43,7 +44,7 @@ func NewMiniAppRequest() MiniAppRequest {
 	return MiniAppRequest{}
 }
 
-func (req *MiniAppRequest) Bind(c *gin.Context) error {
+func (req *MiniAppRequest) Bind(c *gin.Context, awsInstance *connection.Aws) error {
 	if !strings.Contains(c.Request.Header.Get("Content-Type"), "multipart/form-data") {
 		return fmt.Errorf("content type not supported %s", c.Request.Header.Get("Content-Type"))
 	}
@@ -52,33 +53,10 @@ func (req *MiniAppRequest) Bind(c *gin.Context) error {
 		return err
 	}
 
-	logo := ""
-	banner := ""
-	icon := ""
-	iconFile := form.File["icon"]
-	bannerFile := form.File["banner"]
-	logoFile := form.File["logo"]
-	if len(iconFile) > 0 {
-		file := iconFile[0]
-		icon, err = utils.SaveFile(c, file)
-		if err != nil {
-			return err
-		}
-	}
-	if len(bannerFile) > 0 {
-		file := bannerFile[0]
-		banner, err = utils.SaveFile(c, file)
-		if err != nil {
-			return err
-		}
-	}
-	if len(logoFile) > 0 {
-		file := logoFile[0]
-		logo, err = utils.SaveFile(c, file)
-		if err != nil {
-			return err
-		}
-	}
+	icon, _ := utils.UploadFileOnServer(form.File["icon"], awsInstance)
+	banner, _ := utils.UploadFileOnServer(form.File["banner"], awsInstance)
+	logo, _ := utils.UploadFileOnServer(form.File["logo"], awsInstance)
+
 	req.ID, err = uuid.Parse(c.PostForm("id"))
 	req.MiniAppCategoryID = c.PostForm("miniapp_category_id")
 	req.MiniAppSubcategoryID = c.PostForm("miniapp_subcategory_id")

@@ -64,7 +64,8 @@ func main() {
 
 	// Serve static files (like images, CSS, JS)
 	app.Static("/files", "./files") // This will map /files/* to the ./files directory
-
-	// Start the Gin server on the specified port
+	// Enable CORS for all origins (this allows all websites to access your resources)
+	// corsHandler := handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(http.DefaultServeMux)
+	// http.ListenAndServe(fmt.Sprintf("localhost:%d", constants.Port), corsHandler) // Start the Gin server on the specified port
 	app.Run(fmt.Sprintf("localhost:%d", constants.Port))
 }

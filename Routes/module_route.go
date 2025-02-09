@@ -53,6 +53,7 @@ func Endpoints(app *gin.Engine) {
 			"FinalAdmin/dist/pages/gameslist.html",
 			"FinalAdmin/dist/pages/miniapp.html",
 			"FinalAdmin/dist/pages/miniapp_categories.html",
+			"FinalAdmin/dist/pages/banner_list.html",
 			"FinalAdmin/dist/pages/index.html",
 			"FinalAdmin/dist/pages/add_update_miniApp.html",
 			"FinalAdmin/dist/pages/add_update_miniApp_categories.html",

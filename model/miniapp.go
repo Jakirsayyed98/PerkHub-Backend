@@ -2,6 +2,7 @@ package model
 
 import (
 	"PerkHub/request"
+	"PerkHub/utils"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -448,6 +449,10 @@ func GetMiniAppsPopular(db *sql.DB) ([]MiniApp, error) {
 			return nil, err
 		}
 
+		miniApp.Icon = utils.ImageUrlGenerator(miniApp.Icon)
+		miniApp.Banner = utils.ImageUrlGenerator(miniApp.Banner)
+		miniApp.Logo = utils.ImageUrlGenerator(miniApp.Logo)
+
 		miniApps = append(miniApps, miniApp)
 	}
 
@@ -527,6 +532,10 @@ func GetMiniAppsTopCashback(db *sql.DB) ([]MiniApp, error) {
 			return nil, err
 		}
 
+		miniApp.Icon = utils.ImageUrlGenerator(miniApp.Icon)
+		miniApp.Banner = utils.ImageUrlGenerator(miniApp.Banner)
+		miniApp.Logo = utils.ImageUrlGenerator(miniApp.Logo)
+
 		miniApps = append(miniApps, miniApp)
 	}
 
@@ -605,6 +614,10 @@ func GetMiniAppsTrending(db *sql.DB) ([]MiniApp, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		miniApp.Icon = utils.ImageUrlGenerator(miniApp.Icon)
+		miniApp.Banner = utils.ImageUrlGenerator(miniApp.Banner)
+		miniApp.Logo = utils.ImageUrlGenerator(miniApp.Logo)
 
 		miniApps = append(miniApps, miniApp)
 	}
@@ -688,6 +701,10 @@ func SearchMiniApps(db *sql.DB, name string) ([]MiniApp, error) {
 			return nil, err
 		}
 
+		miniApp.Icon = utils.ImageUrlGenerator(miniApp.Icon)
+		miniApp.Banner = utils.ImageUrlGenerator(miniApp.Banner)
+		miniApp.Logo = utils.ImageUrlGenerator(miniApp.Logo)
+
 		miniApps = append(miniApps, miniApp)
 	}
 
@@ -768,6 +785,10 @@ func GetMiniAppsByCategoryID(db *sql.DB, categoryID string) ([]MiniApp, error) {
 		); err != nil {
 			return nil, err
 		}
+
+		miniApp.Icon = utils.ImageUrlGenerator(miniApp.Icon)
+		miniApp.Banner = utils.ImageUrlGenerator(miniApp.Banner)
+		miniApp.Logo = utils.ImageUrlGenerator(miniApp.Logo)
 
 		miniApps = append(miniApps, miniApp)
 	}

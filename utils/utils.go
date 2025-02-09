@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"PerkHub/connection"
 	"PerkHub/constants"
 	"crypto/aes"
 	"crypto/cipher"
@@ -195,4 +196,31 @@ func Decrypt(encryptedText string) (string, error) {
 	stream.XORKeyStream(cipherText, cipherText)
 
 	return string(cipherText), nil
+}
+
+func UploadFileOnServer(files []*multipart.FileHeader, awsInstance *connection.Aws) (string, error) {
+	if len(files) > 0 {
+
+		fileHeader := files[0]
+		f, err := fileHeader.Open()
+		if err != nil {
+			return "", err
+		}
+		defer f.Close()
+
+		image, err := awsInstance.UploadFile(f, fileHeader.Filename, constants.AWSBucketName, constants.AWSSecretAccessKey)
+		// image, err = utils.SaveFile(c, file)
+		if err != nil {
+			return "", err
+		}
+		return image, nil
+	}
+	return "", nil
+}
+
+func ImageUrlGenerator(image string) string {
+	if image == "" {
+		return ""
+	}
+	return constants.AWSCloudFrontURL + constants.AWSSecretAccessKey + "/" + image
 }
