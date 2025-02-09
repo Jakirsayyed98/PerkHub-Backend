@@ -10,7 +10,7 @@ CREATE TABLE users (
     number VARCHAR(100) UNIQUE NOT NULL,  -- Unique mobile number with NOT NULL
     otp VARCHAR(100),  -- 5 digit OTP
     gender VARCHAR(100),  -- Gender
-    dob DATE,  -- Changed to DATE for better type handling
+    dob VARCHAR(100),  -- Changed to DATE for better type handling
     fcm_token VARCHAR(500),  -- Use snake_case for column names
     verified BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),  -- Use now() for default timestamp

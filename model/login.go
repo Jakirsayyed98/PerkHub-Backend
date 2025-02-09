@@ -35,7 +35,12 @@ func InsertLoginData(db *sql.DB, number, otp string) error {
 }
 
 func UpdateUserDetail(db *sql.DB, userID string, details *request.SaveUserDetailReq) error {
+
+	fmt.Println("userID", userID)
+	fmt.Println("userID", details)
+
 	_, err := db.Exec("UPDATE users SET name = $2, email = $3, gender = $4, dob = $5 WHERE user_id = $1", userID, details.Name, details.Email, details.Gender, details.DOB)
+
 	return err
 }
 

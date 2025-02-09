@@ -59,20 +59,22 @@ func SaveUserDetail(c *gin.Context) {
 	store, err := stores.GetStores(c)
 	if err != nil {
 		settings.StatusBadRequest(c, err.Error(), "")
+		return
 	}
 
 	request := request.NewSaveUserDetail()
 
 	if err := c.ShouldBindJSON(&request); err != nil {
 		settings.StatusBadRequest(c, err.Error(), "")
+		return
 	}
 
 	err = store.LoginStore.SaveUserDetail(c.MustGet("user_id").(string), *request)
 	if err != nil {
 		settings.StatusBadRequest(c, err.Error(), "")
+		return
 	}
 	settings.StatusOk(c, nil, "Details Saved Successfully", "")
-	return
 
 }
 
