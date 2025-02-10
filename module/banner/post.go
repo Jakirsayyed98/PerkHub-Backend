@@ -8,6 +8,28 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func CreateBannerCategory(c *gin.Context) {
+	store, err := stores.GetStores(c)
+	if err != nil {
+		settings.StatusBadRequest(c, err, "")
+		return
+	}
+
+	request := request.NewBannerCategory()
+	if err := c.ShouldBindJSON(&request); err != nil {
+		settings.StatusBadRequest(c, err, "")
+		return
+	}
+
+	result, err := store.BannerStore.SaveBannerCategory(request)
+	if err != nil {
+		settings.StatusBadRequest(c, err, "")
+		return
+	}
+
+	settings.StatusCreated(c, result, "Banner Category created Successfully", "")
+}
+
 func CreateBanner(c *gin.Context) {
 	store, err := stores.GetStores(c)
 	if err != nil {
@@ -15,8 +37,14 @@ func CreateBanner(c *gin.Context) {
 		return
 	}
 
+	awsInstance, err := stores.GetAwsInstance(c)
+	if err != nil {
+		settings.StatusBadRequest(c, err, "")
+		return
+	}
+
 	request := request.NewBanner()
-	if err := request.Bind(c); err != nil {
+	if err := request.Bind(c, awsInstance); err != nil {
 		settings.StatusBadRequest(c, err, "")
 		return
 	}
@@ -36,8 +64,15 @@ func UpdateBanner(c *gin.Context) {
 		settings.StatusBadRequest(c, err, "")
 		return
 	}
+
+	awsInstance, err := stores.GetAwsInstance(c)
+	if err != nil {
+		settings.StatusBadRequest(c, err, "")
+		return
+	}
+
 	request := request.NewBanner()
-	if err := request.Bind(c); err != nil {
+	if err := request.Bind(c, awsInstance); err != nil {
 		settings.StatusBadRequest(c, err, "")
 		return
 	}

@@ -39,7 +39,7 @@ func Endpoints(app *gin.Engine) {
 	admin := app.Group("/admin")
 	{
 		admin.Use(cors.New(cors.Config{
-			AllowOrigins: []string{"http://localhost", "http://127.0.0.1"},
+			AllowOrigins: []string{"http://localhost", "http://127.0.0.1", "https://blessed-pretty-mammal.ngrok-free.app"},
 			AllowMethods: []string{"GET", "POST", "PUT", "DELETE"},
 			AllowHeaders: []string{"Origin", "Content-Type", "Authorization"},
 		}))
@@ -53,7 +53,9 @@ func Endpoints(app *gin.Engine) {
 			"FinalAdmin/dist/pages/gameslist.html",
 			"FinalAdmin/dist/pages/miniapp.html",
 			"FinalAdmin/dist/pages/miniapp_categories.html",
+			"FinalAdmin/dist/pages/banner_category_list.html",
 			"FinalAdmin/dist/pages/banner_list.html",
+			"FinalAdmin/dist/pages/add_update_banner_category.html",
 			"FinalAdmin/dist/pages/index.html",
 			"FinalAdmin/dist/pages/add_update_miniApp.html",
 			"FinalAdmin/dist/pages/add_update_miniApp_categories.html",

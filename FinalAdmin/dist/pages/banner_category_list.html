@@ -122,29 +122,27 @@
                   <!-- Search Button -->
                   <button id="searchBtn" class="btn btn-primary ml-2" onclick="searchGames()">Search</button>
                   <!-- Add a refresh button -->
-                  <button type="button" class="btn btn-primary"  onclick="clearStorageAndGoToAdd()">
+                  <button type="button" class="btn btn-primary" id="openModalBtn">
                     +Add Banner Category
                   </button>
                   
                   <!-- Add Brand Button (Optional) -->
-                  <!-- <button id="addBrandBtn" class="btn btn-primary" onclick="window.location.href='AddAndEditBanners.html'">Add Brand</button> -->
+                  <!-- <button id="addBrandBtn" class="btn btn-primary" onclick="window.location.href='AddAndEditMiniApp.html'">Add Brand</button> -->
                 </div>
               </div>
             </div>
           </div>
 <!--end::Row-->
             <div class="card-body">
-              <input type="hidden" id="category_id" name="category_id" >
-
               <table class="table table-bordered">
                 <thead>
                   <tr>
                     <th style="width: 50px">Sr.</th>
-                    <th>Image</th>
+                    <th style="width: 500px">Name</th>
                     <th >Action</th>
                   </tr>
                 </thead>
-                <tbody id="BannersTableBody">
+                <tbody id="BannerCategoryTableBody">
                   <!-- Dynamic rows will be added here -->
               </tbody>
               </table>
@@ -254,7 +252,7 @@
     ></script>
     <!--end::Required Plugin(Bootstrap 5)--><!--begin::Required Plugin(AdminLTE)-->
     <!-- <script src="../../dist/js/adminlte.js"></script> -->
-    <script src="dist/js/Banner/banner.js"></script>
+    <script src="dist/js/Banner/banner_category.js"></script>
     <!-- <script src="FinalAdmin/dist/js/dashboard/dashboard.js"></script> -->
     <!--end::Required Plugin(AdminLTE)--><!--begin::OverlayScrollbars Configure-->
     <script>
@@ -286,7 +284,20 @@
       crossorigin="anonymous"
     ></script>
     <!-- sortablejs -->
-  
+    <script>
+      const connectedSortables = document.querySelectorAll('.connectedSortable');
+      connectedSortables.forEach((connectedSortable) => {
+        let sortable = new Sortable(connectedSortable, {
+          group: 'shared',
+          handle: '.card-header',
+        });
+      });
+
+      const cardHeaders = document.querySelectorAll('.connectedSortable .card-header');
+      cardHeaders.forEach((cardHeader) => {
+        cardHeader.style.cursor = 'move';
+      });
+    </script>
     <!-- apexcharts -->
     <script
       src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js"
@@ -307,7 +318,7 @@
       crossorigin="anonymous"
     ></script>
     <!-- jsvectormap -->
-   
+    
  <script src="dist/js/Login/login.js"></script>
  <script>
  // Check if the token is valid
@@ -323,20 +334,13 @@
  });
  </script>
 
-<script src="dist/js/Banner/banner.js"></script>
+<script src="dist/js/Banner/banner_category.js"></script>
 
 <script>
   function clearStorageAndGoToAdd() {
             localStorage.removeItem('itemData'); // Clear any existing data in localStorage
             window.location.href ='./add_update_banner_category.html' // Redirect to Add Item form
         }
-</script>
-
-<script>
-   const itemData = JSON.parse(localStorage.getItem('itemData'));
-
-      document.getElementById('category_id').value  = itemData
-
 </script>
 
     <!--end::Script-->

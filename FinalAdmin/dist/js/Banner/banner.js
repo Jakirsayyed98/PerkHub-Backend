@@ -1,14 +1,19 @@
 const rowsPerPage = 25;
 let currentPage = 1;
-let miniapp = []; // This holds all the miniapp
-let filteredMiniApp = []; // This is for the filtered miniapp based on search
+let Banners = []; // This holds all the Banners
+let filteredBanners = []; // This is for the filtered Banners based on search
 
-// Function to fetch miniapp from the API
-async function fetchMiniApp() {
+// Function to fetch Banners from the API
+async function fetchBanners() {
     try {
+        const categoryId = localStorage.getItem('category_id');
+        console.log(categoryId)
+        if (!categoryId) {
+            throw new Error('Category ID is not available.');
+        }
         const token = localStorage.getItem('token'); // Get the token from localStorage
 
-        const response = await fetch('http://localhost:4215/api/admin/AllMiniApps', {
+        const response = await fetch('http://localhost:4215/api/admin/get-banners/'+categoryId, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`, // Include the token in the request
@@ -17,72 +22,58 @@ async function fetchMiniApp() {
         });
 
         if (!response.ok) {
-            throw new Error('Failed to fetch miniapp');
+            throw new Error('Failed to fetch Banners');
         }
 
         const data = await response.json();
         
         // Ensure that data.data is an array before using it
-        miniapp = Array.isArray(data.data) ? data.data : [];
-        filteredMiniApp = [...miniapp];  // Copy data to filteredMiniApp for later manipulation
-        // alert('miniapp fetched successfully');
-        displayMiniApps();
+        Banners = Array.isArray(data.data) ? data.data : [];
+        filteredBanners = [...Banners];  // Copy data to filteredBanners for later manipulation
+        // alert('Banners fetched successfully');
+        displayBanners();
     } catch (error) {
-        console.error('Error fetching miniapp:', error);
-        alert('Error fetching miniapp: ' + error.message);
+        console.error('Error fetching Banners:', error);
+        alert('Error fetching Banners: ' + error.message);
     }
 }
 
-// Function to display miniapp in the table
-function displayMiniApps() {
+// Function to display Banners in the table
+function displayBanners() {
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
-    const miniappToDisplay = filteredMiniApp.slice(startIndex, endIndex);
+    const BannersToDisplay = filteredBanners.slice(startIndex, endIndex);
 
-    const tbody = document.getElementById('MiniAppTableBody');
+    const tbody = document.getElementById('BannersTableBody');
     tbody.innerHTML = ''; // Clear the table body
 
-    miniappToDisplay.forEach((miniapp,index) => {
+    BannersToDisplay.forEach((Banners,index) => {
         const row = document.createElement('tr');
         row.innerHTML = `
            <td>${index + 1}</td>
     
-    <td><img src="${miniapp.icon}" alt="Game Image" width="75" height="75"/></td>
-    <td>${miniapp.name}</td>
-    
-    <!-- Button for Popular -->
-    <td>
-        <button class="btn btn-primary" id="Popular" onclick="ActiveAndDeactive('${miniapp.id}', ${miniapp.popular === true ? false : true}, 'Popular')">
-            ${miniapp.popular === true ? 'InActive' : 'Active'}
-        </button>
-    </td>
-
-    <!-- Button for Trending -->
-    <td>
-        <button class="btn btn-primary" id="Trending" onclick="ActiveAndDeactive('${miniapp.id}', ${miniapp.trending === true ? false : true}, 'Trending')">
-            ${miniapp.trending === true ?  'InActive' : 'Active'}
-        </button>
-    </td>
+    <td><img src="${Banners.image}" alt="Game Image" width="75" height="75"/></td>
+    <td>${Banners.name}</td>
 
     <!-- Button for Status -->
     <td>
-        <button class="btn btn-primary" id="Status" onclick="ActiveAndDeactive('${miniapp.id}', ${miniapp.status === true ? false : true}, 'Status')">
-            ${miniapp.status === true ?  'InActive' : 'Active'}
+        <button class="btn btn-primary" id="Status" onclick="ActiveAndDeactive('${Banners.id}', ${Banners.status === true ? false : true}, 'Status')">
+            ${Banners.status === true ?  'InActive' : 'Active'}
         </button>
     </td>
 
     <!-- Delete Button -->
     <td>
-                <button class="btn btn-danger" id="update-${miniapp.id}">Update</button>
+                <button class="btn btn-danger" id="update-${Banners.id}">Update</button>
             </td>
     <!-- Delete Button -->
     <td>
-        <button class="btn btn-danger" id="delete" onclick="window.location.href = './add_update_miniApp.html'">Delete</button>
+        <button class="btn btn-danger" id="delete" onclick="window.location.href = './add_update_Banners.html'">Delete</button>
     </td>
         `;
         tbody.appendChild(row);
-        document.getElementById(`update-${miniapp.id}`).addEventListener('click', function() {
-            updateItem(miniapp);
+        document.getElementById(`update-${Banners.id}`).addEventListener('click', function() {
+            updateItem(Banners);
         });
     });
 
@@ -90,18 +81,18 @@ function displayMiniApps() {
 }
 
 // Store the item data in localStorage and navigate to page2.html for update
-function updateItem(miniapp) {
-    // Directly store the miniapp object in localStorage
-    const itemData = { data: miniapp };  // No need for decodeURIComponent
+function updateItem(Banners) {
+    // Directly store the Banners object in localStorage
+    const itemData = { data: Banners };  // No need for decodeURIComponent
     localStorage.setItem('itemData', JSON.stringify(itemData));  // Store as stringified JSON
-    window.location.href = './add_update_miniApp.html';  // Redirect to update page
+    window.location.href = './add_update_banner_category.html';  // Redirect to update page
 }
 
 
 
 // Function to create pagination buttons
 function createPagination() {
-    const totalPages = Math.ceil(filteredMiniApp.length / rowsPerPage);
+    const totalPages = Math.ceil(filteredBanners.length / rowsPerPage);
     const pagination = document.getElementById('pagination');
     pagination.innerHTML = ''; // Clear existing pagination
 
@@ -115,7 +106,7 @@ function createPagination() {
     prevLink.onclick = () => {
         if (currentPage > 1) {
             currentPage--;
-            displayMiniApps();
+            displayBannerss();
         }
     };
     prevButton.appendChild(prevLink);
@@ -131,7 +122,7 @@ function createPagination() {
         pageLink.textContent = i;
         pageLink.onclick = () => {
             currentPage = i;
-            displayMiniApps();
+            displayBannerss();
         };
         pageButton.appendChild(pageLink);
         pagination.appendChild(pageButton);
@@ -147,7 +138,7 @@ function createPagination() {
     nextLink.onclick = () => {
         if (currentPage < totalPages) {
             currentPage++;
-            displayMiniApps();
+            displayBannerss();
         }
     };
     nextButton.appendChild(nextLink);
@@ -157,18 +148,18 @@ function createPagination() {
 // Function to filter users based on search input
 function searchUsers() {
     const input = document.getElementById('searchInput').value.toLowerCase();
-    filteredMiniApp = miniapp.filter(miniapp => {
+    filteredBanners = Banners.filter(Banners => {
         return (
-            miniapp.name.toLowerCase().includes(input) ||
-            miniapp.id.toString().includes(input) // You can add more fields for filtering if necessary
+            Banners.name.toLowerCase().includes(input) ||
+            Banners.id.toString().includes(input) // You can add more fields for filtering if necessary
         );
     });
     currentPage = 1; // Reset to the first page after filtering
-    displayMiniApps();
+    displayBannerss();
 }
 
 // Event listener for search input
 document.getElementById('searchInput').addEventListener('input', searchUsers);
 
-// Initial fetch of miniapp data when the script is loaded
-fetchMiniApp();
+// Initial fetch of Banners data when the script is loaded
+fetchBanners();

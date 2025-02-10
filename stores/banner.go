@@ -16,6 +16,26 @@ func NewBannerStore(dbs *sql.DB) *BannerStore {
 	}
 }
 
+func (s *BannerStore) SaveBannerCategory(req *request.BannerCategory) (interface{}, error) {
+	err := model.InsertBannerCategory(s.db, req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, nil
+}
+
+func (s *BannerStore) GetBannerCategory() (interface{}, error) {
+	result, err := model.GetAllBannersCategory(s.db)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func (s *BannerStore) SaveBanner(req *request.Banner) (interface{}, error) {
 
 	err := model.InsertBanner(s.db, req)
@@ -29,7 +49,7 @@ func (s *BannerStore) SaveBanner(req *request.Banner) (interface{}, error) {
 
 func (s *BannerStore) UpdateBanner(req *request.Banner) (interface{}, error) {
 
-	err := model.UpdateBanner(s.db, req)
+	err := model.UpdateBannerData(s.db, req)
 
 	if err != nil {
 		return nil, err
@@ -46,9 +66,9 @@ func (s *BannerStore) DeleteBanner(id string) (interface{}, error) {
 	return nil, nil
 }
 
-func (s *BannerStore) GetAllBanners() (interface{}, error) {
+func (s *BannerStore) GetBannersByCategoryID(categoryId string) (interface{}, error) {
 
-	data, err := model.GetAllBanners(s.db)
+	data, err := model.GetBannersByCategoryID(s.db, categoryId)
 	if err != nil {
 		return nil, err
 	}

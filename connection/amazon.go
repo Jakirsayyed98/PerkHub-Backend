@@ -1,8 +1,10 @@
 package connection
 
 import (
+	"fmt"
 	"io"
 	"strings"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -51,7 +53,7 @@ func (awsInstance *Aws) UploadFile(reader io.Reader, fileName, bucketName, key s
 	up, err := uploader.Upload(&s3manager.UploadInput{
 		Bucket:          aws.String(bucketName),
 		ACL:             aws.String("public-read"),
-		Key:             aws.String(key + "/" + fileName),
+		Key:             aws.String(key + "/" + fmt.Sprintf("%v%v", time.Now().Format("20060102_150405")) + fileName),
 		ContentType:     aws.String("image/png"),
 		Body:            reader,
 		ContentEncoding: aws.String("base64"),
@@ -62,6 +64,7 @@ func (awsInstance *Aws) UploadFile(reader io.Reader, fileName, bucketName, key s
 	}
 
 	end := strings.Split(up.Location, ".com/")
+	end1 := strings.Split(end[1], "/")
 
-	return end[1], nil
+	return end1[1], nil
 }

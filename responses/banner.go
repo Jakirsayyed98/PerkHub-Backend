@@ -39,7 +39,7 @@ func (u *BannerResponses) BindMultipleUsers(banners []*model.Banner) ([]BannerRe
 func (u *BannerResponses) ResponsesBind(banner *model.Banner) error {
 	u.ID = banner.ID
 	u.Name = banner.Name
-	u.BannerId = banner.BannerId
+	u.BannerId = banner.BannerCategoryId
 	u.Image = banner.Image
 	u.Url = banner.Url
 	u.Status = banner.Status
