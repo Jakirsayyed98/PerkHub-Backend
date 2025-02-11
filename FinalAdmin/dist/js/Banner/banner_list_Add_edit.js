@@ -28,13 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
         BannerForm.addEventListener('submit', async (e) => {
             e.preventDefault(); // Prevent default form submission
             const categoryId = localStorage.getItem('category_id');
-            
-            console.log(categoryId)
             // Create a new FormData object from the form
             const formData = new FormData(); // Initialize FormData object
 
             // Collecting the text data from form fields
-            // formData.append('id', document.getElementById('id').value);
+            formData.append('id', document.getElementById('id').value);
             formData.append('name', document.getElementById('name').value);
             formData.append('banner_category_id', categoryId);
             formData.append('url', document.getElementById('url').value);
@@ -50,8 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
               formData.append('image', imageFile);
             }
           
-            console.log(formData); // This will log the FormData object for debugging
-
             try {
                 // Call the AddBanner API with FormData
                 const response = await AddBanner(formData);

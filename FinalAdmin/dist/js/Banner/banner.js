@@ -54,7 +54,7 @@ function displayBanners() {
     
     <td><img src="${Banners.image}" alt="Game Image" width="75" height="75"/></td>
     <td>${Banners.name}</td>
-
+    <td>${Banners.end_date}</td>
     <!-- Button for Status -->
     <td>
         <button class="btn btn-primary" id="Status" onclick="ActiveAndDeactive('${Banners.id}', ${Banners.status === true ? false : true}, 'Status')">
@@ -62,18 +62,22 @@ function displayBanners() {
         </button>
     </td>
 
-    <!-- Delete Button -->
+    <!-- Update Button -->
     <td>
                 <button class="btn btn-danger" id="update-${Banners.id}">Update</button>
             </td>
     <!-- Delete Button -->
     <td>
-        <button class="btn btn-danger" id="delete" onclick="window.location.href = './add_update_Banners.html'">Delete</button>
+        <button class="btn btn-danger" id="delete-${Banners.id}"">Delete</button>
     </td>
         `;
         tbody.appendChild(row);
         document.getElementById(`update-${Banners.id}`).addEventListener('click', function() {
             updateItem(Banners);
+        });
+
+        document.getElementById(`delete-${Banners.id}`).addEventListener('click', function() {
+            DeleteBanners(Banners.id);
         });
     });
 
@@ -85,10 +89,8 @@ function updateItem(Banners) {
     // Directly store the Banners object in localStorage
     const itemData = { data: Banners };  // No need for decodeURIComponent
     localStorage.setItem('itemData', JSON.stringify(itemData));  // Store as stringified JSON
-    window.location.href = './add_update_banner_category.html';  // Redirect to update page
+    window.location.href = './add_update_banner.html';  // Redirect to update page
 }
-
-
 
 // Function to create pagination buttons
 function createPagination() {
@@ -163,3 +165,32 @@ document.getElementById('searchInput').addEventListener('input', searchUsers);
 
 // Initial fetch of Banners data when the script is loaded
 fetchBanners();
+
+// Function to fetch Banners from the API
+async function DeleteBanners(bannerId) {
+    try {
+        console.log(bannerId)
+       
+        const token = localStorage.getItem('token'); // Get the token from localStorage
+
+        const response = await fetch('http://localhost:4215/api/admin/delete-banner/'+bannerId, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Include the token in the request
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch Banners');
+        }
+
+        // Initial fetch of Banners data when the script is loaded
+        alert('banner deleted successful!');
+        fetchBanners();
+    } catch (error) {
+        console.error('Error fetching Banners:', error);
+        alert('Error fetching Banners: ' + error.message);
+    }
+}
+

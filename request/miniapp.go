@@ -139,14 +139,6 @@ func NewMiniAppSearchReq() *MiniAppSearchReq {
 	return &MiniAppSearchReq{}
 }
 
-type DeleteMiniApp struct {
-	Id string `json:"id"`
-}
-
-func NewDeleteMiniApp() *DeleteMiniApp {
-	return &DeleteMiniApp{}
-}
-
 type GenrateMiniAppSubId struct {
 	MiniAppName string `json:"name"  binding:"required"`
 }

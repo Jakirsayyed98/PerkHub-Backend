@@ -56,7 +56,7 @@ function displayBannerCategory() {
             </td>
     <!-- Delete Button -->
     <td>
-        <button class="btn btn-danger" id="delete" onclick="window.location.href = './add_update_banner_category.html'">Delete</button>
+        <button class="btn btn-danger" id="delete" onclick="window.location.href = ''">Delete</button>
     </td>
         `;
         tbody.appendChild(row);

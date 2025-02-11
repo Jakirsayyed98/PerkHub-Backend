@@ -111,14 +111,8 @@ func DeleteMiniApp(c *gin.Context) {
 		return
 	}
 
-	request := request.NewDeleteMiniApp()
-
-	if err := c.ShouldBindJSON(request); err != nil {
-		settings.StatusBadRequest(c, err, "")
-		return
-	}
-
-	result, err := store.MiniAppStore.DeletMniApp(request.Id)
+	id := c.Param("id")
+	result, err := store.MiniAppStore.DeletMniApp(id)
 	if err != nil {
 		settings.StatusBadRequest(c, err, "")
 		return

@@ -70,3 +70,13 @@ func (s *AdminStore) GetAdminDashBoardData() (interface{}, error) {
 	response := responses.NewAdminDashBoardData(len(miniapp), len(gamedata), len(userlist))
 	return response, nil
 }
+
+func (S *AdminStore) AffiliateTransactions(request *request.AdminAffiliateTransactionsRequest) (interface{}, error) {
+
+	data, err := model.GetAllAffiliateTransactions(S.db, request.PageNo, request.Limit)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}

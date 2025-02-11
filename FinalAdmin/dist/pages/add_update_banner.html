@@ -38,10 +38,11 @@
               </div>
 
               <div class="card-body">
-              
+                <!-- <div id="id" name="id"></div> -->
                 <div class="mb-3">
                   <label for="name" class="form-label">Name</label>
                   <input type="text" class="form-control" id="name" name="name" placeholder="Enter Banner Name">
+                  <div  id="id" name="id">
                 </div>
 
                 <!-- Image Upload and Preview -->
@@ -68,13 +69,13 @@
                   <input type="date" class="form-control" id="end_date" name="end_date">
                 </div>
 
-                <div class="form-group">
-                  <label for="status" class="form-label">Status</label>
-                  <select class="form-control" id="status" name="status">
-                    <option value="true">Active</option>
-                    <option value="false">Inactive</option>
-                  </select>
+        
+                <!-- Active Status & Popular Trending -->
+                <div class="mb-3 form-check form-check-inline">
+                  <input type="checkbox" class="form-check-input" id="status" name="status" value=true />
+                  <label class="form-check-label" for="status">Active Status</label>
                 </div>
+                
               </div>
 
               <div class="card-footer">
@@ -115,6 +116,41 @@
       });
       
     </script>
+
+
+
+<script>
+  const itemData = JSON.parse(localStorage.getItem('itemData'));
+ 
+ // If itemData exists, populate the form with the values
+ if (itemData && itemData.data) {
+     const banner = itemData.data;
+     
+     // Populate the form fields
+     document.getElementById('name').value = banner.name;
+     document.getElementById('id').value = banner.id;
+     document.getElementById('url').value = banner.url;
+     document.getElementById('start_date').value = banner.start_date;
+     document.getElementById('end_date').value = banner.end_date;
+     // Handle active/inactive states for checkboxes
+     document.getElementById('status').checked = banner.status;
+      // Display images if available
+      if (banner.image) {
+         const bannerPreview = document.getElementById('image-preview');
+         bannerPreview.src = banner.image;
+         bannerPreview.style.display = 'block';  // Show the image
+     }
+ 
+     
+     // You can also handle image previews here if needed
+ }else{
+   document.getElementById('id').value = "";
+ }
+ 
+ </script>
+ 
+
+
     <script src="dist/js/Banner/banner_list_Add_edit.js"></script>
 
   </body>

@@ -65,17 +65,21 @@
               <div class="mb-3">
                 <label for="name" class="form-label">Mini-App Name</label>
                 <input type="text" class="form-control" id="name" name="name" />
-                <input  class="form-control" id="id" name="id" />
+                <input type="hidden" class="form-control" id="id" name="id" />
+                
               </div>
 
               <!-- Category Dropdown -->
               <div class="mb-3">
                 <label for="category" class="form-label">Category</label>
+                
                 <select class="form-control" id="miniapp_category_id" name="miniapp_category_id">
-                  <option value="bf40b9e6-d6db-4b22-846b-f8e1896c511d">Category 1</option>
-                  <option value="bf40b9e6-d6db-4b22-846b-f8e1896c5112">Category 2</option>
-                  <option value="bf40b9e6-d6db-4b22-846b-f8e1896c5111">Category 3</option>
-                </select>
+                  <!-- Initially populated options (optional) -->
+                  <option value="bf40b9e6-d6db-4b22-846b-f8e1896c511d">Select Category ID</option>
+                  
+              </select>
+
+              <!-- <select class="form-control" id="miniapp_category_id1" name="miniapp_category_id1"></select> -->
               </div>
 
               <!-- Sub Category Dropdown -->

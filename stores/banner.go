@@ -4,6 +4,7 @@ import (
 	"PerkHub/model"
 	"PerkHub/request"
 	"database/sql"
+	"fmt"
 )
 
 type BannerStore struct {
@@ -37,11 +38,19 @@ func (s *BannerStore) GetBannerCategory() (interface{}, error) {
 }
 
 func (s *BannerStore) SaveBanner(req *request.Banner) (interface{}, error) {
+	if req.ID == "" {
+		err := model.InsertBanner(s.db, req)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		err := model.UpdateBannerData(s.db, req)
 
-	err := model.InsertBanner(s.db, req)
+		if err != nil {
+			fmt.Println(err.Error())
+			return nil, err
+		}
 
-	if err != nil {
-		return nil, err
 	}
 
 	return nil, nil

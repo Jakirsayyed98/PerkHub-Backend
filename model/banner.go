@@ -80,8 +80,7 @@ func GetAllBannersCategory(db *sql.DB) ([]*BannerCategory, error) {
 }
 
 func InsertBanner(db *sql.DB, item *request.Banner) error {
-	fmt.Println(item.BannerCategoryId)
-	fmt.Println(item)
+
 	query := `
 		INSERT INTO banner_data ( name, banner_category_id, image, url, status,start_date,end_date, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7,$8,$9)
@@ -101,11 +100,11 @@ func UpdateBannerData(db *sql.DB, item *request.Banner) error {
 		params = append(params, item.Name)
 		paramIndex++
 	}
-	if item.Status {
-		clauses = append(clauses, fmt.Sprintf("status = $%d", paramIndex))
-		params = append(params, item.Status)
-		paramIndex++
-	}
+
+	clauses = append(clauses, fmt.Sprintf("status = $%d", paramIndex))
+	params = append(params, item.Status)
+	paramIndex++
+
 	if item.Url != "" {
 		clauses = append(clauses, fmt.Sprintf("url = $%d", paramIndex))
 		params = append(params, item.Url)
@@ -113,12 +112,12 @@ func UpdateBannerData(db *sql.DB, item *request.Banner) error {
 	}
 	if item.StartDate != "" {
 		clauses = append(clauses, fmt.Sprintf("start_date = $%d", paramIndex))
-		params = append(params, item.Url)
+		params = append(params, item.StartDate)
 		paramIndex++
 	}
 	if item.EndDate != "" {
 		clauses = append(clauses, fmt.Sprintf("end_date = $%d", paramIndex))
-		params = append(params, item.Url)
+		params = append(params, item.EndDate)
 		paramIndex++
 	}
 
@@ -133,8 +132,9 @@ func UpdateBannerData(db *sql.DB, item *request.Banner) error {
 	}
 
 	// Construct the final query
-	query := "UPDATE banner_data SET " + strings.Join(clauses, ", ") + " WHERE id = $%d"
-	params = append(params, item.ID) // Add ID at the end for WHERE clause
+	query := "UPDATE banner_data SET " + strings.Join(clauses, ", ") + " WHERE id =" + "'" + item.ID + "'"
+	fmt.Println(query)
+	// params = append(params, item.ID) // Add ID at the end for WHERE clause
 
 	// Execute the update query
 	_, err := db.Exec(query, params...)
@@ -196,19 +196,22 @@ func GetBannersByCategoryID(db *sql.DB, categoryID string) ([]*Banner, error) {
 }
 
 func GetBannerbyId(db *sql.DB, id string) ([]*Banner, error) {
-	query := "SELECT id, name, banner_id, image, url, status, created_at, updated_at FROM banner_data WHERE banner_id=$1"
+	// Modify the query to filter by banner_category_id
+	query := "SELECT id, name, banner_category_id, image, url, status, start_date, end_date, created_at, updated_at FROM banner_data" // WHERE banner_category_id = $1"
 
-	rows, err := db.Query(query, id)
+	// Execute the query with the provided categoryID as a parameter
+	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
+	// Initialize a slice to hold the banners
 	var banners []*Banner
 
+	// Loop through the result set and scan the data into Banner structs
 	for rows.Next() {
 		banner := &Banner{}
-
 		err := rows.Scan(
 			&banner.ID,
 			&banner.Name,
@@ -216,19 +219,23 @@ func GetBannerbyId(db *sql.DB, id string) ([]*Banner, error) {
 			&banner.Image,
 			&banner.Url,
 			&banner.Status,
+			&banner.StartDate,
+			&banner.EndDate,
 			&banner.CreatedAt,
 			&banner.UpdatedAt,
 		)
 		if err != nil {
 			return nil, err
 		}
-
+		banner.Image = utils.ImageUrlGenerator(banner.Image)
 		banners = append(banners, banner)
 	}
 
+	// Check if there were any errors while scanning rows
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 
+	// Return the list of banners for the specified category
 	return banners, nil
 }

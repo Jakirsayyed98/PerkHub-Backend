@@ -77,12 +77,15 @@ function displayMiniApps() {
             </td>
     <!-- Delete Button -->
     <td>
-        <button class="btn btn-danger" id="delete" onclick="window.location.href = './add_update_miniApp.html'">Delete</button>
+        <button class="btn btn-danger" id="delete-${miniapp.id}">Delete</button>
     </td>
         `;
         tbody.appendChild(row);
         document.getElementById(`update-${miniapp.id}`).addEventListener('click', function() {
             updateItem(miniapp);
+        });
+        document.getElementById(`delete-${miniapp.id}`).addEventListener('click', function() {
+            DeleteMiniApp(miniapp.id);
         });
     });
 
@@ -172,3 +175,34 @@ document.getElementById('searchInput').addEventListener('input', searchUsers);
 
 // Initial fetch of miniapp data when the script is loaded
 fetchMiniApp();
+
+
+// Function to fetch miniapp from the API
+async function DeleteMiniApp(miniAppId) {
+    try {
+        const token = localStorage.getItem('token'); // Get the token from localStorage
+        alert('Are yousure you want to delete?');
+        const response = await fetch('http://localhost:4215/api/admin/delete-miniapp/'+miniAppId, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Include the token in the request
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch miniapp');
+        }
+
+        const data = await response.json();
+        
+        // Ensure that data.data is an array before using it
+        miniapp = Array.isArray(data.data) ? data.data : [];
+        filteredMiniApp = [...miniapp];  // Copy data to filteredMiniApp for later manipulation
+        // alert('miniapp fetched successfully');
+        fetchMiniApp();
+    } catch (error) {
+        console.error('Error fetching miniapp:', error);
+        alert('Error fetching miniapp: ' + error.message);
+    }
+}
