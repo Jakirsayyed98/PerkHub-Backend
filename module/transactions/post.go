@@ -19,14 +19,12 @@ func AdminTransactionList(c *gin.Context) {
 	request := request.NewAdminAffiliateTransactionsRequest()
 
 	if err := c.ShouldBindJSON(request); err != nil {
-		fmt.Println("1", err.Error())
 		settings.StatusBadRequest(c, err, "")
 		return
 	}
 
 	result, err := store.AdminStore.AffiliateTransactions(request)
 	if err != nil {
-		fmt.Println("2", err.Error())
 		settings.StatusBadRequest(c, err, "")
 		return
 	}

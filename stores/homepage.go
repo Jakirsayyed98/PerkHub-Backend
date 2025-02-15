@@ -16,22 +16,35 @@ func NewHomePageStore(dbs *sql.DB) *HomePageStore {
 	}
 }
 
-func (s *HomePageStore) GetHomePagedata() (interface{}, error) {
-
-	banner1, err := model.GetBannerbyId(s.db, "1")
+func (s *HomePageStore) GetHomePagedata() (*responses.HomePageResponse, error) {
+	bannerCategory, err := model.GetAllBannersCategory(s.db)
 	if err != nil {
 		return nil, err
 	}
 
-	banner2, err := model.GetBannerbyId(s.db, "2")
-	if err != nil {
-		return nil, err
+	for _, v := range bannerCategory {
+		banner, err := model.GetBannersByCategoryID(s.db, v.ID)
+		if err != nil {
+			return nil, err
+		}
+		v.Banner = banner
+
 	}
 
-	banner3, err := model.GetBannerbyId(s.db, "3")
-	if err != nil {
-		return nil, err
-	}
+	// banner1, err := model.GetBannerbyId(s.db, "1")
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// banner2, err := model.GetBannerbyId(s.db, "2")
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// banner3, err := model.GetBannerbyId(s.db, "3")
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	category, err := model.GetAllCategory(s.db)
 	if err != nil {
@@ -54,7 +67,13 @@ func (s *HomePageStore) GetHomePagedata() (interface{}, error) {
 		if err != nil {
 			return nil, err
 		}
-		categorys.Data = miniApps
+
+		if miniApps != nil {
+			categorys.Data = miniApps
+		} else {
+			categorys.Data = []model.MiniApp{}
+		}
+
 		finalCategory = append(finalCategory, categorys)
 	}
 
@@ -75,7 +94,7 @@ func (s *HomePageStore) GetHomePagedata() (interface{}, error) {
 
 	res := responses.NewHomePagedata()
 
-	data, err := res.Bind(category, banner1, banner2, banner3, popular, trending, topcashback, finalCategory)
+	data, err := res.Bind(category, bannerCategory, popular, trending, topcashback, finalCategory)
 	if err != nil {
 		return nil, err
 	}

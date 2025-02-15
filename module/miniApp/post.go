@@ -4,7 +4,6 @@ import (
 	"PerkHub/request"
 	"PerkHub/settings"
 	"PerkHub/stores"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,7 +25,6 @@ func CreateMiniApp(c *gin.Context) {
 	}
 
 	if err := request.Bind(c, awsInstance); err != nil {
-		fmt.Println("req", err.Error())
 		settings.StatusBadRequest(c, err, "")
 		return
 	}
@@ -84,20 +82,20 @@ func GetAllMiniApps(c *gin.Context) {
 func SearchMiniApp(c *gin.Context) {
 	stores, err := stores.GetStores(c)
 	if err != nil {
-		settings.StatusForbidden(c, err)
+		settings.StatusBadRequest(c, err, "")
 		return
 	}
 
 	request := request.NewMiniAppSearchReq()
 
 	if err := c.ShouldBindJSON(request); err != nil {
-		settings.StatusNotFound(c, err, "")
+		settings.StatusBadRequest(c, err, "")
 		return
 	}
 
 	result, err := stores.MiniAppStore.SearchMiniApps(request)
 	if err != nil {
-		settings.StatusUnauthorized(c, err)
+		settings.StatusBadRequest(c, err, "")
 		return
 	}
 

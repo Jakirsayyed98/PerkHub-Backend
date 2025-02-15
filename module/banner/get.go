@@ -3,7 +3,6 @@ package banner
 import (
 	"PerkHub/settings"
 	"PerkHub/stores"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,7 +15,6 @@ func GetBanners(c *gin.Context) {
 	}
 
 	id := c.Param("id")
-	fmt.Println("Category_ID", id)
 	result, err := store.BannerStore.GetBannersByCategoryID(id)
 
 	if err != nil {

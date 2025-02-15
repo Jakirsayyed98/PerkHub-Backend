@@ -96,7 +96,6 @@ func (s *GamesResponse) InsertGames(db *sql.DB, item *GamesResponse, category_id
 		INSERT INTO games_data (code, url, name, isPortrait, description, gamePreviews, assets, category_id, colorMuted, colorVibrant, status, privateAllowed, rating, numberOfRatings, gamePlays, hasIntegratedAds, width, height, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, now(), now())
 	`
-	fmt.Println(string(datas))
 	_, err = db.Exec(query,
 		item.Code,             // $1
 		item.URL,              // $2

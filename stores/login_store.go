@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 )
 
 type LoginStore struct {
@@ -30,7 +31,6 @@ func (s *LoginStore) RegistrationLogin(number string) error {
 	err := model.InsertLoginData(s.db, number, otp)
 
 	if err != nil {
-		fmt.Println(err.Error())
 		return err
 	}
 
@@ -56,7 +56,26 @@ func (s *LoginStore) VerifyOTP(login *request.LoginRequest) (interface{}, error)
 		return nil, err
 	}
 	token := responses.Token{}
-	res, err := utils.GenerateJWTToken(userDetail.User_id.String)
+	res, err := utils.GenerateJWTToken(userDetail.User_id.String, time.Minute*15)
+	if err != nil {
+
+	}
+	token.Token = res
+	return token, nil
+}
+
+func (s *LoginStore) GetAuthToken(login *request.GetAuthToken) (interface{}, error) {
+
+	if login.Number == "" {
+		return nil, errors.New("number required")
+	}
+
+	userDetail, err := model.UserDetailByMobileNumber(s.db, login.Number)
+	if err != nil {
+		return nil, err
+	}
+	token := responses.Token{}
+	res, err := utils.GenerateJWTToken(userDetail.User_id.String, time.Minute*15)
 	if err != nil {
 
 	}

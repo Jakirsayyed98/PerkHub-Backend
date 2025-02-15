@@ -29,7 +29,7 @@ func (s *GamesStore) GetGameCategories() (interface{}, error) {
 	data, err := model.GetGameCategories(s.db)
 
 	if err != nil {
-		fmt.Println(err.Error())
+
 		return nil, err
 	}
 
@@ -41,7 +41,7 @@ func (s *GamesStore) GetGames() (interface{}, error) {
 	data, err := model.GetAllGames(s.db)
 
 	if err != nil {
-		fmt.Println(err.Error())
+
 		return nil, err
 	}
 
@@ -53,7 +53,7 @@ func (s *GamesStore) GetPopularGames() (interface{}, error) {
 	data, err := model.GetPopularGames(s.db)
 
 	if err != nil {
-		fmt.Println(err.Error())
+
 		return nil, err
 	}
 
@@ -65,7 +65,7 @@ func (s *GamesStore) GetTrendingGames() (interface{}, error) {
 	data, err := model.GetTrendingGames(s.db)
 
 	if err != nil {
-		fmt.Println(err.Error())
+
 		return nil, err
 	}
 
@@ -77,7 +77,7 @@ func (s *GamesStore) GetGamesByCategory(category_id string) (interface{}, error)
 	data, err := model.GetAllGamesBycategory(s.db, category_id)
 
 	if err != nil {
-		fmt.Println(err.Error())
+
 		return nil, err
 	}
 
@@ -89,7 +89,7 @@ func (s *GamesStore) GameSearch(search string) (interface{}, error) {
 	data, err := model.GetGameSearch(s.db, search)
 
 	if err != nil {
-		fmt.Println(err.Error())
+
 		return nil, err
 	}
 
@@ -107,7 +107,7 @@ func (s *GamesStore) Refreshcategory() error {
 			_, err = model.NewGameCategory().FindGameCategoryByNameOrId(s.db, "", cat)
 
 			if err != nil {
-				fmt.Println(err.Error())
+
 				if err == sql.ErrNoRows {
 					model.InsertGamesCategory(s.db, cat, "")
 				}
@@ -128,7 +128,6 @@ func (s *GamesStore) RefreshGames() (interface{}, error) {
 	data, err := s.gameservice.GetAllgames()
 
 	if err != nil {
-		fmt.Println("Status :=", err.Error())
 		return nil, err
 	}
 	resu := []model.GamesResponse{}
@@ -176,7 +175,7 @@ func (s *GamesStore) SetGameStatus(game *model.SetGameStatus) error {
 	}
 
 	if err := model.UpdateGameStatus(s.db, updateData, game.StatusType); err != nil {
-		fmt.Println(err.Error())
+
 		return err
 	}
 

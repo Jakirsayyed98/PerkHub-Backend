@@ -48,20 +48,13 @@ func (banner *Banner) Bind(c *gin.Context, awsInstance *connection.Aws) error {
 	if !strings.Contains(c.Request.Header.Get("Content-Type"), "multipart/form-data") {
 		return fmt.Errorf("content type not supported %s", c.Request.Header.Get("Content-Type"))
 	}
-	fmt.Println(c.PostForm("id"))
-
-	if len(strings.Split(c.PostForm("image"), "http")) > 0 {
-		fmt.Println("Update")
-	} else {
-		fmt.Println("New")
-		form, err := c.MultipartForm()
-		if err != nil {
-			return err
-		}
-
-		image, _ := utils.UploadFileOnServer(form.File["image"], awsInstance)
-		banner.Image = image
+	form, err := c.MultipartForm()
+	if err != nil {
+		return err
 	}
+
+	image, _ := utils.UploadFileOnServer(form.File["image"], awsInstance)
+	banner.Image = image
 
 	banner.ID = c.PostForm("id")
 	banner.Name = c.PostForm("name")

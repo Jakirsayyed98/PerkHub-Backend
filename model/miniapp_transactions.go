@@ -194,7 +194,6 @@ func InsertMiniAppTransaction(db *sql.DB, req *MiniAppTransactions) error {
 func GetAllAffiliateTransactions(db *sql.DB, page int, limit int) ([]MiniAppTransactions, error) {
 	// Calculate offset
 	// 	offset := (page - 1) * limit
-	// 	fmt.Println(offset)
 	// 	// SQL query with LIMIT and OFFSET for pagination
 	// 	query := fmt.Sprintf(`
 	// 		SELECT id, campaign_id, commission, user_commission, user_id, order_id, reference_id,

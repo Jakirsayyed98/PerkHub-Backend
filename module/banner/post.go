@@ -33,7 +33,7 @@ func CreateBannerCategory(c *gin.Context) {
 func CreateBanner(c *gin.Context) {
 	store, err := stores.GetStores(c)
 	if err != nil {
-		settings.StatusInternalServerError(c, err, "")
+		settings.StatusBadRequest(c, err, "")
 		return
 	}
 

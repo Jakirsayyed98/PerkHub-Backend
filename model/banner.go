@@ -16,6 +16,7 @@ type BannerCategory struct {
 	Status    bool      `json:"status"`     // Status of the item (e.g., active, inactive)
 	CreatedAt time.Time `json:"created_at"` // Timestamp when the item was created
 	UpdatedAt time.Time `json:"updated_at"` // Timestamp when the item was last updated
+	Banner    []*Banner `json:"banner"`
 }
 
 type Banner struct {
@@ -45,7 +46,7 @@ func InsertBannerCategory(db *sql.DB, item *request.BannerCategory) error {
 }
 
 func GetAllBannersCategory(db *sql.DB) ([]*BannerCategory, error) {
-	query := "SELECT id, title, status, created_at, updated_at FROM Banner_Category"
+	query := "SELECT id, title, status, created_at, updated_at FROM banner_category"
 
 	rows, err := db.Query(query)
 	if err != nil {
@@ -133,7 +134,6 @@ func UpdateBannerData(db *sql.DB, item *request.Banner) error {
 
 	// Construct the final query
 	query := "UPDATE banner_data SET " + strings.Join(clauses, ", ") + " WHERE id =" + "'" + item.ID + "'"
-	fmt.Println(query)
 	// params = append(params, item.ID) // Add ID at the end for WHERE clause
 
 	// Execute the update query
@@ -197,7 +197,7 @@ func GetBannersByCategoryID(db *sql.DB, categoryID string) ([]*Banner, error) {
 
 func GetBannerbyId(db *sql.DB, id string) ([]*Banner, error) {
 	// Modify the query to filter by banner_category_id
-	query := "SELECT id, name, banner_category_id, image, url, status, start_date, end_date, created_at, updated_at FROM banner_data" // WHERE banner_category_id = $1"
+	query := "SELECT id, name, banner_category_id, image, url, status, start_date, end_date, created_at, updated_at FROM banner_data WHERE banner_category_id = $1"
 
 	// Execute the query with the provided categoryID as a parameter
 	rows, err := db.Query(query)

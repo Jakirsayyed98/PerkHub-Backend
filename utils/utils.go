@@ -86,26 +86,25 @@ type SecretClaims struct {
 	jwt.RegisteredClaims
 }
 
-func GenerateJWTToken(user_id string) (string, error) {
+func GenerateJWTToken(user_id string, duration time.Duration) (string, error) {
 	secretKey := []byte(constants.JWT_KEY)
 	claims := jwt.MapClaims{
 		"user_id": fmt.Sprintf("%s|%s", user_id, string(secretKey)),
 		"iss":     "perkhub",
-		"exp":     time.Now().Add(time.Hour * 10).Unix(),
+		"exp":     time.Now().Add(duration).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	signedToken, err := token.SignedString(secretKey)
 	if err != nil {
-		fmt.Println("Error signing the token:", err)
 		return "", err
 	}
 
 	return signedToken, nil
 }
 
-func VerifyJwt(tokenString string, secret string) (string, error) {
-	jwtKey := []byte(secret)
+func VerifyJwt(tokenString string) (string, error) {
+	jwtKey := []byte(constants.JWT_KEY)
 	claims := &Claims{}
 
 	tkn, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
@@ -139,7 +138,6 @@ func SaveFile(c *gin.Context, file *multipart.FileHeader) (string, error) {
 	timestamp := time.Now().Format("20060102150405")
 	sanitizedFileName := strings.ReplaceAll(file.Filename, " ", "_")
 	filename := fmt.Sprintf("%s%s", timestamp, sanitizedFileName)
-	fmt.Println(filename)
 
 	desti := filepath.Join("./files", filename)
 	if err := c.SaveUploadedFile(file, desti); err != nil {

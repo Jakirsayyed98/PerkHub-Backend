@@ -48,7 +48,6 @@ func main() {
 	}
 
 	// Connect to the database
-	fmt.Println("S3 Connected Successfully")
 	db, err := connection.MakePotgressConn()
 	if err != nil {
 		fmt.Println(err.Error())

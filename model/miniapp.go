@@ -68,9 +68,6 @@ func InsertGenratedSubId(db *sql.DB, miniapp_id, userId, subid1, subid2 string) 
 }
 
 func InsertMiniAppData(db *sql.DB, req *request.MiniAppRequest) error {
-
-	fmt.Println("\n\n", req, "\n\n")
-
 	query := `
     INSERT INTO miniapp_data (
         miniapp_category_id,
@@ -370,6 +367,9 @@ func GetAllMiniApps(db *sql.DB) ([]MiniApp, error) {
 		if err != nil {
 			return nil, err
 		}
+		miniApp.Icon = utils.ImageUrlGenerator(miniApp.Icon)
+		miniApp.Banner = utils.ImageUrlGenerator(miniApp.Banner)
+		miniApp.Logo = utils.ImageUrlGenerator(miniApp.Logo)
 
 		miniApps = append(miniApps, miniApp)
 	}
@@ -377,6 +377,7 @@ func GetAllMiniApps(db *sql.DB) ([]MiniApp, error) {
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
+
 	return miniApps, nil
 }
 
@@ -547,6 +548,7 @@ func GetMiniAppsTopCashback(db *sql.DB) ([]MiniApp, error) {
 }
 
 func GetMiniAppsTrending(db *sql.DB) ([]MiniApp, error) {
+	var miniApps []MiniApp
 	query := `
 		SELECT 
 			id, 
@@ -577,11 +579,12 @@ func GetMiniAppsTrending(db *sql.DB) ([]MiniApp, error) {
 
 	rows, err := db.Query(query)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return miniApps, nil
+		}
 		return nil, err
 	}
 	defer rows.Close()
-
-	var miniApps []MiniApp
 
 	for rows.Next() {
 		var miniApp MiniApp

@@ -4,7 +4,6 @@ import (
 	"PerkHub/model"
 	"PerkHub/request"
 	"database/sql"
-	"fmt"
 )
 
 type BannerStore struct {
@@ -47,7 +46,6 @@ func (s *BannerStore) SaveBanner(req *request.Banner) (interface{}, error) {
 		err := model.UpdateBannerData(s.db, req)
 
 		if err != nil {
-			fmt.Println(err.Error())
 			return nil, err
 		}
 

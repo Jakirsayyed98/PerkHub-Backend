@@ -10,6 +10,7 @@ func Routes(api *gin.RouterGroup) {
 
 	app := api.Group("/")
 	app.Use(middlewear.UserMiddleware())
+	api.POST("/authorization", GetAuthToken)
 	api.POST("/sendOTP", LoginRegistration)
 	api.POST("/verifyOTP", VerifyOTP)
 	app.POST("/savedetail", SaveUserDetail)
