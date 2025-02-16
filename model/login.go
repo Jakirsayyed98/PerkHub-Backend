@@ -7,6 +7,16 @@ import (
 	"fmt"
 )
 
+type ResponseOTP struct {
+	Return    bool     `json:"return"`
+	RequestID string   `json:"request_id"`
+	Message   []string `json:"message"`
+}
+
+func NewResponseOTP() *ResponseOTP {
+	return &ResponseOTP{}
+}
+
 type UserDetail struct {
 	User_id   sql.NullString `json:"user_id" db:"user_id"`
 	Name      sql.NullString `json:"name" db:"name"`

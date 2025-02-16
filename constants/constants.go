@@ -69,6 +69,10 @@ func getImageBaseUrl() string {
 	return settings.Config("IMAGE_BASE_URL")
 }
 
+func getFast2SMSKey() string {
+	return settings.Config("FAST2SMS_API_KEY")
+}
+
 var (
 	Port               = GetPortNumber()
 	PostgresHost       = getPostgresHost()
@@ -85,4 +89,5 @@ var (
 	BASE_URL           = getBaseUrl()
 	ADMIN_BASE_URL     = getAdminBaseUrl()
 	IMAGE_BASE_URL     = getImageBaseUrl()
+	FAST2SMS_API_KEY   = getFast2SMSKey()
 )

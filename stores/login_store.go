@@ -4,20 +4,23 @@ import (
 	"PerkHub/model"
 	"PerkHub/request"
 	"PerkHub/responses"
+	"PerkHub/services"
 	"PerkHub/utils"
 	"database/sql"
 	"errors"
-	"fmt"
 	"time"
 )
 
 type LoginStore struct {
-	db *sql.DB
+	db          *sql.DB
+	userService *services.UserService
 }
 
 func NewLoginStore(dbs *sql.DB) *LoginStore {
+	userService := services.NewUserService()
 	return &LoginStore{
-		db: dbs,
+		db:          dbs,
+		userService: userService,
 	}
 }
 
@@ -27,14 +30,23 @@ func (s *LoginStore) RegistrationLogin(number string) error {
 	}
 
 	otp := utils.GenerateNumber(5)
-	fmt.Println(otp)
-	err := model.InsertLoginData(s.db, number, otp)
+	_, err := s.userService.SendOTPService(number, otp)
+	if err != nil {
+		return err
+	}
+
+	err = model.InsertLoginData(s.db, number, otp)
 
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (s *LoginStore) sendOtpTOMobile(number, otp string) (interface{}, error) {
+	// send otp to mobile number
+	return nil, nil
 }
 
 func (s *LoginStore) VerifyOTP(login *request.LoginRequest) (interface{}, error) {
