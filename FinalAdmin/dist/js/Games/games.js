@@ -1,7 +1,35 @@
 const rowsPerPage = 25;
 let currentPage = 1;
 let games = []; // This holds all the games
-let filteredUsers = []; // This is for the filtered games based on search
+let filteredGames = []; // This is for the filtered games based on search
+
+async function ActiveAndDeactive(gameId, currentStatus,StatusType) {
+    try {
+        console.log(`Game ID: ${gameId}, Current Status: ${currentStatus}, Status Type: ${StatusType}`);
+        const token = localStorage.getItem('token'); // Get the token from localStorage
+        
+        const credentials = { id: gameId, type: 'activate', status: currentStatus,StatusType :StatusType };
+        const response = await fetch('http://localhost:4215/api/admin/set-games-status', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`, 
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(credentials),
+        });
+
+        if (response.ok) {
+            alert('Status Change successful!');
+            fetchGames();
+        } else {
+            alert(response.message || 'Statuc Change failed. Please check your credentials.');
+        }
+
+    } catch (error) {
+        console.error('Error fetching games:', error);
+        alert('Error fetching games: ' + error.message);
+    }
+}
 
 // Function to fetch games from the API
 async function fetchGames() {
@@ -24,8 +52,8 @@ async function fetchGames() {
         
         // Ensure that data.data is an array before using it
         games = Array.isArray(data.data) ? data.data : [];
-        filteredUsers = [...games];  // Copy data to filteredUsers for later manipulation
-        alert('games fetched successfully');
+        filteredGames = [...games];  // Copy data to filteredGames for later manipulation
+        // alert('Games fetched successfully');
         displayGames();
     } catch (error) {
         console.error('Error fetching games:', error);
@@ -33,26 +61,93 @@ async function fetchGames() {
     }
 }
 
+
+async function RefreshGames() {
+    try {
+        const token = localStorage.getItem('token'); // Get the token from localStorage
+
+        // Add a loading indicator to the UI (optional)
+        // document.getElementById('loadingIndicator').style.display = 'block';  // Example: Show a loading spinner
+        
+        const response = await fetch('http://localhost:4215/api/admin/refresh-games', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to refresh games');
+        }
+
+        const data = await response.json();
+        
+        // Ensure that data.data is an array before using it
+        games = Array.isArray(data.data) ? data.data : [];
+        filteredGames = [...games];  // Copy data to filteredGames for later manipulation
+        
+        // Refresh the display
+        displayGames();
+        
+        // Hide loading indicator after completion
+        // document.getElementById('loadingIndicator').style.display = 'none';  // Example: Hide the loading spinner
+        
+        alert('Games refreshed successfully!');
+    } catch (error) {
+        console.error('Error fetching games:', error);
+        alert('Error fetching games: ' + error.message);
+        
+        // Hide loading indicator on error
+        // document.getElementById('loadingIndicator').style.display = 'none';
+    }
+}
+
+
 // Function to display games in the table
 function displayGames() {
     const startIndex = (currentPage - 1) * rowsPerPage;
     const endIndex = startIndex + rowsPerPage;
-    const gamesToDisplay = filteredUsers.slice(startIndex, endIndex);
+    const gamesToDisplay = filteredGames.slice(startIndex, endIndex);
 
     const tbody = document.getElementById('GameTableBody');
     tbody.innerHTML = ''; // Clear the table body
 
-    gamesToDisplay.forEach(game => {
+    gamesToDisplay.forEach((game,index) => {
         const row = document.createElement('tr');
         row.innerHTML = `
-            <td>${game.id}</td>
-            <td>${game.name}</td>
-            <td>${game.status === '1' ? 'Active' : 'InActive'}</td>
-            <td>
-                <button onclick="updateItem(${game.id}, '${encodeURIComponent(game.name)}', '${encodeURIComponent(game.status)}')">Update</button>
-                <button onclick="updateItem(${game.id}, '${encodeURIComponent(game.name)}', '${encodeURIComponent(game.status)}')">Delete</button>
-            </td>
-        `;
+    <td>${index + 1}</td>
+    
+    <td><img src="${game.assets.square}" alt="Game Image" width="75" height="75"/></td>
+    <td>${game.name}</td>
+    
+    <!-- Button for Popular -->
+    <td>
+        <button class="btn btn-primary" id="Popular" onclick="ActiveAndDeactive('${game.id}', ${game.popular === true ? false : true}, 'Popular')">
+            ${game.popular === true ? 'InActive' : 'Active'}
+        </button>
+    </td>
+
+    <!-- Button for Trending -->
+    <td>
+        <button class="btn btn-primary" id="Trending" onclick="ActiveAndDeactive('${game.id}', ${game.trending === true ? false : true}, 'Trending')">
+            ${game.trending === true ?  'InActive' : 'Active'}
+        </button>
+    </td>
+
+    <!-- Button for Status -->
+    <td>
+        <button class="btn btn-primary" id="Status" onclick="ActiveAndDeactive('${game.id}', ${game.status === true ? false : true}, 'Status')">
+            ${game.status === true ?  'InActive' : 'Active'}
+        </button>
+    </td>
+
+    <!-- Delete Button -->
+    <td>
+        <button class="btn btn-danger" id="delete" onclick="window.location.href='AddAndEditMiniApp.html'">Delete</button>
+    </td>
+`;
+
         tbody.appendChild(row);
     });
 
@@ -68,7 +163,7 @@ function updateItem(id, name, status) {
 
 // Function to create pagination buttons
 function createPagination() {
-    const totalPages = Math.ceil(filteredUsers.length / rowsPerPage);
+    const totalPages = Math.ceil(filteredGames.length / rowsPerPage);
     const pagination = document.getElementById('pagination');
     pagination.innerHTML = ''; // Clear existing pagination
 
@@ -124,16 +219,16 @@ function createPagination() {
 // Function to filter users based on search input
 function searchUsers() {
     const input = document.getElementById('searchInput').value.toLowerCase();
-    filteredUsers = games.filter(user => {
+    filteredGames = games.filter(game => {
         return (
-            user.name.toLowerCase().includes(input) ||
-            user.email.toLowerCase().includes(input) ||
-            user.phone.includes(input)
+            game.name.toLowerCase().includes(input) ||
+            game.id.toString().includes(input) // You can add more fields for filtering if necessary
         );
     });
     currentPage = 1; // Reset to the first page after filtering
     displayGames();
 }
+
 
 // Event listener for search input
 document.getElementById('searchInput').addEventListener('input', searchUsers);

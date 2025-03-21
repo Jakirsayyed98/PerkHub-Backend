@@ -134,7 +134,6 @@ func (s *HttpService) PostFormData(
 
 	req, err := http.NewRequest("POST", s.Host+path, body)
 	if err != nil {
-		fmt.Println("ERR ", err)
 		return nil, err
 	}
 

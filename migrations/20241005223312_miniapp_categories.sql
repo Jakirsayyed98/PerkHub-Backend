@@ -7,8 +7,8 @@ CREATE TABLE miniapp_categories (
     name VARCHAR(255) NOT NULL,   -- Name of the item
     description TEXT,              -- Description of the item
     image VARCHAR(500),            -- URL or path to the item's image
-    status TEXT DEFAULT '1',       -- 0 means inactive, 1 means active
-    homepage_visible TEXT DEFAULT '0',
+    status BOOLEAN DEFAULT FALSE,  -- 0 means inactive, 1 means active
+    homepage_visible BOOLEAN DEFAULT FALSE,  -- 0 means inactive, 1 means active
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(), -- Creation timestamp
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()  -- Last update timestamp
 );

@@ -16,7 +16,7 @@ type AdminUser struct {
 	Name      *string   `json:"name,omitempty" db:"name"`   // Nullable field
 	Email     *string   `json:"email,omitempty" db:"email"` // Nullable field
 	Password  string    `json:"password" db:"password"`
-	Verified  int       `json:"verified" db:"verified"` // SMALLINT maps to int in Go
+	Verified  bool      `json:"verified" db:"verified"` // SMALLINT maps to int in Go
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
@@ -26,7 +26,7 @@ func RegisterAdmin(db *sql.DB, register *request.AdminRegister) error {
 	if err != nil {
 		return err
 	}
-	_, err = db.Exec("INSERT INTO adminuser (user_id, name, email, password, verified, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) ", userId, register.Name, register.Email, register.Password, 0, time.Now(), time.Now())
+	_, err = db.Exec("INSERT INTO adminuser (user_id, name, email, password, verified, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) ", userId, register.Name, register.Email, register.Password, true, time.Now(), time.Now())
 	return err
 }
 

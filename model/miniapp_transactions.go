@@ -191,3 +191,73 @@ func InsertMiniAppTransaction(db *sql.DB, req *MiniAppTransactions) error {
 
 	return err
 }
+func GetAllAffiliateTransactions(db *sql.DB, page int, limit int) ([]MiniAppTransactions, error) {
+	// Calculate offset
+	// 	offset := (page - 1) * limit
+	// 	// SQL query with LIMIT and OFFSET for pagination
+	// 	query := fmt.Sprintf(`
+	// 		SELECT id, campaign_id, commission, user_commission, user_id, order_id, reference_id,
+	//        sale_amount, status, subid, subid1, subid2, miniapp_id, commission_percentage,
+	//        transaction_date, transaction_id, created_at, updated_at
+	// FROM miniapp_transactions
+	// ORDER BY created_at DESC
+	// LIMIT 10 OFFSET 0
+	// `)
+	query := `
+			SELECT id, campaign_id, commission, user_commission, user_id, order_id, reference_id,
+	       sale_amount, status, subid, subid1, subid2, miniapp_id, commission_percentage,
+	       transaction_date, transaction_id, created_at, updated_at
+	FROM miniapp_transactions
+	ORDER BY created_at DESC
+	`
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var transactions []MiniAppTransactions
+
+	for rows.Next() {
+		var transaction MiniAppTransactions
+
+		err := rows.Scan(
+			&transaction.Id,
+			&transaction.CampaignID,
+			&transaction.Commission,
+			&transaction.UserCommission,
+			&transaction.UserId,
+			&transaction.OrderID,
+			&transaction.ReferenceID,
+			&transaction.SaleAmount,
+			&transaction.Status,
+			&transaction.SubID,
+			&transaction.SubID1,
+			&transaction.SubID2,
+			&transaction.MiniAppName,
+			&transaction.CommissionPercentage,
+			&transaction.TransactionDate,
+			&transaction.TransactionID,
+			&transaction.CreatedAt,
+			&transaction.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		// Fetch miniapp info as before
+		miniApp, err := SearchMiniApps(db, transaction.MiniAppName)
+		if err != nil {
+			return nil, err
+		}
+
+		transaction.MiniApp = miniApp
+		transactions = append(transactions, transaction)
+	}
+
+	// Check for any errors after row iteration
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return transactions, nil
+}

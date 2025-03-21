@@ -29,13 +29,11 @@ func (s *AffiliatesStore) CueLinkCallBack(req *request.CueLinkCallBackRequest) (
 
 		commission, err := strconv.ParseFloat(req.Commission, 64)
 		if err != nil {
-			fmt.Println("Error converting commission:", err)
 			return nil, err
 		}
 
 		userCommissionPercentageInt, err := strconv.Atoi(UserCommisionPercentage)
 		if err != nil {
-			fmt.Println("Error converting commission percentage:", err)
 			return nil, err
 		}
 
@@ -48,7 +46,6 @@ func (s *AffiliatesStore) CueLinkCallBack(req *request.CueLinkCallBackRequest) (
 		request.CommissionPercentage = UserCommisionPercentage
 		err = model.InsertMiniAppTransaction(s.db, request)
 		if err != nil {
-			fmt.Println("UserComision :- ", err.Error())
 			return nil, err
 		}
 

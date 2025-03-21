@@ -4,7 +4,6 @@ import (
 	"PerkHub/model"
 	"PerkHub/settings"
 	"PerkHub/stores"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -24,7 +23,6 @@ func GameByCategory(c *gin.Context) {
 		settings.StatusBadRequest(c, err.Error(), "")
 		return
 	}
-	fmt.Println("\n\n", req.Id, "\n\n")
 	result, err := store.GamesStore.GetGamesByCategory(req.Id.String())
 	if err != nil {
 		settings.StatusBadRequest(c, err.Error(), "")
@@ -57,4 +55,28 @@ func GameSearch(c *gin.Context) {
 	}
 
 	settings.StatusOk(c, result, "Game Get Successfully", "")
+}
+
+func SetGameStatus(c *gin.Context) {
+
+	store, err := stores.GetStores(c)
+
+	if err != nil {
+		settings.StatusBadRequest(c, err.Error(), "")
+		return
+	}
+
+	req := model.NewSetGameStatus()
+
+	if err := c.ShouldBind(&req); err != nil {
+		settings.StatusBadRequest(c, err.Error(), "")
+		return
+	}
+
+	if err := store.GamesStore.SetGameStatus(req); err != nil {
+		settings.StatusBadRequest(c, err.Error(), "")
+		return
+	}
+
+	settings.StatusOk(c, nil, "Game Get Successfully", "")
 }

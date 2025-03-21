@@ -17,18 +17,18 @@ type MiniAppRes struct {
 	Description          string    `db:"description" json:"description"`                       // Description of the miniapp
 	CashbackTerms        string    `db:"cashback_terms" json:"cashback_terms"`                 // Terms for cashback
 	CashbackRates        string    `db:"cashback_rates" json:"cashback_rates"`                 // Rates for cashback
-	Status               string    `db:"status" json:"status"`                                 // Status: '0' for inactive, '1' for active
+	Status               bool      `db:"status" json:"status"`                                 // Status: '0' for inactive, '1' for active
 	UrlType              string    `db:"url_type" json:"url_type"`                             // Type of URL
-	CBActive             string    `db:"cb_active" json:"cb_active"`                           // Cashback active status
+	CBActive             bool      `db:"cb_active" json:"cb_active"`                           // Cashback active status
 	CBPercentage         string    `db:"cb_percentage" json:"cb_percentage"`                   // Cashback percentage
 	Url                  string    `db:"url" json:"url"`                                       // URL of the miniapp
 	Label                string    `db:"label" json:"label"`                                   // Label for the miniapp
 	Banner               string    `db:"banner" json:"banner"`                                 // Banner URL
 	Logo                 string    `db:"logo" json:"logo"`                                     // Logo URL
 	MacroPublisher       string    `db:"macro_publisher" json:"macro_publisher"`               // Publisher name
-	Popular              string    `db:"popular" json:"popular"`                               // Popular status
-	Trending             string    `db:"trending" json:"trending"`                             // Trending status
-	TopCashback          string    `db:"top_cashback" json:"top_cashback"`                     // Top cashback status
+	Popular              bool      `db:"popular" json:"popular"`                               // Popular status
+	Trending             bool      `db:"trending" json:"trending"`                             // Trending status
+	TopCashback          bool      `db:"top_cashback" json:"top_cashback"`                     // Top cashback status
 	About                string    `db:"about" json:"about"`                                   // About information
 	HowItsWork           string    `db:"howitswork" json:"howitswork"`                         // How it works information
 	CreatedAt            time.Time `db:"created_at" json:"created_at"`                         // Creation timestamp

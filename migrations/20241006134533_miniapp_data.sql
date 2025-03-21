@@ -11,18 +11,18 @@ CREATE TABLE miniapp_data (
     description TEXT,
     cashback_terms TEXT,
     cashback_rates TEXT,
-    status TEXT DEFAULT '1', -- 0 means inactive, 1 means active
+    status BOOLEAN DEFAULT FALSE,
     url_type VARCHAR(50),
-    cb_active TEXT DEFAULT '0',
+    cb_active BOOLEAN DEFAULT FALSE,
     cb_percentage TEXT,
     url VARCHAR(255),
     label VARCHAR(255),
     banner VARCHAR(255),
     logo VARCHAR(255),
     macro_publisher VARCHAR(255),
-    popular  TEXT DEFAULT '0',
-    trending TEXT DEFAULT '0',
-    top_cashback TEXT DEFAULT '0',
+    popular  BOOLEAN DEFAULT FALSE,
+    trending BOOLEAN DEFAULT FALSE,
+    top_cashback BOOLEAN DEFAULT FALSE,
     about TEXT,
     howitswork TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(), -- Creation timestamp
@@ -30,12 +30,6 @@ CREATE TABLE miniapp_data (
 );
 
 -- Add comments after the table creation
-COMMENT ON COLUMN miniapp_data.status IS '0 means inactive, 1 means active';
-COMMENT ON COLUMN miniapp_data.cb_active IS '0 means inactive, 1 means active';
-COMMENT ON COLUMN miniapp_data.popular IS '0 means inactive, 1 means active';
-COMMENT ON COLUMN miniapp_data.trending IS '0 means inactive, 1 means active';
-COMMENT ON COLUMN miniapp_data.top_cashback IS '0 means inactive, 1 means active';
-
 -- +goose StatementEnd
 
 -- +goose Down

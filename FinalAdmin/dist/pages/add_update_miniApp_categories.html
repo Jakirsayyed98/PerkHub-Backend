@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>AdminLTE v4 | Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="title" content="PerkHub" />
+    <meta name="description" content="AdminLTE is a Free Bootstrap 5 Admin Dashboard." />
+    <!-- Bootstrap Icons Plugin -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+    <!-- AdminLTE Styles -->
+    <link rel="stylesheet" href="dist/css/adminlte.css" />
+    <style>
+      .form-with-side-margins {
+        margin-left: 20px;
+        margin-right: 20px;
+      }
+      .form-check-inline {
+        margin-right: 20px;
+      }
+    </style>
+  </head>
+  <body class="layout-fixed sidebar-expand-lg bg-body-tertiary">
+    <div class="app-wrapper">
+      <!-- Navbar and Sidebar Template -->
+      {{ template "navbar" }}
+      {{ template "sidenavbar" }}
+      
+      <!-- Main Content -->
+      <main class="app-main">
+
+    <!-- Content Header -->
+        <div class="app-content-header">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-sm-6"><h3 class="mb-0">MiniApp Details</h3></div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-end">
+                  <li class="breadcrumb-item"><a href="#">Home</a></li>
+                  <li class="breadcrumb-item active" aria-current="page">MiniApp</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+
+          <!--begin::App Content-->
+  <div class="app-content">
+    <!--begin::Container-->
+    <div class="container-fluid">
+
+        <div class="card">
+    
+        <!-- Form Card -->
+        <div class="card card-primary card-outline mb-4">
+          <div class="card-header">
+            <div class="card-title">Quick Example</div>
+          </div>
+
+
+          <form class="form-with-side-margins" id="miniapp-form">
+            <div class="card-body">
+              <!-- Mini App Name -->
+    <!-- Mini App Name -->
+                <div class="mb-3">
+                  <label for="name" class="form-label">Mini-App Name</label>
+                  <input type="text" class="form-control" id="name" name="name" />
+                </div>
+
+                <!-- Description -->
+                <div class="mb-3">
+                  <label for="description" class="form-label">Description</label>
+                  <textarea class="form-control" id="description" name="description"></textarea>
+                </div>
+
+
+                <!-- Banner Image Upload -->
+                <div class="mb-3">
+                  <label for="image" class="form-label">Image</label>
+                  <input type="file" class="form-control" id="image" name="image" accept="image/*" onchange="previewImage(event, 'image')" />
+                  <img id="image" class="img-fluid mt-2" style="max-width: 100px; display: none;" />
+                </div>
+
+               
+
+            </div>
+            <div class="d-flex justify-content-center mb-3">
+              <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+            </div>
+            
+          </form>
+       
+
+        </div>
+      </div>
+
+          <!--end::Row-->
+        </div>
+        <!--end::Container-->
+      </div>
+      <!--end::App Content-->
+      </main>
+
+      <!-- Footer -->
+      <footer class="main-footer">
+        <div class="container">
+          <p>&copy; 2025 <strong>JH Infotech</strong></p>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      // Function to preview selected image before uploading
+      function previewImage(event, previewId) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+    
+        reader.onload = function (e) {
+          const preview = document.getElementById(previewId);
+          preview.src = e.target.result;
+          preview.style.display = 'block';
+        };
+    
+        if (file) {
+          reader.readAsDataURL(file);
+        }
+      }
+    </script>
+
+<script>
+  const itemData = JSON.parse(localStorage.getItem('itemData'));
+  
+  // If itemData exists, populate the form with the values
+  if (itemData && itemData.data) {
+      const miniapp = itemData.data;
+      
+      // Populate the form fields
+      document.getElementById('name').value = miniapp.name || '';
+      document.getElementById('id').value = miniapp.id || '';
+      document.getElementById('description').value = miniapp.description || '';
+      
+      // Handle active/inactive states for checkboxes
+      document.getElementById('status').checked = miniapp.status || false;
+      document.getElementById('homepage_visible').checked = miniapp.homepage_visible || false;
+  
+      // Handle image upload (if there's an image URL or file)
+      if (miniapp.image) {
+          const imageInput = document.getElementById('image');
+          // You would need to have a file object or file URL here
+          const file = new File([miniapp.image], "image.jpg", { type: "image/jpeg" });
+          const dataTransfer = new DataTransfer();
+          dataTransfer.items.add(file);
+          imageInput.files = dataTransfer.files;
+      }
+  } else {
+      // If no itemData exists, reset the ID field and checkboxes
+      document.getElementById('id').value = "";
+      document.getElementById('status').checked = false;
+      document.getElementById('homepage_visible').checked = false;
+  }
+  </script>
+  
+
+    <!-- Required Scripts -->
+    <script src="dist/js/adminlte.js"></script>
+    <script src="dist/js/MiniAppCategories/miniappCategoriesEdit.js"></script>
+  </body>
+</html>

@@ -42,7 +42,7 @@
     />
     <!--end::Third Party Plugin(Bootstrap Icons)-->
     <!--begin::Required Plugin(AdminLTE)-->
-    <link rel="stylesheet" href="../../dist/css/adminlte.css" />
+    <link rel="stylesheet" href="dist/css/adminlte.css" />
     <!--end::Required Plugin(AdminLTE)-->
     <!-- apexcharts -->
     <link
@@ -80,11 +80,11 @@
         <div class="container-fluid">
           <!--begin::Row-->
           <div class="row">
-            <div class="col-sm-6"><h3 class="mb-0">Simple Tables</h3></div>
+            <div class="col-sm-6"><h3 class="mb-0">Games List</h3></div>
             <div class="col-sm-6">
               <ol class="breadcrumb float-sm-end">
                 <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Simple Tables</li>
+                <li class="breadcrumb-item active" aria-current="page">Games List</li>
               </ol>
             </div>
           </div>
@@ -98,23 +98,50 @@
       <div class="app-content">
         <!--begin::Container-->
         <div class="container-fluid">
-          <!--begin::Row-->
-          <div class="card ">
-            <div class="card-header"><h3 class="card-title">Bordered Table</h3></div>
-             <!-- Search Bar and Add Brand Button -->
-             <div class="search-container">
-              <input type="text" id="searchInput" class="search-bar" onkeyup="searchUsers()" placeholder="Search for users...">
-              <button id="addBrandBtn" class="btn btn-primary" onclick="window.location.href='AddAndEditMiniApp.html'">Add Brand</button>
-          </div>
+         <!--begin::Row-->
+<div class="card">
+  <div class="row">
+    <!--begin::Col for Title-->
+    <div class="col-lg-6 col-6">
+      <div class="card-header">
+        <h3 class="card-title">Bordered Table</h3>
+      </div>
+    </div>
+
+    <!-- Search Bar and Add Brand Button (Aligned to the right)-->
+    <div class="col-lg-6 col-6">
+      <div class="d-flex justify-content-end align-items-center">
+        <!-- Search Bar -->
+        <input type="text" id="searchInput" class="search-bar" onkeyup="searchUsers()" placeholder="Search for games...">
+        
+        <!-- Search Button -->
+        <button id="searchBtn" class="btn btn-primary ml-2" onclick="searchGames()">Search</button>
+        <!-- Add a refresh button -->
+        <button id="refreshBtn" class="btn btn-primary ml-2" onclick="RefreshGames()">Refresh Games</button>
+
+        
+        <!-- Add Brand Button (Optional) -->
+        <!-- <button id="addBrandBtn" class="btn btn-primary" onclick="window.location.href='AddAndEditMiniApp.html'">Add Brand</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+<!--end::Row-->
+
+           
+
           
             <div class="card-body">
               <table class="table table-bordered">
                 <thead>
                   <tr>
-                    <th style="width: 10px">#</th>
-                    <th>Task</th>
-                    <th>Progress</th>
-                    <th style="width: 40px">Label</th>
+                    <th style="width: 50px">Sr.</th>
+                    <th>Icon</th>
+                    <th style="width: 500px">Name</th>
+                    <th>Popular</th>
+                    <th>Trending</th>
+                    <th>Is Active</th>
+                    <th >Action</th>
                   </tr>
                 </thead>
                 <tbody id="GameTableBody">
@@ -406,27 +433,24 @@
       const sparkline3 = new ApexCharts(document.querySelector('#sparkline-3'), option_sparkline3);
       sparkline3.render();
     </script>
+ <script src="dist/js/Login/login.js"></script>
+ <script>
+ // Check if the token is valid
+ if (!validateToken()) {
+     alert('You are not logged in or your session has expired. Redirecting to login page...');
+     window.location.href = './login.html';
+ }
 
-<script>
-  if (!validateToken()) {
-      alert('You are not logged in or your session has expired. Redirecting to login page...');
-      window.location.href = '/login.html';
-  }
+ // Logout button
+ document.getElementById('logout-btn').addEventListener('click', () => {
+     localStorage.removeItem('token'); // Clear the token
+     window.location.href = './login.html'; // Redirect to login page
+ });
+ </script>
 
-  // Logout button
-  document.getElementById('logout-btn').addEventListener('click', () => {
-      localStorage.removeItem('token'); // Clear the token
-      window.location.href = '/login.html'; // Redirect to login page
-  });
+<script src="./dist/js/Games/games.js"></script>
 
-  // Add Brand button click event
-  document.getElementById('addBrandBtn').addEventListener('click', () => {
-      // Code to handle the "Add Brand" functionality
-      alert('Add Brand button clicked!');
-  });
-</script>
 
-<script src="dist/js/Games/games.js"></script>
     <!--end::Script-->
   </body>
   <!--end::Body-->

@@ -8,7 +8,7 @@
       <a href="./index.html" class="brand-link">
         <!--begin::Brand Image-->
         <img
-          src="../../dist/assets/img/AdminLTELogo.png"
+          src="dist/assets/img/AdminLTELogo.png"
           alt="AdminLTE Logo"
           class="brand-image opacity-75 shadow"
         />
@@ -31,33 +31,37 @@
           data-accordion="false"
         >
           <li class="nav-item menu-open">
-            <a href="#" class="nav-link active">
+            <a href="./index.html" class="nav-link active">
               <i class="nav-icon bi bi-speedometer"></i>
               <p>
                 Dashboard
-                <i class="nav-arrow bi bi-chevron-right"></i>
+                <!-- <i class="nav-arrow bi bi-chevron-right"></i> -->
               </p>
             </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="./index.html" class="nav-link active">
-                  <i class="nav-icon bi bi-circle"></i>
-                  <p>Dashboard v1</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="./index2.html" class="nav-link">
-                  <i class="nav-icon bi bi-circle"></i>
-                  <p>Dashboard v2</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="./index3.html" class="nav-link">
-                  <i class="nav-icon bi bi-circle"></i>
-                  <p>Dashboard v3</p>
-                </a>
-              </li>
-            </ul>
+          </li>
+          <li class="nav-item">
+            <a href="./miniapp.html" class="nav-link">
+              <i class="nav-icon bi bi-palette"></i>
+              <p>MiniApp List</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="./miniapp_categories.html" class="nav-link">
+              <i class="nav-icon bi bi-palette"></i>
+              <p>MiniApp Categories</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="./banner_category_list.html" class="nav-link">
+              <i class="nav-icon bi bi-palette"></i>
+              <p>Banner Categories</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="./affiliate_transaction_list.html" class="nav-link">
+              <i class="nav-icon bi bi-palette"></i>
+              <p>Affiliate Transactions</p>
+            </a>
           </li>
           <li class="nav-item">
             <a href="./gameslist.html" class="nav-link">
@@ -72,33 +76,21 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon bi bi-box-seam-fill"></i>
+            <a href="#" class="nav-link" data-bs-toggle="collapse" data-bs-target="#widgetsMenu" aria-expanded="false" aria-controls="widgetsMenu">
+              <i class="nav-icon bi bi-clipboard-fill"></i>
               <p>
-                Widgets
+                Expand Options
+                <span class="nav-badge badge text-bg-secondary me-3">6</span>
                 <i class="nav-arrow bi bi-chevron-right"></i>
               </p>
             </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="./widgets/small-box.html" class="nav-link">
-                  <i class="nav-icon bi bi-circle"></i>
-                  <p>Small Box</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="./widgets/info-box.html" class="nav-link">
-                  <i class="nav-icon bi bi-circle"></i>
-                  <p>info Box</p>
-                </a>
-              </li>
-              <li class="nav-item">
-                <a href="./widgets/cards.html" class="nav-link">
-                  <i class="nav-icon bi bi-circle"></i>
-                  <p>Cards</p>
-                </a>
-              </li>
-            </ul>
+            <div id="widgetsMenu" class="collapse">
+              <ul class="nav flex-column ms-3">
+                <li class="nav-item"><a href="#" class="nav-link">Small Box</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Info Box</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Cards</a></li>
+              </ul>
+            </div>
           </li>
           <li class="nav-item">
             <a href="#" class="nav-link">

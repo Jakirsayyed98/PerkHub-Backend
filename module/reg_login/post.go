@@ -5,6 +5,7 @@ import (
 	"PerkHub/settings"
 	"PerkHub/stores"
 	"errors"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -29,6 +30,33 @@ func LoginRegistration(c *gin.Context) {
 	}
 
 	settings.StatusOk(c, nil, "OTP sent Successfully", "")
+}
+
+func GetAuthToken(c *gin.Context) {
+	s, err := stores.GetStores(c)
+	if err != nil {
+		settings.StatusBadRequest(c, err.Error(), "")
+		return
+	}
+
+	var request request.GetAuthToken
+	err = c.ShouldBindJSON(&request)
+	if err != nil {
+		settings.StatusBadRequest(c, err.Error(), "")
+		return
+	}
+
+	result, err := s.LoginStore.GetAuthToken(&request)
+	if err != nil {
+		settings.StatusBadRequest(c, err.Error(), "")
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
+		"message": "Token Got Successfully",
+		"data":    result,
+	})
 }
 
 func VerifyOTP(c *gin.Context) {
@@ -59,20 +87,22 @@ func SaveUserDetail(c *gin.Context) {
 	store, err := stores.GetStores(c)
 	if err != nil {
 		settings.StatusBadRequest(c, err.Error(), "")
+		return
 	}
 
 	request := request.NewSaveUserDetail()
 
 	if err := c.ShouldBindJSON(&request); err != nil {
 		settings.StatusBadRequest(c, err.Error(), "")
+		return
 	}
 
 	err = store.LoginStore.SaveUserDetail(c.MustGet("user_id").(string), *request)
 	if err != nil {
 		settings.StatusBadRequest(c, err.Error(), "")
+		return
 	}
 	settings.StatusOk(c, nil, "Details Saved Successfully", "")
-	return
 
 }
 
