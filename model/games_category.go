@@ -12,7 +12,7 @@ type GameCategory struct {
 	Id     uuid.UUID `json:"id"`
 	Name   string    `json:"name"`
 	Icon   string    `json:"icon"`
-	Status bool      `json:"status"`
+	Status string    `json:"status"`
 }
 
 func NewGameCategory() *GameCategory {

@@ -6,6 +6,7 @@ import (
 	"PerkHub/responses"
 	"database/sql"
 	"errors"
+	"fmt"
 )
 
 type AdminStore struct {
@@ -41,7 +42,9 @@ func (s *AdminStore) AdminLogin(request *request.AdminLoginRequest) (*model.Admi
 }
 
 func (s *AdminStore) AdminRegister(request *request.AdminRegister) (interface{}, error) {
-
+	fmt.Println("request", request.Email)
+	fmt.Println("request", request.Name)
+	fmt.Println("request", request.Password)
 	if request.Email == "" && request.Password == "" {
 		return nil, errors.New("Invalid username or password")
 	}
@@ -69,14 +72,4 @@ func (s *AdminStore) GetAdminDashBoardData() (interface{}, error) {
 
 	response := responses.NewAdminDashBoardData(len(miniapp), len(gamedata), len(userlist))
 	return response, nil
-}
-
-func (S *AdminStore) AffiliateTransactions(request *request.AdminAffiliateTransactionsRequest) (interface{}, error) {
-
-	data, err := model.GetAllAffiliateTransactions(S.db, request.PageNo, request.Limit)
-	if err != nil {
-		return nil, err
-	}
-
-	return data, nil
 }

@@ -42,7 +42,7 @@
     />
     <!--end::Third Party Plugin(Bootstrap Icons)-->
     <!--begin::Required Plugin(AdminLTE)-->
-    <link rel="stylesheet" href="dist/css/adminlte.css" />
+    <link rel="stylesheet" href="../../dist/css/adminlte.css" />
     <!--end::Required Plugin(AdminLTE)-->
     <!-- apexcharts -->
     <link
@@ -175,7 +175,7 @@
                     ></path>
                   </svg>
                   <a
-                    href="./gameslist.html"
+                    href="#"
                     class="small-box-footer link-dark link-underline-opacity-0 link-underline-opacity-50-hover"
                   >
                     More info <i class="bi bi-link-45deg"></i>
@@ -496,21 +496,6 @@
       const sparkline3 = new ApexCharts(document.querySelector('#sparkline-3'), option_sparkline3);
       sparkline3.render();
     </script>
-<script src="dist/js/Login/login.js"></script>
-<script>
-  // Check if the token is valid
-  if (!validateToken()) {
-      alert('You are not logged in or your session has expired. Redirecting to login page...');
-      window.location.href = './login.html';
-  }
-
-  // Logout button
-  document.getElementById('logout-btn').addEventListener('click', () => {
-      localStorage.removeItem('token'); // Clear the token
-      window.location.href = './login.html'; // Redirect to login page
-  });
-</script>
-
     <!--end::Script-->
   </body>
   <!--end::Body-->

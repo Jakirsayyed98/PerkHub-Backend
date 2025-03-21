@@ -2,7 +2,7 @@ package request
 
 import (
 	"PerkHub/connection"
-	"PerkHub/utils"
+	"PerkHub/constants"
 	"fmt"
 	"strings"
 	"time"
@@ -15,7 +15,7 @@ type Category struct {
 	Name            string    `json:"name"`             // Name of the item
 	Description     string    `json:"description"`      // Description of the item
 	Image           string    `json:"image"`            // URL or path to the item's image
-	Status          bool      `json:"status"`           // Status of the item (e.g., active, inactive)
+	Status          string    `json:"status"`           // Status of the item (e.g., active, inactive)
 	HomepageVisible bool      `json:"homepage_visible"` // Visibility on the homepage
 	CreatedAt       time.Time `json:"created_at"`       // Timestamp when the item was created
 	UpdatedAt       time.Time `json:"updated_at"`       // Timestamp when the item was last updated
@@ -33,16 +33,29 @@ func (category *Category) Bind(c *gin.Context, awsInstance *connection.Aws) erro
 	if err != nil {
 		return err
 	}
+	image := ""
+	files := form.File["image"]
 
-	image, err := utils.UploadFileOnServer(form.File["image"], awsInstance)
-	if err != nil {
-		return err
+	if len(files) > 0 {
+
+		fileHeader := files[0]
+		f, err := fileHeader.Open()
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+
+		image, err = awsInstance.UploadFile(f, fileHeader.Filename, constants.AWSBucketName, constants.AWSSecretAccessKey, constants.AWSCloudFrontURL)
+		// image, err = utils.SaveFile(c, file)
+		if err != nil {
+			return err
+		}
 	}
 
 	category.ID = c.PostForm("id")
 	category.Name = c.PostForm("name")
 	category.Description = c.PostForm("description")
-	category.Status = false
+	category.Status = c.PostForm("status")
 	category.HomepageVisible = false
 	category.Image = image
 	category.CreatedAt = time.Now()

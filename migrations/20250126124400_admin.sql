@@ -8,7 +8,7 @@ CREATE TABLE AdminUser (
     name VARCHAR(255) NULL,  -- Added NOT NULL constraint
     email VARCHAR(255)  NULL,  -- Added NOT NULL constraint
     password VARCHAR(100) UNIQUE NOT NULL,  -- Unique mobile number with NOT NULL
-    verified BOOLEAN DEFAULT FALSE, -- Use SMALLINT for status flags
+    verified SMALLINT DEFAULT 0,  -- Use SMALLINT for status flags
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),  -- Use now() for default timestamp
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()  -- Use now() for default timestamp
 );

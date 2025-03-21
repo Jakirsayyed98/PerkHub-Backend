@@ -8,10 +8,8 @@ import (
 
 func Routes(api *gin.RouterGroup) {
 	app := api.Group("/admin")
-	app.Use(middlewear.UserMiddleware())
 	app.GET("refresh-games", RefreshGames)
 	app.GET("refresh-games-categories", RefreshGameCategories)
-	app.POST("set-games-status", SetGameStatus)
 	api.Use(middlewear.UserMiddleware())
 	{
 		api.GET("getgames-categories", GetGameCategories)

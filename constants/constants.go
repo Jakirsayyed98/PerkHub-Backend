@@ -61,18 +61,6 @@ func getBaseUrl() string {
 	return settings.Config("BASE_URL")
 }
 
-func getAdminBaseUrl() string {
-	return settings.Config("ADMIN_BASE_URL")
-}
-
-func getImageBaseUrl() string {
-	return settings.Config("IMAGE_BASE_URL")
-}
-
-func getFast2SMSKey() string {
-	return settings.Config("FAST2SMS_API_KEY")
-}
-
 var (
 	Port               = GetPortNumber()
 	PostgresHost       = getPostgresHost()
@@ -87,7 +75,4 @@ var (
 	AWSCloudFrontURL   = getAWSCloudFrontURL()
 	JWT_KEY            = getJWT_KEY()
 	BASE_URL           = getBaseUrl()
-	ADMIN_BASE_URL     = getAdminBaseUrl()
-	IMAGE_BASE_URL     = getImageBaseUrl()
-	FAST2SMS_API_KEY   = getFast2SMSKey()
 )

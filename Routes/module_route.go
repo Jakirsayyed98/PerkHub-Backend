@@ -36,30 +36,29 @@ func Endpoints(app *gin.Engine) {
 		withdrawal.Routes(api)
 
 	}
+
 	admin := app.Group("/admin")
 	{
+		// CORS configuration for frontend
 		admin.Use(cors.New(cors.Config{
-			AllowOrigins: []string{"http://localhost", "http://127.0.0.1", "https://blessed-pretty-mammal.ngrok-free.app"},
-			AllowMethods: []string{"GET", "POST", "PUT", "DELETE"},
-			AllowHeaders: []string{"Origin", "Content-Type", "Authorization"},
+			AllowOrigins:     []string{"http://localhost:5173"},                         // Allow React app's domain
+			AllowMethods:     []string{"POST", "GET", "OPTIONS"},                        // Allow POST, GET, OPTIONS
+			AllowHeaders:     []string{"Content-Type", "Authorization", "X-Request-Id"}, // Allow x-request-id
+			ExposeHeaders:    []string{"Content-Length"},
+			AllowCredentials: true,
 		}))
 
-		// Serve static files from the "dist" directory
-		admin.Static("/dist", "./FinalAdmin/dist")
+		// Serve static files for Admin assets
+		admin.Static("/FinalAdmin", "./FinalAdmin")
+		admin.Static("/dist", "D:/PerkHub/PerkHub_Go/FinalAdmin/dist")
 
 		// Parse templates
+		// tmpl := template.Must(template.ParseFiles("Admin/index.html", "Admin/component/navbar.html"))
 		tmpl, err := template.New("base").ParseFiles(
 			"FinalAdmin/dist/pages/login/login.html",
 			"FinalAdmin/dist/pages/gameslist.html",
-			"FinalAdmin/dist/pages/miniapp.html",
-			"FinalAdmin/dist/pages/miniapp_categories.html",
-			"FinalAdmin/dist/pages/banner_category_list.html",
-			"FinalAdmin/dist/pages/banner_list.html",
-			"FinalAdmin/dist/pages/add_update_banner.html",
-			"FinalAdmin/dist/pages/affiliate_transaction_list.html",
 			"FinalAdmin/dist/pages/index.html",
-			"FinalAdmin/dist/pages/add_update_miniApp.html",
-			"FinalAdmin/dist/pages/add_update_miniApp_categories.html",
+			"FinalAdmin/dist/pages/index2.html",
 			"FinalAdmin/dist/component/navbar.html",
 			"FinalAdmin/dist/component/sidenavbar.html",
 		)
@@ -67,15 +66,18 @@ func Endpoints(app *gin.Engine) {
 			log.Fatal("Error parsing templates:", err)
 		}
 
-		// Render HTML pages dynamically
 		admin.GET("/:page", func(c *gin.Context) {
+			// Get the page name from the URL parameter
 			page := c.Param("page")
+
+			// Try to render the specific template (e.g. login, about, contact, etc.)
 			err := tmpl.ExecuteTemplate(c.Writer, page, nil)
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 				log.Println("Error rendering template:", err)
 			}
 		})
+
 	}
 
 }

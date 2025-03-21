@@ -48,6 +48,7 @@ func main() {
 	}
 
 	// Connect to the database
+	fmt.Println("S3 Connected Successfully")
 	db, err := connection.MakePotgressConn()
 	if err != nil {
 		fmt.Println(err.Error())
@@ -63,8 +64,7 @@ func main() {
 
 	// Serve static files (like images, CSS, JS)
 	app.Static("/files", "./files") // This will map /files/* to the ./files directory
-	// Enable CORS for all origins (this allows all websites to access your resources)
-	// corsHandler := handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(http.DefaultServeMux)
-	// http.ListenAndServe(fmt.Sprintf("localhost:%d", constants.Port), corsHandler) // Start the Gin server on the specified port
+
+	// Start the Gin server on the specified port
 	app.Run(fmt.Sprintf("localhost:%d", constants.Port))
 }

@@ -26,7 +26,3 @@ type SaveUserDetailReq struct {
 func NewSaveUserDetail() *SaveUserDetailReq {
 	return &SaveUserDetailReq{}
 }
-
-type GetAuthToken struct {
-	Number string `json:"number" binding:"required,min=10,max=10"`
-}

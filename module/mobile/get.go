@@ -10,13 +10,13 @@ import (
 func GetHomePage(c *gin.Context) {
 	store, err := stores.GetStores(c)
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		settings.StatusInternalServerError(c, err, "")
 		return
 	}
 
 	result, err := store.HomePageStore.GetHomePagedata()
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		settings.StatusInternalServerError(c, err, "")
 		return
 	}
 	settings.StatusOk(c, result, "data fetched successfully", "")
