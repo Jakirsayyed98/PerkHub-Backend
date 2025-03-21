@@ -10,7 +10,7 @@ import (
 
 func CreateMiniApp(c *gin.Context) {
 
-	store, err := stores.GetStores(c)
+	stores, err := stores.GetStores(c)
 	if err != nil {
 		settings.StatusBadRequest(c, err, "")
 		return
@@ -18,25 +18,19 @@ func CreateMiniApp(c *gin.Context) {
 
 	request := request.NewMiniAppRequest()
 
-	awsInstance, err := stores.GetAwsInstance(c)
-	if err != nil {
+	if err := request.Bind(c); err != nil {
 		settings.StatusBadRequest(c, err, "")
 		return
 	}
 
-	if err := request.Bind(c, awsInstance); err != nil {
-		settings.StatusBadRequest(c, err, "")
-		return
-	}
-
-	result, err := store.MiniAppStore.CreateMiniApp(&request)
+	result, err := stores.MiniAppStore.CreateMiniApp(&request)
 
 	if err != nil {
 		settings.StatusBadRequest(c, err, "")
 		return
 	}
 
-	settings.StatusOk(c, result, "MiniApp Work Successfully", "")
+	settings.StatusOk(c, result, "MiniApp Created Successfully", "")
 
 }
 
@@ -82,20 +76,20 @@ func GetAllMiniApps(c *gin.Context) {
 func SearchMiniApp(c *gin.Context) {
 	stores, err := stores.GetStores(c)
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		settings.StatusForbidden(c, err)
 		return
 	}
 
 	request := request.NewMiniAppSearchReq()
 
 	if err := c.ShouldBindJSON(request); err != nil {
-		settings.StatusBadRequest(c, err, "")
+		settings.StatusNotFound(c, err, "")
 		return
 	}
 
 	result, err := stores.MiniAppStore.SearchMiniApps(request)
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		settings.StatusUnauthorized(c, err)
 		return
 	}
 
@@ -109,8 +103,14 @@ func DeleteMiniApp(c *gin.Context) {
 		return
 	}
 
-	id := c.Param("id")
-	result, err := store.MiniAppStore.DeletMniApp(id)
+	request := request.NewDeleteMiniApp()
+
+	if err := c.ShouldBindJSON(request); err != nil {
+		settings.StatusBadRequest(c, err, "")
+		return
+	}
+
+	result, err := store.MiniAppStore.DeletMniApp(request.Id)
 	if err != nil {
 		settings.StatusBadRequest(c, err, "")
 		return

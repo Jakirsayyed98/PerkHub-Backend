@@ -11,7 +11,7 @@ type CategoryResponse struct {
 	Name            string          `json:"name"`
 	Description     string          `json:"description"`
 	Image           string          `json:"image"`
-	Status          bool            `json:"status"`
+	Status          string          `json:"status"`
 	HomepageVisible bool            `json:"homepage_visible"`
 	CreatedAt       time.Time       `json:"created_at"`
 	UpdatedAt       time.Time       `json:"updated_at"`

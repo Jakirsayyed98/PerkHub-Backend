@@ -7,16 +7,6 @@ import (
 	"fmt"
 )
 
-type ResponseOTP struct {
-	Return    bool     `json:"return"`
-	RequestID string   `json:"request_id"`
-	Message   []string `json:"message"`
-}
-
-func NewResponseOTP() *ResponseOTP {
-	return &ResponseOTP{}
-}
-
 type UserDetail struct {
 	User_id   sql.NullString `json:"user_id" db:"user_id"`
 	Name      sql.NullString `json:"name" db:"name"`
@@ -26,7 +16,7 @@ type UserDetail struct {
 	Gender    sql.NullString `json:"gender" db:"gender"`
 	Dob       sql.NullString `json:"dob" db:"dob"`
 	FCMToken  sql.NullString `json:"fcm_token" db:"fcm_token"`
-	Verified  bool           `json:"verified" db:"verified"`
+	Verified  sql.NullString `json:"verified" db:"verified"`
 	CreatedAt sql.NullString `json:"created_at" db:"created_at"`
 	UpdatedAt sql.NullString `json:"updated_at" db:"updated_at"`
 }
@@ -40,13 +30,12 @@ func InsertLoginData(db *sql.DB, number, otp string) error {
 	if err != nil {
 		return err
 	}
-	_, err = db.Exec("INSERT INTO users (number, otp, user_id, verified) VALUES ($1, $2, $3,false) ON CONFLICT ( number ) DO UPDATE SET otp = EXCLUDED.otp, verified = true ", number, otp, userId)
+	_, err = db.Exec("INSERT INTO users (number, otp, user_id, verified) VALUES ($1, $2, $3, 0) ON CONFLICT ( number ) DO UPDATE SET otp = EXCLUDED.otp, verified = 0 ", number, otp, userId)
 	return err
 }
 
 func UpdateUserDetail(db *sql.DB, userID string, details *request.SaveUserDetailReq) error {
 	_, err := db.Exec("UPDATE users SET name = $2, email = $3, gender = $4, dob = $5 WHERE user_id = $1", userID, details.Name, details.Email, details.Gender, details.DOB)
-
 	return err
 }
 
@@ -66,7 +55,7 @@ func VerifyOtp(db *sql.DB, mobileNumber, otp string) (bool, error) {
 
 	if storedOTP == otp {
 		query := "UPDATE users SET verified = $1 WHERE number = $2"
-		_, err := db.Exec(query, true, mobileNumber)
+		_, err := db.Exec(query, "1", mobileNumber)
 		if err != nil {
 			return false, err
 		}

@@ -4,6 +4,7 @@ import (
 	"PerkHub/settings"
 	"PerkHub/utils"
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -12,7 +13,9 @@ import (
 func UserMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		authorizationHeader := ctx.Request.Header.Get("Authorization")
+
 		if authorizationHeader == "" {
+			fmt.Println("Authorization header is not provided")
 			settings.StatusUnauthorized(ctx, errors.New("authorization header is not provided"))
 			return
 		}
@@ -23,8 +26,9 @@ func UserMiddleware() gin.HandlerFunc {
 		}
 
 		token := strings.TrimPrefix(authorizationHeader, "Bearer ")
-		tokenData, err := utils.VerifyJwt(token)
+		tokenData, err := utils.VerifyJwt(token, "eWA1KTkOjDw03TyQuyxQv1KTq+X+KoDY3ejg8iaas")
 		if err != nil {
+			fmt.Println("Token verification error:", err)
 			settings.StatusUnauthorized(ctx, err)
 			return
 		}

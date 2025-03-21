@@ -4,23 +4,18 @@ import (
 	"PerkHub/model"
 	"PerkHub/request"
 	"PerkHub/responses"
-	"PerkHub/services"
 	"PerkHub/utils"
 	"database/sql"
 	"errors"
-	"time"
 )
 
 type LoginStore struct {
-	db          *sql.DB
-	userService *services.UserService
+	db *sql.DB
 }
 
 func NewLoginStore(dbs *sql.DB) *LoginStore {
-	userService := services.NewUserService()
 	return &LoginStore{
-		db:          dbs,
-		userService: userService,
+		db: dbs,
 	}
 }
 
@@ -30,23 +25,14 @@ func (s *LoginStore) RegistrationLogin(number string) error {
 	}
 
 	otp := utils.GenerateNumber(5)
-	_, err := s.userService.SendOTPService(number, otp)
-	if err != nil {
-		return err
-	}
 
-	err = model.InsertLoginData(s.db, number, otp)
+	err := model.InsertLoginData(s.db, number, otp)
 
 	if err != nil {
 		return err
 	}
 
 	return nil
-}
-
-func (s *LoginStore) sendOtpTOMobile(number, otp string) (interface{}, error) {
-	// send otp to mobile number
-	return nil, nil
 }
 
 func (s *LoginStore) VerifyOTP(login *request.LoginRequest) (interface{}, error) {
@@ -68,26 +54,7 @@ func (s *LoginStore) VerifyOTP(login *request.LoginRequest) (interface{}, error)
 		return nil, err
 	}
 	token := responses.Token{}
-	res, err := utils.GenerateJWTToken(userDetail.User_id.String, time.Minute*15)
-	if err != nil {
-
-	}
-	token.Token = res
-	return token, nil
-}
-
-func (s *LoginStore) GetAuthToken(login *request.GetAuthToken) (interface{}, error) {
-
-	if login.Number == "" {
-		return nil, errors.New("number required")
-	}
-
-	userDetail, err := model.UserDetailByMobileNumber(s.db, login.Number)
-	if err != nil {
-		return nil, err
-	}
-	token := responses.Token{}
-	res, err := utils.GenerateJWTToken(userDetail.User_id.String, time.Minute*15)
+	res, err := utils.GenerateJWTToken(userDetail.User_id.String)
 	if err != nil {
 
 	}

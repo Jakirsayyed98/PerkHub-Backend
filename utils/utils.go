@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"PerkHub/connection"
 	"PerkHub/constants"
 	"crypto/aes"
 	"crypto/cipher"
@@ -86,25 +85,26 @@ type SecretClaims struct {
 	jwt.RegisteredClaims
 }
 
-func GenerateJWTToken(user_id string, duration time.Duration) (string, error) {
+func GenerateJWTToken(user_id string) (string, error) {
 	secretKey := []byte(constants.JWT_KEY)
 	claims := jwt.MapClaims{
 		"user_id": fmt.Sprintf("%s|%s", user_id, string(secretKey)),
 		"iss":     "perkhub",
-		"exp":     time.Now().Add(duration).Unix(),
+		"exp":     time.Now().Add(time.Hour * 10).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	signedToken, err := token.SignedString(secretKey)
 	if err != nil {
+		fmt.Println("Error signing the token:", err)
 		return "", err
 	}
 
 	return signedToken, nil
 }
 
-func VerifyJwt(tokenString string) (string, error) {
-	jwtKey := []byte(constants.JWT_KEY)
+func VerifyJwt(tokenString string, secret string) (string, error) {
+	jwtKey := []byte(secret)
 	claims := &Claims{}
 
 	tkn, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
@@ -138,6 +138,7 @@ func SaveFile(c *gin.Context, file *multipart.FileHeader) (string, error) {
 	timestamp := time.Now().Format("20060102150405")
 	sanitizedFileName := strings.ReplaceAll(file.Filename, " ", "_")
 	filename := fmt.Sprintf("%s%s", timestamp, sanitizedFileName)
+	fmt.Println(filename)
 
 	desti := filepath.Join("./files", filename)
 	if err := c.SaveUploadedFile(file, desti); err != nil {
@@ -194,31 +195,4 @@ func Decrypt(encryptedText string) (string, error) {
 	stream.XORKeyStream(cipherText, cipherText)
 
 	return string(cipherText), nil
-}
-
-func UploadFileOnServer(files []*multipart.FileHeader, awsInstance *connection.Aws) (string, error) {
-	if len(files) > 0 {
-
-		fileHeader := files[0]
-		f, err := fileHeader.Open()
-		if err != nil {
-			return "", err
-		}
-		defer f.Close()
-
-		image, err := awsInstance.UploadFile(f, fileHeader.Filename, constants.AWSBucketName, constants.AWSSecretAccessKey)
-		// image, err = utils.SaveFile(c, file)
-		if err != nil {
-			return "", err
-		}
-		return image, nil
-	}
-	return "", nil
-}
-
-func ImageUrlGenerator(image string) string {
-	if image == "" {
-		return ""
-	}
-	return constants.AWSCloudFrontURL + constants.AWSSecretAccessKey + "/" + image
 }

@@ -5,8 +5,8 @@ import (
 	"PerkHub/settings"
 	"PerkHub/stores"
 	"PerkHub/utils"
+	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -30,7 +30,8 @@ func AdminLogin(c *gin.Context) {
 		return
 	}
 
-	res, err := utils.GenerateJWTToken(result.UserID, time.Minute*10)
+	fmt.Println(result)
+	res, err := utils.GenerateJWTToken(result.UserID)
 	if err != nil {
 		settings.StatusBadRequest(c, err.Error(), "")
 		return
@@ -58,6 +59,7 @@ func RegisterAdmin(c *gin.Context) {
 	var register request.AdminRegister
 	err = c.ShouldBindJSON(&register)
 	if err != nil {
+		fmt.Println(err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  400,
 			"error":   err.Error(), // Capture the error message here
@@ -68,9 +70,11 @@ func RegisterAdmin(c *gin.Context) {
 
 	_, err = store.AdminStore.AdminRegister(&register)
 	if err != nil {
+		fmt.Println(err.Error())
 		settings.StatusBadRequest(c, err.Error(), "")
 		return
 	}
+	fmt.Println("no error")
 	c.JSON(http.StatusOK, gin.H{"message": "Registration successful"})
 
 }

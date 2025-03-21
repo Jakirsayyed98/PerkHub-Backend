@@ -2,7 +2,6 @@ package model
 
 import (
 	"PerkHub/request"
-	"PerkHub/utils"
 	"database/sql"
 	"time"
 )
@@ -12,7 +11,7 @@ type Category struct {
 	Name            string    `json:"name"`
 	Description     string    `json:"description"`
 	Image           string    `json:"image"`
-	Status          bool      `json:"status"`
+	Status          string    `json:"status"`
 	HomepageVisible bool      `json:"homepage_visible"`
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at"`
@@ -28,7 +27,7 @@ func InsertCategory(db *sql.DB, item *request.Category) error {
 		VALUES ($1, $2, $3, $4, $5, $6, $7)
 	`
 
-	_, err := db.Exec(query, item.Name, item.Description, item.Image, true, false, time.Now(), time.Now())
+	_, err := db.Exec(query, item.Name, item.Description, item.Image, "1", "0", time.Now(), time.Now())
 	return err
 }
 
@@ -83,7 +82,6 @@ func GetAllCategory(db *sql.DB) ([]*Category, error) {
 			return nil, err
 		}
 
-		categorym.Image = utils.ImageUrlGenerator(categorym.Image)
 		category = append(category, &categorym)
 	}
 
