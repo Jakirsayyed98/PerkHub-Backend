@@ -4,6 +4,7 @@ import (
 	"PerkHub/request"
 	"PerkHub/settings"
 	"PerkHub/stores"
+	"PerkHub/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,7 +13,7 @@ func CreateMiniApp(c *gin.Context) {
 
 	store, err := stores.GetStores(c)
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
@@ -20,140 +21,140 @@ func CreateMiniApp(c *gin.Context) {
 
 	awsInstance, err := stores.GetAwsInstance(c)
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
 	if err := request.Bind(c, awsInstance); err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
 	result, err := store.MiniAppStore.CreateMiniApp(&request)
 
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
-	settings.StatusOk(c, result, "MiniApp Work Successfully", "")
+	utils.RespondOK(c, result, "MiniApp Work Successfully", "")
 
 }
 
 func UpdateActivateAndDeactive(c *gin.Context) {
 	stores, err := stores.GetStores(c)
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
 	request := request.NewActiveDeactiveminiAppReq()
 
 	if err := c.ShouldBindBodyWithJSON(request); err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
 	result, err := stores.MiniAppStore.ActivateSomekey(request)
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
-	settings.StatusOk(c, result, "Updated Successfully", "")
+	utils.RespondOK(c, result, "Updated Successfully", "")
 }
 
 func GetAllMiniApps(c *gin.Context) {
 	stores, err := stores.GetStores(c)
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
 	result, err := stores.MiniAppStore.GetAllMiniApps()
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
-	settings.StatusOk(c, result, "Get All MiniApp Successfully", "")
+	utils.RespondOK(c, result, "Get All MiniApp Successfully", "")
 }
 
 func SearchMiniApp(c *gin.Context) {
 	stores, err := stores.GetStores(c)
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
 	request := request.NewMiniAppSearchReq()
 
 	if err := c.ShouldBindJSON(request); err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
 	result, err := stores.MiniAppStore.SearchMiniApps(request)
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
-	settings.StatusOk(c, result, "Get All MiniApp Successfully", "")
+	utils.RespondOK(c, result, "fetched successfully", "")
 }
 
 func DeleteMiniApp(c *gin.Context) {
 	store, err := stores.GetStores(c)
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
 	id := c.Param("id")
 	result, err := store.MiniAppStore.DeletMniApp(id)
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
-	settings.StatusOk(c, result, "MiniApp Deleted Successfully", "")
+	utils.RespondOK(c, result, "MiniApp Deleted Successfully", "")
 }
 
-func GetMiniAppBycategory(c *gin.Context) {
+func GetStoresByCategory(c *gin.Context) {
 
 	store, err := stores.GetStores(c)
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
 	data := request.NewCategoryID()
 
 	if err := c.ShouldBindJSON(data); err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
-	result, err := store.MiniAppStore.GetMiniAppsBycategoryID(data.CategoryId)
+	result, err := store.MiniAppStore.GetStoresByCategory(data.CategoryId)
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
-	settings.StatusOk(c, result, "Get MiniApp Successfully", "")
+	utils.RespondOK(c, result, "Get MiniApp Successfully", "")
 
 }
 
 func GenrateSubid(c *gin.Context) {
 	store, err := stores.GetStores(c)
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
 	request := request.NewGenrateMiniAppSubId()
 
 	if err := c.ShouldBindJSON(request); err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
@@ -164,5 +165,5 @@ func GenrateSubid(c *gin.Context) {
 		settings.StatusBadRequest(c, err.Error(), "")
 		return
 	}
-	settings.StatusOk(c, result, "Generate SubID Successfully", "")
+	utils.RespondOK(c, result, "Generate SubID Successfully", "")
 }

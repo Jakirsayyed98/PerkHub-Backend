@@ -433,7 +433,7 @@ func GetGameSearch(db *sql.DB, search string) ([]GamesResponse, error) {
 	return games, nil
 }
 
-func UpdateGameStatus(db *sql.DB, update *GamesResponse, gameStatusType string) error {
+func UpdateGameStatus(db *sql.DB, update *GamesResponse, gameStatusType string, status bool) error {
 	var clauses []string
 	var params []interface{}
 
@@ -445,13 +445,13 @@ func UpdateGameStatus(db *sql.DB, update *GamesResponse, gameStatusType string) 
 	switch gameStatusType {
 	case "Trending":
 		clauses = append(clauses, "trending = $"+strconv.Itoa(len(clauses)+1))
-		params = append(params, update.Trending)
+		params = append(params, status)
 	case "Popular":
 		clauses = append(clauses, "popular = $"+strconv.Itoa(len(clauses)+1))
-		params = append(params, update.Popular)
+		params = append(params, status)
 	case "Status":
 		clauses = append(clauses, "status = $"+strconv.Itoa(len(clauses)+1))
-		params = append(params, update.Status)
+		params = append(params, status)
 	}
 
 	if len(clauses) > 0 {

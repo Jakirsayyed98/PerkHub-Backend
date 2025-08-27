@@ -5,6 +5,7 @@ import (
 	"PerkHub/utils"
 	"database/sql"
 	"fmt"
+	"time"
 )
 
 type ResponseOTP struct {
@@ -17,12 +18,19 @@ func NewResponseOTP() *ResponseOTP {
 	return &ResponseOTP{}
 }
 
+type OtpLog struct {
+	Number    string    `json:"number" db:"number"`
+	OTP       string    `json:"otp" db:"otp"`
+	Verified  bool      `json:"verified" db:"verified"`
+	ExpiresAt time.Time `json:"expires_at" db:"expires_at"`
+	CreatedAt time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
+}
 type UserDetail struct {
 	User_id   sql.NullString `json:"user_id" db:"user_id"`
 	Name      sql.NullString `json:"name" db:"name"`
 	Email     sql.NullString `json:"email" db:"email"`
 	Number    sql.NullString `json:"number" db:"number"`
-	OTP       sql.NullString `json:"otp" db:"otp"`
 	Gender    sql.NullString `json:"gender" db:"gender"`
 	Dob       sql.NullString `json:"dob" db:"dob"`
 	FCMToken  sql.NullString `json:"fcm_token" db:"fcm_token"`
@@ -35,12 +43,12 @@ func NewUserDetail() UserDetail {
 	return UserDetail{}
 }
 
-func InsertLoginData(db *sql.DB, number, otp string) error {
+func InsertLoginData(db *sql.DB, number string) error {
 	userId, err := utils.GenerateRandomUUID(15)
 	if err != nil {
 		return err
 	}
-	_, err = db.Exec("INSERT INTO users (number, otp, user_id, verified) VALUES ($1, $2, $3,false) ON CONFLICT ( number ) DO UPDATE SET otp = EXCLUDED.otp, verified = true ", number, otp, userId)
+	_, err = db.Exec("INSERT INTO users (number,  user_id, verified) VALUES ($1, $2,true) ON CONFLICT ( number ) DO UPDATE SET verified = true ", number, userId)
 	return err
 }
 
@@ -78,7 +86,7 @@ func VerifyOtp(db *sql.DB, mobileNumber, otp string) (bool, error) {
 }
 
 func UserDetailByMobileNumber(db *sql.DB, mobileNumber string) (*UserDetail, error) {
-	query := "SELECT user_id, name, email, number, otp, gender, dob, fcm_token, verified, created_at, updated_at FROM users WHERE number = $1"
+	query := "SELECT user_id, name, email, number, gender, dob, fcm_token, verified, created_at, updated_at FROM users WHERE number = $1"
 	user := NewUserDetail()
 
 	err := db.QueryRow(query, mobileNumber).Scan(
@@ -86,7 +94,6 @@ func UserDetailByMobileNumber(db *sql.DB, mobileNumber string) (*UserDetail, err
 		&user.Name,
 		&user.Email,
 		&user.Number,
-		&user.OTP,
 		&user.Gender,
 		&user.Dob,
 		&user.FCMToken,
@@ -96,7 +103,8 @@ func UserDetailByMobileNumber(db *sql.DB, mobileNumber string) (*UserDetail, err
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("no user found with the mobile number: %s", mobileNumber)
+			fmt.Println("no user found with the mobile number: %s", mobileNumber)
+			return nil, sql.ErrNoRows
 		}
 		return nil, err
 	}
@@ -104,7 +112,7 @@ func UserDetailByMobileNumber(db *sql.DB, mobileNumber string) (*UserDetail, err
 }
 
 func UserDetailByUserID(db *sql.DB, user_id string) (*UserDetail, error) {
-	query := "SELECT user_id, name, email, number, otp, gender, dob, fcm_token, verified, created_at, updated_at FROM users WHERE user_id = $1"
+	query := "SELECT user_id, name, email, number, gender, dob, fcm_token, verified, created_at, updated_at FROM users WHERE user_id = $1"
 	user := NewUserDetail()
 
 	err := db.QueryRow(query, user_id).Scan(
@@ -112,7 +120,6 @@ func UserDetailByUserID(db *sql.DB, user_id string) (*UserDetail, error) {
 		&user.Name,
 		&user.Email,
 		&user.Number,
-		&user.OTP,
 		&user.Gender,
 		&user.Dob,
 		&user.FCMToken,
@@ -130,7 +137,7 @@ func UserDetailByUserID(db *sql.DB, user_id string) (*UserDetail, error) {
 }
 
 func AllUsersDetail(db *sql.DB) ([]*UserDetail, error) {
-	query := "SELECT user_id, name, email, number, otp, gender, dob, fcm_token, verified, created_at, updated_at FROM users"
+	query := "SELECT user_id, name, email, number, gender, dob, fcm_token, verified, created_at, updated_at FROM users"
 
 	rows, err := db.Query(query)
 	if err != nil {
@@ -148,7 +155,6 @@ func AllUsersDetail(db *sql.DB) ([]*UserDetail, error) {
 			&user.Name,
 			&user.Email,
 			&user.Number,
-			&user.OTP,
 			&user.Gender,
 			&user.Dob,
 			&user.FCMToken,
@@ -168,4 +174,33 @@ func AllUsersDetail(db *sql.DB) ([]*UserDetail, error) {
 	}
 
 	return users, nil
+}
+
+func InsertOTPRequest(db *sql.DB, number, otp string) error {
+	_, err := db.Exec("INSERT INTO otp_logs (number, otp) VALUES ($1, $2)", number, otp)
+	return err
+}
+
+func GetLatestOTPByNumber(db *sql.DB, number string) (string, error) {
+	var otp string
+	var expiresAt time.Time
+	query := `SELECT otp, expires_at FROM otp_logs WHERE number = $1 ORDER BY created_at DESC LIMIT 1`
+	err := db.QueryRow(query, number).Scan(&otp, &expiresAt)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", fmt.Errorf("no OTP found for number: %s", number)
+		}
+		return "", err
+	}
+
+	if time.Now().After(expiresAt) {
+		return "", fmt.Errorf("OTP expired for number: %s", number)
+	}
+
+	return otp, nil
+}
+
+func MarkOtpVerified(db *sql.DB, number, otp string) error {
+	_, err := db.Exec("UPDATE otp_logs SET verified = true WHERE number = $1 AND otp = $2", number, otp)
+	return err
 }

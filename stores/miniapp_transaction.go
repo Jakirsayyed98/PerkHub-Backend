@@ -62,10 +62,9 @@ func (s *MiniAppTransactionStore) GetMiniAppTransaction(userId string) (interfac
 		"verified":   fmt.Sprintf("%.2f", (verified - withdrawal)),
 		"rejected":   fmt.Sprintf("%.2f", rejected),
 		"withdrawal": fmt.Sprintf("%.2f", withdrawal),
-
-		"status":  http.StatusOK,
-		"message": "Transaction list",
-		"data":    transaction,
+		"status":     http.StatusOK,
+		"message":    "Transaction list",
+		"data":       transaction,
 	}, nil
 
 }

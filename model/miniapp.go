@@ -718,7 +718,7 @@ func SearchMiniApps(db *sql.DB, name string) ([]MiniApp, error) {
 	return miniApps, nil
 }
 
-func GetMiniAppsByCategoryID(db *sql.DB, categoryID string) ([]MiniApp, error) {
+func GetStoresByCategory(db *sql.DB, categoryID string) ([]MiniApp, error) {
 	// Prepare the query to search for mini apps by category ID
 	query := `
 		SELECT 

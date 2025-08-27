@@ -27,9 +27,9 @@ func NewUserCashWithdrawal() *UserCashWithdrawal {
 }
 
 func InserWithdrawalRequest(sql *sql.DB, req request.WithdrawalRequest, userId string) error {
-	query := `INSERT INTO user_cash_withdrawal (requested_amt, VPA_ID,user_id, created_at, updated_at) 
-				VALUES ($1, $2,$3, NOW(), NOW());`
-	_, err := sql.Exec(query, req.RequestedAmt, req.Upi, userId)
+	query := `INSERT INTO user_cash_withdrawal (requested_amt, VPA_ID,user_id, status, created_at, updated_at) 
+				VALUES ($1, $2,$3, $4, NOW(), NOW());`
+	_, err := sql.Exec(query, req.RequestedAmt, req.Upi, userId, "0")
 	if err != nil {
 		return err
 	}
@@ -38,6 +38,8 @@ func InserWithdrawalRequest(sql *sql.DB, req request.WithdrawalRequest, userId s
 
 func WithdrawalTxnList(db *sql.DB, userId string) ([]UserCashWithdrawal, error) {
 	var reason sql.NullString
+	var txnId sql.NullString
+	var txnTime sql.NullString
 	query := "SELECT id,requested_amt,user_id, reason, vpa_id,status,txn_id,txn_time, created_at, updated_at FROM user_cash_withdrawal WHERE user_id = $1"
 
 	rows, err := db.Query(query, userId)
@@ -62,8 +64,8 @@ func WithdrawalTxnList(db *sql.DB, userId string) ([]UserCashWithdrawal, error) 
 			&reason,
 			&transaction.VPA_ID,
 			&transaction.Status,
-			&transaction.TxnId,
-			&transaction.TxnTime,
+			&txnId,
+			&txnTime,
 			&transaction.CreatedAt,
 			&transaction.UpdatedAt,
 		)
@@ -74,6 +76,16 @@ func WithdrawalTxnList(db *sql.DB, userId string) ([]UserCashWithdrawal, error) 
 			transaction.Reason = reason.String
 		} else {
 			transaction.Reason = ""
+		}
+		if txnId.Valid {
+			transaction.TxnId = txnId.String
+		} else {
+			transaction.TxnId = ""
+		}
+		if txnTime.Valid {
+			transaction.TxnTime = txnTime.String
+		} else {
+			transaction.TxnTime = ""
 		}
 		transactions = append(transactions, transaction)
 	}

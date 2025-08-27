@@ -31,6 +31,9 @@ func (s *UserService) SendOTPService(number, otp string) (interface{}, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error marshaling JSON: %w", err)
 	}
+
+	return nil, nil
+
 	fmt.Println("Request Body:", string(jsonMarshal)) // Optional, for debugging
 
 	headers := map[string]string{

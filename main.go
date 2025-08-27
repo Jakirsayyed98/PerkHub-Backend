@@ -9,6 +9,7 @@ import (
 	"PerkHub/stores"
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -27,6 +28,18 @@ func main() {
 	// Initialize Gin
 	app := gin.Default()
 
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:5173"}, // your React dev server
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+	app.Use(func(c *gin.Context) {
+		println("Request:", c.Request.Method, c.Request.URL.Path)
+		c.Next()
+	})
 	// CORS middleware setup
 	app.Use(cors.Default())
 

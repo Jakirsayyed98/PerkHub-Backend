@@ -8,6 +8,7 @@ import (
 	"PerkHub/utils"
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 )
 
@@ -29,24 +30,20 @@ func (s *LoginStore) RegistrationLogin(number string) error {
 		return errors.New("number required")
 	}
 
-	otp := utils.GenerateNumber(5)
+	otp := utils.GenerateNumber(6)
 	_, err := s.userService.SendOTPService(number, otp)
 	if err != nil {
 		return err
 	}
 
-	err = model.InsertLoginData(s.db, number, otp)
+	err = model.InsertOTPRequest(s.db, number, otp)
+	// err = model.InsertLoginData(s.db, number, otp)
 
 	if err != nil {
 		return err
 	}
 
 	return nil
-}
-
-func (s *LoginStore) sendOtpTOMobile(number, otp string) (interface{}, error) {
-	// send otp to mobile number
-	return nil, nil
 }
 
 func (s *LoginStore) VerifyOTP(login *request.LoginRequest) (interface{}, error) {
@@ -58,22 +55,36 @@ func (s *LoginStore) VerifyOTP(login *request.LoginRequest) (interface{}, error)
 		return nil, errors.New("otp required")
 	}
 
-	_, err := model.VerifyOtp(s.db, login.Number, login.OTP)
+	latestOTP, err := model.GetLatestOTPByNumber(s.db, login.Number)
 	if err != nil {
 		return nil, err
 	}
 
-	userDetail, err := model.UserDetailByMobileNumber(s.db, login.Number)
-	if err != nil {
+	if latestOTP != login.OTP {
+		return nil, errors.New("invalid otp")
+	}
+
+	if err := model.MarkOtpVerified(s.db, login.Number, login.OTP); err != nil {
 		return nil, err
 	}
-	token := responses.Token{}
-	res, err := utils.GenerateJWTToken(userDetail.User_id.String, time.Minute*15)
-	if err != nil {
 
+	_, err = model.UserDetailByMobileNumber(s.db, login.Number)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			return nil, fmt.Errorf("failed to get user details: %w", err)
+		}
+		if err := model.InsertLoginData(s.db, login.Number); err != nil {
+			return nil, fmt.Errorf("failed to insert login data: %w", err)
+		}
 	}
-	token.Token = res
-	return token, nil
+
+	// token := responses.Token{}
+	// res, err := utils.GenerateJWTToken(userDetail.User_id.String, time.Minute*15)
+	// if err != nil {
+
+	// }
+	// token.Token = res
+	return nil, nil
 }
 
 func (s *LoginStore) GetAuthToken(login *request.GetAuthToken) (interface{}, error) {

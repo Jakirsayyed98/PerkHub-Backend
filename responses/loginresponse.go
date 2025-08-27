@@ -11,7 +11,6 @@ type UserDetailResponse struct {
 	Name      string `json:"name"`
 	Email     string `json:"email"`
 	Number    string `json:"number"`
-	OTP       string `json:"otp"`
 	Gender    string `json:"gender"`
 	Dob       string `json:"dob"`
 	FCMToken  string `json:"fcm_token"`
@@ -29,7 +28,6 @@ func (u *UserDetailResponse) ResponsesBind(dbUser *model.UserDetail) error {
 	u.Name = dbUser.Name.String
 	u.Email = dbUser.Email.String
 	u.Number = dbUser.Number.String
-	u.OTP = dbUser.OTP.String
 	u.Gender = dbUser.Gender.String
 	u.Dob = dbUser.Dob.String
 	u.FCMToken = dbUser.FCMToken.String
