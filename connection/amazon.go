@@ -1,10 +1,10 @@
 package connection
 
 import (
+	"PerkHub/constants"
 	"fmt"
 	"io"
 	"strings"
-	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -44,16 +44,19 @@ func NewAws(region, accessKeyId, secretKey, bucketName, cloudFrontURL string) (*
 	}, nil
 }
 
-func (awsInstance *Aws) UploadFile(reader io.Reader, fileName, bucketName, key string) (string, error) {
+func (awsInstance *Aws) UploadFile(reader io.Reader, fileName string) (string, error) {
 	uploader := s3manager.NewUploader(awsInstance.session, func(u *s3manager.Uploader) {
 		u.PartSize = 5 * 1024 * 1024 // The minimum/default allowed part size is 5MB
 		u.Concurrency = 2
 	})
 
+	bucketName := constants.AWSBucketName
+	cloudFrontURL := constants.AWSCloudFrontURL
+	key := "images"
+
 	up, err := uploader.Upload(&s3manager.UploadInput{
 		Bucket:          aws.String(bucketName),
-		ACL:             aws.String("public-read"),
-		Key:             aws.String(key + "/" + fmt.Sprintf("%v%v", time.Now().Format("20060102_150405")) + fileName),
+		Key:             aws.String(key + "/" + fileName),
 		ContentType:     aws.String("image/png"),
 		Body:            reader,
 		ContentEncoding: aws.String("base64"),
@@ -64,7 +67,7 @@ func (awsInstance *Aws) UploadFile(reader io.Reader, fileName, bucketName, key s
 	}
 
 	end := strings.Split(up.Location, ".com/")
-	end1 := strings.Split(end[1], "/")
+	fmt.Println(cloudFrontURL + "/" + end[1])
 
-	return end1[1], nil
+	return cloudFrontURL + "/" + end[1], nil
 }
