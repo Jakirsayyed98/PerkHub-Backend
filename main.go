@@ -79,5 +79,5 @@ func main() {
 	// Enable CORS for all origins (this allows all websites to access your resources)
 	// corsHandler := handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(http.DefaultServeMux)
 	// http.ListenAndServe(fmt.Sprintf("localhost:%d", constants.Port), corsHandler) // Start the Gin server on the specified port
-	app.Run(fmt.Sprintf("localhost:%d", constants.Port))
+	app.Run(fmt.Sprintf(":%d", constants.Port))
 }
