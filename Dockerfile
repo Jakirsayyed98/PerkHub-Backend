@@ -18,5 +18,5 @@ WORKDIR /app
 COPY --from=build /src/go-api /app/go-api
 
 USER nonroot:nonroot
-EXPOSE 8081
+EXPOSE 4215
 ENTRYPOINT ["/app/go-api"]
