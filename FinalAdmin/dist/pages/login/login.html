@@ -1,106 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
-    <!-- Link to the correct CSS file -->
-    <style>
-      /* login.css */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PerkHub Admin Login</title>
+  <style>
+    /* ===== Reset & Base ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
 
-.login-container {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
-}
+    body {
+      background: linear-gradient(135deg, #4caf50, #2e7d32);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
 
-h2 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 20px;
-}
+    /* ===== Login Box ===== */
+    .login-container {
+      background: #fff;
+      padding: 30px 25px;
+      border-radius: 12px;
+      box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 400px;
+      animation: fadeIn 0.6s ease-in-out;
+    }
 
-.form-group {
-    margin-bottom: 15px;
-}
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 25px;
+    }
 
-label {
-    display: block;
-    font-size: 14px;
-    color: #333;
-    margin-bottom: 5px;
-}
+    /* ===== Form ===== */
+    .form-group {
+      margin-bottom: 18px;
+    }
 
-input[type="email"], input[type="password"] {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    font-size: 14px;
-    margin-top: 5px;
-    outline: none;
-}
+    label {
+      font-size: 14px;
+      color: #555;
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
+    }
 
-input[type="email"]:focus, input[type="password"]:focus {
-    border-color: #4CAF50;
-    box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
-}
+    input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
 
-button {
-    width: 100%;
-    padding: 12px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
-    margin-top: 10px;
-}
+    input:focus {
+      border-color: #4caf50;
+      box-shadow: 0 0 6px rgba(76, 175, 80, 0.3);
+      outline: none;
+    }
 
-button:hover {
-    background-color: #eb2507;
-    /* background-color: #45a049; */
-}
+    /* ===== Button ===== */
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      background: #4caf50;
+      color: #fff;
+      transition: background 0.3s ease;
+    }
 
-button:active {
-    background-color: #4c388e;
-    /* background-color: #388e3c; */
-}
+    button:hover {
+      background: #43a047;
+    }
 
-    </style>
+    button:active {
+      background: #2e7d32;
+    }
+
+    /* ===== Animations ===== */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ===== Small Text ===== */
+    .footer-text {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 12px;
+      color: #888;
+    }
+  </style>
 </head>
 <body>
-    <div class="login-container">
-        <h2>PerkHub Admin Page</h2>
-        <form id="login-form">
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" class="input-field" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" class="input-field" required>
-            </div>
-            <button type="submit" class="submit-button">Login</button>
-        </form>
-    </div>
+  <div class="login-container">
+    <h2>PerkHub Admin</h2>
+    <form id="login-form">
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          placeholder="Enter your email"
+          required
+        />
+      </div>
 
-    <!-- Include the authentication script -->
-    <script src="dist/js/Login/login.js"></script>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Enter your password"
+          required
+        />
+      </div>
+
+      <button type="submit">Login</button>
+    </form>
+    <p class="footer-text">© 2025 PerkHub Admin Panel</p>
+  </div>
+
+  <!-- Login Script -->
+  <script src="dist/js/Login/login.js"></script>
 </body>
 </html>

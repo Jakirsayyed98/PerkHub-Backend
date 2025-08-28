@@ -1,8 +1,8 @@
 package mobile
 
 import (
-	"PerkHub/settings"
 	"PerkHub/stores"
+	"PerkHub/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,14 +10,14 @@ import (
 func GetHomePage(c *gin.Context) {
 	store, err := stores.GetStores(c)
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
 	result, err := store.HomePageStore.GetHomePagedata()
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
-	settings.StatusOk(c, result, "data fetched successfully", "")
+	utils.RespondOK(c, result, "data fetched successfully", "")
 }

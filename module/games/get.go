@@ -3,6 +3,7 @@ package games
 import (
 	"PerkHub/settings"
 	"PerkHub/stores"
+	"PerkHub/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,13 +12,13 @@ func GetGameCategories(c *gin.Context) {
 	store, err := stores.GetStores(c)
 
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
 	result, err := store.GamesStore.GetGameCategories()
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
@@ -28,13 +29,13 @@ func GetGames(c *gin.Context) {
 	store, err := stores.GetStores(c)
 
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
 	result, err := store.GamesStore.GetGames()
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
@@ -45,13 +46,13 @@ func GetPopulargames(c *gin.Context) {
 	store, err := stores.GetStores(c)
 
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
 	result, err := store.GamesStore.GetPopularGames()
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
@@ -62,13 +63,13 @@ func GetTrendingGames(c *gin.Context) {
 	store, err := stores.GetStores(c)
 
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
 	result, err := store.GamesStore.GetTrendingGames()
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
@@ -79,13 +80,13 @@ func RefreshGameCategories(c *gin.Context) {
 	store, err := stores.GetStores(c)
 
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
 	err = store.GamesStore.Refreshcategory()
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
@@ -95,13 +96,13 @@ func RefreshGames(c *gin.Context) {
 	store, err := stores.GetStores(c)
 
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
 	result, err := store.GamesStore.RefreshGames()
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 

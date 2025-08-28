@@ -4,6 +4,8 @@ import (
 	"PerkHub/model"
 	"PerkHub/responses"
 	"database/sql"
+
+	"golang.org/x/sync/errgroup"
 )
 
 type HomePageStore struct {
@@ -17,86 +19,86 @@ func NewHomePageStore(dbs *sql.DB) *HomePageStore {
 }
 
 func (s *HomePageStore) GetHomePagedata() (*responses.HomePageResponse, error) {
+	// Get banner categories
 	bannerCategory, err := model.GetAllBannersCategory(s.db)
 	if err != nil {
 		return nil, err
 	}
 
-	for _, v := range bannerCategory {
-		banner, err := model.GetBannersByCategoryID(s.db, v.ID)
+	// Attach banners to each category properly
+	for i := range bannerCategory {
+		banner, err := model.GetBannersByCategoryID(s.db, bannerCategory[i].ID)
 		if err != nil {
 			return nil, err
 		}
-		v.Banner = banner
-
+		bannerCategory[i].Banner = banner
 	}
 
-	// banner1, err := model.GetBannerbyId(s.db, "1")
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// banner2, err := model.GetBannerbyId(s.db, "2")
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// banner3, err := model.GetBannerbyId(s.db, "3")
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	category, err := model.GetAllCategory(s.db)
-	if err != nil {
-		return nil, err
-	}
-
+	// Get categories for homepage
 	categoryHomePage, err := model.GetAllHomePageActive(s.db)
 	if err != nil {
 		return nil, err
 	}
+
 	categoriesres := responses.NewCategoryRes()
 	categories, err := categoriesres.BindMultipleUsers(categoryHomePage)
 	if err != nil {
 		return nil, err
 	}
 
-	finalCategory := []responses.CategoryResponse{}
-	for _, categorys := range categories {
-		miniApps, err := model.GetMiniAppsByCategoryID(s.db, categorys.ID)
+	// Attach mini apps to categories
+	finalCategory := make([]responses.CategoryResponse, 0, len(categories))
+	for _, cat := range categories {
+		miniApps, err := model.GetStoresByCategory(s.db, cat.ID)
 		if err != nil {
 			return nil, err
 		}
-
 		if miniApps != nil {
-			categorys.Data = miniApps
+			cat.Data = miniApps
 		} else {
-			categorys.Data = []model.MiniApp{}
+			cat.Data = []model.MiniApp{}
 		}
-
-		finalCategory = append(finalCategory, categorys)
+		finalCategory = append(finalCategory, cat)
 	}
 
-	popular, err := model.GetMiniAppsPopular(s.db)
-	if err != nil {
+	// Run popular/trending/topcashback queries in parallel
+	var (
+		popular     []model.MiniApp
+		trending    []model.MiniApp
+		topcashback []model.MiniApp
+	)
+
+	g := new(errgroup.Group)
+
+	g.Go(func() error {
+		var err error
+		popular, err = model.GetMiniAppsPopular(s.db)
+		return err
+	})
+
+	g.Go(func() error {
+		var err error
+		trending, err = model.GetMiniAppsTrending(s.db)
+		return err
+	})
+
+	g.Go(func() error {
+		var err error
+		topcashback, err = model.GetMiniAppsTopCashback(s.db)
+		return err
+	})
+
+	// Wait for all goroutines
+	if err := g.Wait(); err != nil {
 		return nil, err
 	}
 
-	trending, err := model.GetMiniAppsTrending(s.db)
-	if err != nil {
-		return nil, err
-	}
-
-	topcashback, err := model.GetMiniAppsTopCashback(s.db)
-	if err != nil {
-		return nil, err
-	}
-
+	// Build final response
 	res := responses.NewHomePagedata()
-
-	data, err := res.Bind(category, bannerCategory, popular, trending, topcashback, finalCategory)
+	data, err := res.Bind(nil, bannerCategory, popular, trending, topcashback, finalCategory)
 	if err != nil {
 		return nil, err
 	}
+
 	return data, nil
 }

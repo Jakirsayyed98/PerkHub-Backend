@@ -6,7 +6,7 @@ CREATE TABLE game_categories (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     name VARCHAR(50),
     icon VARCHAR(255),
-    status BOOLEAN DEFAULT FALSE,
+    status BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );

@@ -206,7 +206,7 @@ func UploadFileOnServer(files []*multipart.FileHeader, awsInstance *connection.A
 		}
 		defer f.Close()
 
-		image, err := awsInstance.UploadFile(f, fileHeader.Filename, constants.AWSBucketName, constants.AWSSecretAccessKey)
+		image, err := awsInstance.UploadFile(f, fileHeader.Filename)
 		// image, err = utils.SaveFile(c, file)
 		if err != nil {
 			return "", err

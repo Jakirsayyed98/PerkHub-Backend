@@ -63,12 +63,16 @@ func (s *MiniAppStore) GetAllMiniApps() (interface{}, error) {
 
 }
 
-func (s *MiniAppStore) GetMiniAppsBycategoryID(category_id string) (interface{}, error) {
+func (s *MiniAppStore) GetStoresByCategory(category_id string) (interface{}, error) {
 
-	data, err := model.GetMiniAppsByCategoryID(s.db, category_id)
+	data, err := model.GetStoresByCategory(s.db, category_id)
 
 	if err != nil {
 		return nil, err
+	}
+
+	if len(data) == 0 {
+		return nil, errors.New("Store not found")
 	}
 	res := responses.NewMiniAppRes()
 
@@ -90,7 +94,7 @@ func (s *MiniAppStore) SearchMiniApps(req *request.MiniAppSearchReq) (interface{
 	}
 	res := responses.NewMiniAppRes()
 	if len(data) == 0 {
-		return data, nil
+		return nil, errors.New("Store not found")
 	}
 
 	result, err := res.BindMultipleUsers(data)

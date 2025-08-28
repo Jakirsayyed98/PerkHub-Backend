@@ -10,7 +10,7 @@ func Routes(api *gin.RouterGroup) {
 	user := api.Group("/")
 	user.Use(middlewear.UserMiddleware())
 	user.POST("/searchMiniApps", SearchMiniApp)
-	user.POST("/getMiniAppByCategory", GetMiniAppBycategory)
+	user.POST("/getStoresByCategory", GetStoresByCategory)
 	user.POST("/genrateSubID", GenrateSubid)
 
 	app := api.Group("/admin")

@@ -174,7 +174,7 @@ func (s *GamesStore) SetGameStatus(game *model.SetGameStatus) error {
 		updateData.Status = game.Status
 	}
 
-	if err := model.UpdateGameStatus(s.db, updateData, game.StatusType); err != nil {
+	if err := model.UpdateGameStatus(s.db, updateData, game.StatusType, game.Status); err != nil {
 
 		return err
 	}

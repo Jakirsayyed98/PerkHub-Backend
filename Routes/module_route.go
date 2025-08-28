@@ -11,16 +11,14 @@ import (
 	reglogin "PerkHub/module/reg_login"
 	"PerkHub/module/transactions"
 	"PerkHub/module/withdrawal"
-	"html/template"
-	"log"
-	"net/http"
+	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func Endpoints(app *gin.Engine) {
-
+	// ---------- API ROUTES ----------
 	api := app.Group("/api")
 	{
 		admin.Routes(api)
@@ -28,54 +26,62 @@ func Endpoints(app *gin.Engine) {
 		category.Routes(api)
 		miniapp.Routes(api)
 		banner.Routes(api)
-
 		mobile.Routes(api)
 		affiliates.Routes(api)
 		transactions.Routes(api)
 		games.Routes(api)
 		withdrawal.Routes(api)
-
 	}
-	admin := app.Group("/admin")
+
+	// ---------- ADMIN PANEL ROUTES ----------
+	adminGroup := app.Group("/admin")
 	{
-		admin.Use(cors.New(cors.Config{
-			AllowOrigins: []string{"http://localhost", "http://127.0.0.1", "https://blessed-pretty-mammal.ngrok-free.app"},
-			AllowMethods: []string{"GET", "POST", "PUT", "DELETE"},
-			AllowHeaders: []string{"Origin", "Content-Type", "Authorization"},
+		// Apply CORS (best practice: allow only your production domain later)
+		adminGroup.Use(cors.New(cors.Config{
+			AllowOrigins:     []string{"http://localhost:4215"}, // React/Vite dev URL
+			AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+			AllowHeaders:     []string{"Origin", "Authorization", "Content-Type"},
+			ExposeHeaders:    []string{"Content-Length"},
+			AllowCredentials: true,
+			MaxAge:           12 * time.Hour,
 		}))
 
-		// Serve static files from the "dist" directory
-		admin.Static("/dist", "./FinalAdmin/dist")
+		// // Serve static files (CSS, JS, Images)
+		// adminGroup.Static("/assets", "./FinalAdmin/dist/assets")
 
-		// Parse templates
-		tmpl, err := template.New("base").ParseFiles(
-			"FinalAdmin/dist/pages/login/login.html",
-			"FinalAdmin/dist/pages/gameslist.html",
-			"FinalAdmin/dist/pages/miniapp.html",
-			"FinalAdmin/dist/pages/miniapp_categories.html",
-			"FinalAdmin/dist/pages/banner_category_list.html",
-			"FinalAdmin/dist/pages/banner_list.html",
-			"FinalAdmin/dist/pages/add_update_banner.html",
-			"FinalAdmin/dist/pages/affiliate_transaction_list.html",
-			"FinalAdmin/dist/pages/index.html",
-			"FinalAdmin/dist/pages/add_update_miniApp.html",
-			"FinalAdmin/dist/pages/add_update_miniApp_categories.html",
-			"FinalAdmin/dist/component/navbar.html",
-			"FinalAdmin/dist/component/sidenavbar.html",
-		)
-		if err != nil {
-			log.Fatal("Error parsing templates:", err)
-		}
+		// // Pre-parse templates (ensures error at startup, not runtime)
+		// tmpl, err := template.ParseFiles(
+		// 	"FinalAdmin/dist/pages/login/login.html",
+		// 	"FinalAdmin/dist/pages/gameslist.html",
+		// 	"FinalAdmin/dist/pages/miniapp.html",
+		// 	"FinalAdmin/dist/pages/miniapp_categories.html",
+		// 	"FinalAdmin/dist/pages/banner_category_list.html",
+		// 	"FinalAdmin/dist/pages/banner_list.html",
+		// 	"FinalAdmin/dist/pages/add_update_banner.html",
+		// 	"FinalAdmin/dist/pages/affiliate_transaction_list.html",
+		// 	"FinalAdmin/dist/pages/index.html",
+		// 	"FinalAdmin/dist/pages/add_update_miniApp.html",
+		// 	"FinalAdmin/dist/pages/add_update_miniApp_categories.html",
+		// 	"FinalAdmin/dist/component/navbar.html",
+		// 	"FinalAdmin/dist/component/sidenavbar.html",
+		// )
+		// if err != nil {
+		// 	log.Fatal("Error parsing templates:", err)
+		// }
 
-		// Render HTML pages dynamically
-		admin.GET("/:page", func(c *gin.Context) {
-			page := c.Param("page")
-			err := tmpl.ExecuteTemplate(c.Writer, page, nil)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-				log.Println("Error rendering template:", err)
-			}
-		})
+		// // Dynamic page renderer
+		// adminGroup.GET("/:page", func(c *gin.Context) {
+		// 	page := c.Param("page") + ".html" // auto append .html for cleaner URLs
+		// 	err := tmpl.ExecuteTemplate(c.Writer, page, nil)
+		// 	if err != nil {
+		// 		log.Printf("Error rendering template (%s): %v", page, err)
+		// 		c.JSON(http.StatusNotFound, gin.H{"error": "Page not found"})
+		// 	}
+		// })
+
+		// // Default: redirect /admin → /admin/index
+		// adminGroup.GET("/", func(c *gin.Context) {
+		// 	c.Redirect(http.StatusFound, "/admin/index")
+		// })
 	}
-
 }
