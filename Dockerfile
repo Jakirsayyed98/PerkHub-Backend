@@ -2,6 +2,8 @@
 FROM golang:1.23 AS build
 WORKDIR /src
 
+ENV GOCACHE=/tmp/.cache
+
 # Cache dependencies first
 COPY go.mod go.sum ./
 RUN go mod download
@@ -11,6 +13,10 @@ COPY . .
 
 # Build binary (output in /src)
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o go-api .
+
+
+# Clean up Go build caches to reduce image size
+RUN go clean -cache -modcache -testcache -fuzzcache
 
 # Runtime stage
 FROM gcr.io/distroless/static:nonroot
