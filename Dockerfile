@@ -14,7 +14,6 @@ RUN apt-get update && apt-get install -y bash
 
 # Copy source code
 COPY . .
-COPY --from=build /src/migrations /app/migrations
 
 # Build binary (output in /src)
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o go-api .
@@ -30,8 +29,10 @@ FROM gcr.io/distroless/static:nonroot
 
 WORKDIR /app
 
-# Copy build artifacts from the build stage
+# Copy the go-api binary and any other required files from the build stage
 COPY --from=build /src/go-api /app/go-api
+
+# Copy the migrations and .env from the build stage
 COPY --from=build /src/migrations /app/migrations
 COPY --from=build /src/.env.production /app/.env.production
 
