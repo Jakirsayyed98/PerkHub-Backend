@@ -14,7 +14,7 @@ RUN go mod download
 
 # Copy source code
 COPY . .
-COPY ./migrations /app/migrations
+COPY migrations /app/migrations
 
 # Build binary (output in /src)
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o go-api .
