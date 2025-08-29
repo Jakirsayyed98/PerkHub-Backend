@@ -25,11 +25,8 @@ ENV GIN_MODE=release
 # Clean up Go build caches to reduce image size
 RUN go clean -cache -modcache -testcache -fuzzcache
 
-# Debug stage (temporary for debugging purposes)
-FROM debian:bullseye-slim  # Use a minimal Debian image with bash support
-
-# Install bash and any other debugging tools
-RUN apt-get update && apt-get install -y bash curl
+# Runtime stage (non-debug)
+FROM gcr.io/distroless/static:nonroot
 
 WORKDIR /app
 
@@ -41,8 +38,7 @@ COPY --from=build /src/.env.production /app/.env.production
 # Expose the port (for API)
 EXPOSE 4215
 
-# Switch to root user for debugging
-USER root
+# Switch to non-root user for security
+USER nonroot:nonroot
 
-# The command to run the application
 ENTRYPOINT ["/app/go-api"]
