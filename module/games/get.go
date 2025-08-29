@@ -108,3 +108,38 @@ func RefreshGames(c *gin.Context) {
 
 	settings.StatusOk(c, result, "Games refresh successfully", "")
 }
+
+
+func AdminGetGameCategories(c *gin.Context) {
+	store, err := stores.GetStores(c)
+
+	if err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	result, err := store.GamesStore.GetAdminGameCategories()
+	if err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+	utils.RespondOK(c, result, "Successfully get games categories", "")
+}
+
+func AdminGetGames(c *gin.Context) {
+	store, err := stores.GetStores(c)
+
+	if err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+	result, err := store.GamesStore.GetAdminGames()
+	if err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	utils.RespondOK(c, result, "Successfully get games", "")
+}
+
+

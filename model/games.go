@@ -468,3 +468,60 @@ func UpdateGameStatus(db *sql.DB, update *GamesResponse, gameStatusType string, 
 
 	return errors.New("nothing to update")
 }
+
+
+func AdminGetAllGames(db *sql.DB) ([]GamesResponse, error) {
+	query := `SELECT id, code, url, name, isPortrait, description, gamepreviews, assets, category_id, colorMuted, colorVibrant, status, privateAllowed, rating, numberOfRatings, gamePlays, hasIntegratedAds, width, height,trending,popular FROM games_data`
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("query failed: %w", err)
+	}
+	defer rows.Close()
+
+	var games []GamesResponse
+
+	for rows.Next() {
+		var game GamesResponse
+		var assetsJSON string
+		err := rows.Scan(
+			&game.Id,
+			&game.Code,
+			&game.URL,
+			&game.Name,
+			&game.IsPortrait,
+			&game.Description,
+			&game.GamePreviews,
+			&assetsJSON,
+			&game.Categories,
+			&game.ColorsM,
+			&game.ColorsV,
+			&game.Status,
+			&game.PrivateAllowed,
+			&game.Rating,
+			&game.NumberOfRatings,
+			&game.GamePlays,
+			&game.HasIntegratedAds,
+			&game.Width,
+			&game.Height,
+			&game.Trending,
+			&game.Popular,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("row scan failed: %w", err)
+		}
+		err = json.Unmarshal([]byte(assetsJSON), &game.Assets)
+		if err != nil {
+			return nil, fmt.Errorf("row scan failed: %w", err)
+		}
+		games = append(games, game)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	return games, nil
+}
+
+

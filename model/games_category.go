@@ -83,3 +83,36 @@ func GetGameCategories(db *sql.DB) ([]GameCategory, error) {
 
 	return categories, nil
 }
+
+func AdminGetGameCategories(db *sql.DB) ([]GameCategory, error) {
+	query := `SELECT id, name, icon, status FROM game_categories;`
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("query failed: %w", err)
+	}
+	defer rows.Close()
+
+	var categories []GameCategory
+
+	for rows.Next() {
+		var category GameCategory
+		err := rows.Scan(
+			&category.Id,
+			&category.Name,
+			&category.Icon,
+			&category.Status,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("row scan failed: %w", err)
+		}
+
+		categories = append(categories, category)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	return categories, nil
+}
