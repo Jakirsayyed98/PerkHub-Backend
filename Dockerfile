@@ -1,9 +1,6 @@
 # Build stage
 FROM golang:1.23 AS build
 
-#FROM alpine:latest
-#RUN apk add --no-cache bash curl
-
 WORKDIR /src
 
 ENV GOCACHE=/tmp/.cache
@@ -12,11 +9,12 @@ ENV GOCACHE=/tmp/.cache
 COPY go.mod go.sum ./
 RUN go mod download
 
+# Install bash for debugging (needed for the build stage)
 RUN apt-get update && apt-get install -y bash
 
 # Copy source code
 COPY . .
-COPY migrations /app/migrations
+COPY --from=build /src/migrations /app/migrations
 
 # Build binary (output in /src)
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o go-api .
@@ -27,14 +25,24 @@ ENV GIN_MODE=release
 # Clean up Go build caches to reduce image size
 RUN go clean -cache -modcache -testcache -fuzzcache
 
-# Runtime stage
-FROM gcr.io/distroless/static:nonroot
-WORKDIR /app
-COPY --from=build /src/go-api /app/go-api
+# Debug stage (temporary for debugging purposes)
+FROM debian:bullseye-slim  # Use a minimal Debian image with bash support
 
-# Copy the .env file explicitly
+# Install bash and any other debugging tools
+RUN apt-get update && apt-get install -y bash curl
+
+WORKDIR /app
+
+# Copy build artifacts from the build stage
+COPY --from=build /src/go-api /app/go-api
+COPY --from=build /src/migrations /app/migrations
 COPY --from=build /src/.env.production /app/.env.production
 
-USER nonroot:nonroot
+# Expose the port (for API)
 EXPOSE 4215
+
+# Switch to root user for debugging
+USER root
+
+# The command to run the application
 ENTRYPOINT ["/app/go-api"]
