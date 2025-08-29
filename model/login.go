@@ -35,6 +35,7 @@ type UserDetail struct {
 	Dob       sql.NullString `json:"dob" db:"dob"`
 	FCMToken  sql.NullString `json:"fcm_token" db:"fcm_token"`
 	Verified  bool           `json:"verified" db:"verified"`
+	Blocked   bool           `json:"blocked" db:"blocked"`
 	CreatedAt sql.NullString `json:"created_at" db:"created_at"`
 	UpdatedAt sql.NullString `json:"updated_at" db:"updated_at"`
 }
@@ -137,7 +138,7 @@ func UserDetailByUserID(db *sql.DB, user_id string) (*UserDetail, error) {
 }
 
 func AllUsersDetail(db *sql.DB) ([]*UserDetail, error) {
-	query := "SELECT user_id, name, email, number, gender, dob, fcm_token, verified, created_at, updated_at FROM users"
+	query := "SELECT user_id, name, email, number, gender, dob, fcm_token, verified, blocked, created_at, updated_at FROM users"
 
 	rows, err := db.Query(query)
 	if err != nil {
@@ -159,6 +160,7 @@ func AllUsersDetail(db *sql.DB) ([]*UserDetail, error) {
 			&user.Dob,
 			&user.FCMToken,
 			&user.Verified,
+			&user.Blocked,
 			&user.CreatedAt,
 			&user.UpdatedAt,
 		)
