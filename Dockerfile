@@ -1,5 +1,9 @@
 # Build stage
 FROM golang:1.23 AS build
+
+FROM alpine:latest
+RUN apk add --no-cache bash curl
+
 WORKDIR /src
 
 ENV GOCACHE=/tmp/.cache
