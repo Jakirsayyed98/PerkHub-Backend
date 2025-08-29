@@ -25,8 +25,8 @@ FROM gcr.io/distroless/static:nonroot
 WORKDIR /app
 COPY --from=build /src/go-api /app/go-api
 
-# Copy all env/config files (optional but requested)
-COPY --from=build /src/*.env* /app/
+# Copy the .env file explicitly
+COPY .env /app/.env
 
 USER nonroot:nonroot
 EXPOSE 4215
