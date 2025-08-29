@@ -15,6 +15,7 @@ type UserDetailResponse struct {
 	Dob       string `json:"dob"`
 	FCMToken  string `json:"fcm_token"`
 	Verified  bool   `json:"verified"`
+	Blocked   bool   `json:"blocked"`
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
 }
@@ -32,6 +33,7 @@ func (u *UserDetailResponse) ResponsesBind(dbUser *model.UserDetail) error {
 	u.Dob = dbUser.Dob.String
 	u.FCMToken = dbUser.FCMToken.String
 	u.Verified = dbUser.Verified
+	u.Blocked = dbUser.Blocked
 	u.CreatedAt = dbUser.CreatedAt.String
 	u.UpdatedAt = dbUser.UpdatedAt.String
 

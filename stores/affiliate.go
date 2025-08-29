@@ -6,6 +6,8 @@ import (
 	"database/sql"
 	"fmt"
 	"strconv"
+
+	"github.com/google/uuid"
 )
 
 type AffiliatesStore struct {
@@ -57,4 +59,66 @@ func (s *AffiliatesStore) CueLinkCallBack(req *request.CueLinkCallBackRequest) (
 	}
 
 	return nil, nil
+}
+
+func (s *AffiliatesStore) CreateAffiliate(req *request.CreateAffiliateRequest) (interface{}, error) {
+	// Create a new affiliate in the database
+	err := model.CreateAffiliate(s.db, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, nil
+}
+
+func (s *AffiliatesStore) UpdateAffiliate(req *request.CreateAffiliateRequest) (interface{}, error) {
+
+	id, err := uuid.Parse(req.Id)
+	if err != nil {
+		return nil, fmt.Errorf("invalid affiliate ID: %w", err)
+	}
+
+	// Update the affiliate in the database
+	err = model.UpdateAffiliate(s.db, req, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, nil
+}
+
+func (s *AffiliatesStore) DeleteAffiliate(id string) (interface{}, error) {
+	ids, err := uuid.Parse(id)
+	if err != nil {
+		return nil, fmt.Errorf("invalid affiliate ID: %w", err)
+	}
+	// Delete the affiliate from the database
+	err = model.DeleteAffiliate(s.db, ids)
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, nil
+}
+
+func (s *AffiliatesStore) UpdateAffiliateFlag(id string, status bool) (interface{}, error) {
+	ids, err := uuid.Parse(id)
+	if err != nil {
+		return nil, fmt.Errorf("invalid affiliate ID: %w", err)
+	}
+	// Update the affiliate flag in the database
+	err = model.UpdateAffiliateFlag(s.db, ids, status)
+	if err != nil {
+		return nil, err
+	}
+
+	return nil, nil
+}
+
+func (s *AffiliatesStore) ListAffiliates() (interface{}, error) {
+	affiliates, err := model.ListAffiliates(s.db)
+	if err != nil {
+		return nil, err
+	}
+	return affiliates, nil
 }

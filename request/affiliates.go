@@ -4,6 +4,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type CreateAffiliateRequest struct {
+	Id     string `json:"id"`
+	Name   string `json:"name"`
+	Key    string `json:"key"`
+	URL    string `json:"url"`
+	Status bool   `json:"status"`
+}
+
+func NewCreateAffiliateRequest() *CreateAffiliateRequest {
+	return &CreateAffiliateRequest{}
+}
+
 type CueLinkCallBackRequest struct {
 	CampaignID           string `json:"campaign_id"`
 	Commission           string `json:"commission"` // Corrected spelling

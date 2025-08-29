@@ -30,7 +30,7 @@ func AdminLogin(c *gin.Context) {
 		return
 	}
 
-	res, err := utils.GenerateJWTToken(result.UserID, time.Minute*10)
+	res, err := utils.GenerateJWTToken(result.UserID, time.Minute*30)
 	if err != nil {
 		settings.StatusBadRequest(c, err.Error(), "")
 		return
