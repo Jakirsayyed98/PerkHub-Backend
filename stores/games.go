@@ -181,3 +181,23 @@ func (s *GamesStore) SetGameStatus(game *model.SetGameStatus) error {
 
 	return nil
 }
+
+
+func (s *GamesStore) GetAdminGameCategories() (interface{}, error) {
+	result, err := model.AdminGetGameCategories(s.db)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (s *GamesStore) GetAdminGames() (interface{}, error) {
+	result, err := model.AdminGetAllGames(s.db)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+
