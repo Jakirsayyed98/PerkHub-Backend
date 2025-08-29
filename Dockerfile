@@ -12,6 +12,8 @@ ENV GOCACHE=/tmp/.cache
 COPY go.mod go.sum ./
 RUN go mod download
 
+RUN apt-get update && apt-get install -y bash
+
 # Copy source code
 COPY . .
 COPY migrations /app/migrations
