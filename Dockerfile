@@ -46,6 +46,7 @@ WORKDIR /app
 COPY --from=builder /app/go-api .
 
 # Copy migrations the build stage
+COPY --from=builder /app/.env.production /app/.env.production
 COPY --from=builder /app/migrations /app/migrations
 
 # Create logs directory
