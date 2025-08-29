@@ -16,7 +16,7 @@ func LoadEnvFile() {
 	var envFile string
 	switch gin.Mode() {
 	case "release":
-		envFile = "/app/.env.development" // Adjusted for container path
+		envFile = ".env.production"
 		log.Println("Loaded .env for production environment")
 	case "debug":
 		envFile = ".env.development"
