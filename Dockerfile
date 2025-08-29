@@ -26,7 +26,7 @@ WORKDIR /app
 COPY --from=build /src/go-api /app/go-api
 
 # Copy the .env file explicitly
-COPY .env /app/.env
+COPY --from=build /src/.env.production /app/.env.production
 
 USER nonroot:nonroot
 EXPOSE 4215
