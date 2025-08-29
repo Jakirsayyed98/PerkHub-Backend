@@ -14,6 +14,8 @@ COPY . .
 # Build binary (output in /src)
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o go-api .
 
+# Optionally set default mode
+ENV GIN_MODE=release
 
 # Clean up Go build caches to reduce image size
 RUN go clean -cache -modcache -testcache -fuzzcache
