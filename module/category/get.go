@@ -22,3 +22,20 @@ func GetAllCategory(c *gin.Context) {
 	}
 	settings.StatusOk(c, result, "Category fetched Successfully", "")
 }
+
+func GetCategoryByID(c *gin.Context) {
+	id := c.Param("id")
+
+	store, err := stores.GetStores(c)
+	if err != nil {
+		settings.StatusBadRequest(c, err, "")
+		return
+	}
+
+	result, err := store.CategoryStore.GetCategoryByID(id)
+	if err != nil {
+		settings.StatusBadRequest(c, err, "")
+		return
+	}
+	settings.StatusOk(c, result, "Category fetched Successfully", "")
+}

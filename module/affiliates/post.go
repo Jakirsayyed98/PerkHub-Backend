@@ -119,3 +119,26 @@ func UpdateAffiliateFlag(c *gin.Context) {
 
 	utils.RespondOK(c, result, "Affiliate flag updated successfully", "")
 }
+
+func GetAffiliateByID(c *gin.Context) {
+
+	store, err := stores.GetStores(c)
+	if err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	request := request.NewCreateAffiliateRequest()
+	if err := c.ShouldBindJSON(request); err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	result, err := store.AffiliatesStore.GetAffiliateByID(request.Id)
+	if err != nil {
+		utils.RespondInternalError(c, err, "")
+		return
+	}
+
+	utils.RespondOK(c, result, "Affiliate fetched successfully", "")
+}

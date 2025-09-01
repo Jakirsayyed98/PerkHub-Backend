@@ -42,8 +42,8 @@ func (category *Category) Bind(c *gin.Context, awsInstance *connection.Aws) erro
 	category.ID = c.PostForm("id")
 	category.Name = c.PostForm("name")
 	category.Description = c.PostForm("description")
-	category.Status = false
-	category.HomepageVisible = false
+	category.Status = c.PostForm("status") == "1"
+	category.HomepageVisible = c.PostForm("homepage_visible") == "1"
 	category.Image = image
 	category.CreatedAt = time.Now()
 	category.UpdatedAt = time.Now()

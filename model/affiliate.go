@@ -81,3 +81,16 @@ func ListAffiliates(db *sql.DB) ([]*Affiliate, error) {
 	}
 	return affiliates, nil
 }
+
+func GetAffiliateByID(db *sql.DB, id string) (interface{}, error) {
+	query := "SELECT id,name,key,url,status FROM affiliates WHERE id=$1"
+	row := db.QueryRow(query, id)
+
+	affiliate := &Affiliate{}
+	err := row.Scan(&affiliate.ID, &affiliate.Name, &affiliate.Key, &affiliate.URL, &affiliate.Status)
+	if err != nil {
+		return nil, err
+	}
+
+	return affiliate, nil
+}
