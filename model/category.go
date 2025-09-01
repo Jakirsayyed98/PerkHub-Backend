@@ -50,7 +50,6 @@ SET
     homepage_visible = $5, 
     updated_at = $6
 WHERE id = $7`
-	fmt.Println("Executing query:", query, item.Status, item.HomepageVisible)
 	_, err := db.Exec(query, item.Name, item.Description, item.Image, item.Status, item.HomepageVisible, time.Now(), item.ID)
 	return err
 }
