@@ -80,3 +80,26 @@ func SetGameStatus(c *gin.Context) {
 
 	utils.RespondOK(c, nil, "Status Updated Successfully", "")
 }
+func SetGameCategoryStatus(c *gin.Context) {
+
+	store, err := stores.GetStores(c)
+
+	if err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	req := model.NewSetGameStatus()
+
+	if err := c.ShouldBind(&req); err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	if err := store.GamesStore.SetGameCategoryStatus(req); err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	utils.RespondOK(c, nil, "Status Updated Successfully", "")
+}

@@ -270,7 +270,7 @@ func UpdateMiniAppData(db *sql.DB, update *request.MiniAppRequest) error {
 	}
 
 	// Ensure that the MiniApp ID is provided for the update query
-	if update.ID.String() == "" {
+	if update.ID == "" {
 		return errors.New("missing MiniApp ID for update")
 	}
 
@@ -279,7 +279,7 @@ func UpdateMiniAppData(db *sql.DB, update *request.MiniAppRequest) error {
 	// params = append(params, update.ID)
 
 	// Construct the final query
-	query := "UPDATE miniapp_data SET " + strings.Join(clauses, ", ") + " WHERE id = " + "'" + update.ID.String() + "'"
+	query := "UPDATE miniapp_data SET " + strings.Join(clauses, ", ") + " WHERE id = " + "'" + update.ID + "'"
 
 	// Execute the update query
 	_, err := db.Exec(query, params...)
@@ -290,7 +290,7 @@ func UpdateMiniAppData(db *sql.DB, update *request.MiniAppRequest) error {
 	return nil
 }
 
-func ActivateSomekey(db *sql.DB, key, id, value string) error {
+func ActivateSomekey(db *sql.DB, key, id string, value bool) error {
 	query := fmt.Sprintf("UPDATE miniapp_data SET %s = $1 WHERE id = $2", key)
 	if _, err := db.Exec(query, value, id); err != nil {
 		return err
@@ -325,7 +325,7 @@ func GetAllMiniApps(db *sql.DB) ([]MiniApp, error) {
 			howitswork, 
 			created_at, 
 			updated_at 
-		FROM miniapp_data WHERE status=true` // Adjust the table name as per your database schema
+		FROM miniapp_data` // Adjust the table name as per your database schema
 
 	rows, err := db.Query(query)
 	if err != nil {
@@ -808,4 +808,78 @@ func DeleteMiniAppByID(db *sql.DB, id string) error {
 	_, err := db.Exec(query, id)
 	return err
 
+}
+
+func GetStoreByID(db *sql.DB, id string) (*MiniApp, error) {
+	parsedID, err := uuid.Parse(id)
+	if err != nil {
+		return nil, fmt.Errorf("invalid UUID: %v", err)
+	}
+	query := `
+		SELECT 
+			id, 
+			miniapp_category_id, 
+			miniapp_subcategory_id, 
+			name, 
+			icon, 
+			description, 
+			cashback_terms, 
+			cashback_rates, 
+			status, 
+			url_type, 
+			cb_active, 
+			cb_percentage, 
+			url, 
+			label, 
+			banner, 
+			logo, 
+			macro_publisher, 
+			popular, 
+			trending, 
+			top_cashback, 
+			about, 
+			howitswork, 
+			created_at, 
+			updated_at 
+		FROM miniapp_data 
+		WHERE id=$1
+	`
+
+	row := db.QueryRow(query, parsedID)
+
+	var miniApp MiniApp
+	err = row.Scan(
+		&miniApp.ID,
+		&miniApp.MiniAppCategoryID,
+		&miniApp.MiniAppSubcategoryID,
+		&miniApp.Name,
+		&miniApp.Icon,
+		&miniApp.Description,
+		&miniApp.CashbackTerms,
+		&miniApp.CashbackRates,
+		&miniApp.Status,
+		&miniApp.UrlType,
+		&miniApp.CBActive,
+		&miniApp.CBPercentage,
+		&miniApp.Url,
+		&miniApp.Label,
+		&miniApp.Banner,
+		&miniApp.Logo,
+		&miniApp.MacroPublisher,
+		&miniApp.Popular,
+		&miniApp.Trending,
+		&miniApp.TopCashback,
+		&miniApp.About,
+		&miniApp.HowItsWork,
+		&miniApp.CreatedAt,
+		&miniApp.UpdatedAt,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, sql.ErrNoRows // no record found
+		}
+		return nil, err
+	}
+
+	return &miniApp, nil
 }

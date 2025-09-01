@@ -11,5 +11,6 @@ func Routes(api *gin.RouterGroup) {
 	app.GET("/get-category", GetAllCategory)
 	app.POST("/update-category", UpdateCategory)
 	app.POST("/delete-category", DeleteCategory)
+	app.POST("/active-deactive-category", ActiveDeactiveCategory)
 	app.GET("/get-category/:id", GetCategoryByID)
 }

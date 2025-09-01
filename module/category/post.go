@@ -88,3 +88,25 @@ func DeleteCategory(c *gin.Context) {
 	settings.StatusOk(c, result, "Category deleted Successfully", "")
 
 }
+
+func ActiveDeactiveCategory(c *gin.Context) {
+	store, err := stores.GetStores(c)
+	if err != nil {
+		settings.StatusBadRequest(c, err, "")
+		return
+	}
+
+	data := request.NewCategoryActiveDeactive()
+
+	if err := c.ShouldBindJSON(data); err != nil {
+		settings.StatusBadRequest(c, err, "")
+		return
+	}
+
+	result, err := store.CategoryStore.ActiveDeactiveCategory(data)
+	if err != nil {
+		settings.StatusBadRequest(c, err, "")
+	}
+	settings.StatusOk(c, result, "Category updated Successfully", "")
+
+}

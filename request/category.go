@@ -58,3 +58,13 @@ type CategoryID struct {
 func NewCategoryID() *CategoryID {
 	return &CategoryID{}
 }
+
+type CategoryActiveDeactive struct {
+	CategoryId string `json:"id"`
+	Key        string `json:"key"`
+	Value      bool   `json:"value"`
+}
+
+func NewCategoryActiveDeactive() *CategoryActiveDeactive {
+	return &CategoryActiveDeactive{}
+}

@@ -9,11 +9,10 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 type MiniAppRequest struct {
-	ID                   uuid.UUID `db:"id" json:"id"`                                         // Unique identifier
+	ID                   string    `db:"id" json:"id"`                                         // Unique identifier
 	MiniAppCategoryID    string    `db:"miniapp_category_id" json:"miniapp_category_id"`       // Category ID
 	MiniAppSubcategoryID string    `db:"miniapp_subcategory_id" json:"miniapp_subcategory_id"` // Subcategory ID
 	Name                 string    `db:"name" json:"name"`                                     // Name of the miniapp
@@ -40,8 +39,8 @@ type MiniAppRequest struct {
 	UpdatedAt            time.Time `db:"updated_at" json:"updated_at"`
 }
 
-func NewMiniAppRequest() MiniAppRequest {
-	return MiniAppRequest{}
+func NewMiniAppRequest() *MiniAppRequest {
+	return &MiniAppRequest{}
 }
 
 func (req *MiniAppRequest) Bind(c *gin.Context, awsInstance *connection.Aws) error {
@@ -57,7 +56,7 @@ func (req *MiniAppRequest) Bind(c *gin.Context, awsInstance *connection.Aws) err
 	banner, _ := utils.UploadFileOnServer(form.File["banner"], awsInstance)
 	logo, _ := utils.UploadFileOnServer(form.File["logo"], awsInstance)
 
-	req.ID, err = uuid.Parse(c.PostForm("id"))
+	req.ID = c.PostForm("id")
 	req.MiniAppCategoryID = c.PostForm("miniapp_category_id")
 	req.MiniAppSubcategoryID = c.PostForm("miniapp_subcategory_id")
 	req.Name = c.PostForm("name")
@@ -118,7 +117,7 @@ func (req *MiniAppRequest) Bind(c *gin.Context, awsInstance *connection.Aws) err
 type ActiveDeactiveMiniAppReq struct {
 	ID    string `json:"id"`
 	Key   string `json:"key"`
-	Value string `json:"value"`
+	Value bool   `json:"value"`
 	// Top_cashback bool `json:"top_cashback"`
 	// Trending     bool `json:"trending"`
 	// Popular      bool `json:"popular"`

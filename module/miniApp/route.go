@@ -17,8 +17,10 @@ func Routes(api *gin.RouterGroup) {
 	app.Use(middlewear.UserMiddleware())
 	{
 		app.POST("/create-miniapp", CreateMiniApp)
+		app.POST("/get-store-by-id", GetStoreByID)
 		app.POST("/active-deactive-miniapp", UpdateActivateAndDeactive)
 		app.GET("/delete-miniapp/:id", DeleteMiniApp)
 		app.GET("/AllMiniApps", GetAllMiniApps)
+
 	}
 }

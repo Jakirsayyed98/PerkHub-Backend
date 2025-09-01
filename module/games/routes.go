@@ -12,6 +12,7 @@ func Routes(api *gin.RouterGroup) {
 	app.GET("refresh-games", RefreshGames)
 	app.GET("refresh-games-categories", RefreshGameCategories)
 	app.POST("set-games-status", SetGameStatus)
+	app.POST("set-games-category-status", SetGameCategoryStatus)
 	app.GET("get-all-games-categories", AdminGetGameCategories)
 	app.GET("get-all-games", AdminGetGames)
 	api.Use(middlewear.UserMiddleware())

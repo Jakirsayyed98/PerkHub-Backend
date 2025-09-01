@@ -8,8 +8,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-
-	"github.com/google/uuid"
 )
 
 type MiniAppStore struct {
@@ -24,7 +22,7 @@ func NewMiniAppStore(dbs *sql.DB) *MiniAppStore {
 
 func (s *MiniAppStore) CreateMiniApp(req *request.MiniAppRequest) (interface{}, error) {
 
-	if req.ID != uuid.Nil {
+	if req.ID != "" {
 		if err := model.UpdateMiniAppData(s.db, req); err != nil {
 			return nil, err
 		}
@@ -61,6 +59,17 @@ func (s *MiniAppStore) GetAllMiniApps() (interface{}, error) {
 
 	return result, nil
 
+}
+
+func (s *MiniAppStore) GetStoreByID(id string) (interface{}, error) {
+
+	data, err := model.GetStoreByID(s.db, id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
 }
 
 func (s *MiniAppStore) GetStoresByCategory(category_id string) (interface{}, error) {
