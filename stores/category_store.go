@@ -56,3 +56,11 @@ func (s *CategoryStore) GetAllCategory() (interface{}, error) {
 
 	return result, nil
 }
+
+func (s *CategoryStore) GetCategoryByID(id string) (interface{}, error) {
+	result, err := model.GetCategoryByID(s.db, id)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}

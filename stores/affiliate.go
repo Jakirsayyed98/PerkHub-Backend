@@ -122,3 +122,13 @@ func (s *AffiliatesStore) ListAffiliates() (interface{}, error) {
 	}
 	return affiliates, nil
 }
+
+func (s *AffiliatesStore) GetAffiliateByID(id string) (interface{}, error) {
+
+	affiliate, err := model.GetAffiliateByID(s.db, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return affiliate, nil
+}

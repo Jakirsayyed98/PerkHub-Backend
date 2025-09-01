@@ -4,6 +4,7 @@ import (
 	"PerkHub/request"
 	"PerkHub/utils"
 	"database/sql"
+	"fmt"
 	"time"
 )
 
@@ -49,7 +50,7 @@ SET
     homepage_visible = $5, 
     updated_at = $6
 WHERE id = $7`
-
+	fmt.Println("Executing query:", query, item.Status, item.HomepageVisible)
 	_, err := db.Exec(query, item.Name, item.Description, item.Image, item.Status, item.HomepageVisible, time.Now(), item.ID)
 	return err
 }
@@ -131,4 +132,27 @@ func GetAllHomePageActive(db *sql.DB) ([]*Category, error) {
 	}
 
 	return category, nil
+}
+
+func GetCategoryByID(db *sql.DB, id string) (*Category, error) {
+	query := "SELECT id, name, description, image, status, homepage_visible, created_at, updated_at FROM miniapp_categories WHERE id = $1"
+	row := db.QueryRow(query, id)
+
+	var category Category
+	err := row.Scan(
+		&category.ID,
+		&category.Name,
+		&category.Description,
+		&category.Image,
+		&category.Status,
+		&category.HomepageVisible,
+		&category.CreatedAt,
+		&category.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	// category.Image = utils.ImageUrlGenerator(category.Image)
+	return &category, nil
 }

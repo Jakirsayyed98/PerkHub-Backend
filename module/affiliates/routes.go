@@ -16,5 +16,6 @@ func Routes(api *gin.RouterGroup) {
 		app.POST("/active-deactive-affiliate", UpdateAffiliateFlag)
 		app.POST("/delete-affiliate", DeleteAffiliate)
 		app.GET("/cuelink-callback", CueLinkCallBack)
+		app.POST("/affiliate", GetAffiliateByID)
 	}
 }
