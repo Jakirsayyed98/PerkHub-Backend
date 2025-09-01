@@ -109,7 +109,6 @@ func RefreshGames(c *gin.Context) {
 	settings.StatusOk(c, result, "Games refresh successfully", "")
 }
 
-
 func AdminGetGameCategories(c *gin.Context) {
 	store, err := stores.GetStores(c)
 
@@ -141,5 +140,3 @@ func AdminGetGames(c *gin.Context) {
 
 	utils.RespondOK(c, result, "Successfully get games", "")
 }
-
-

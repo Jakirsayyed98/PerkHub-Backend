@@ -5,6 +5,7 @@ import (
 	"PerkHub/settings"
 	"PerkHub/stores"
 	"PerkHub/utils"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -30,7 +31,7 @@ func CreateMiniApp(c *gin.Context) {
 		return
 	}
 
-	result, err := store.MiniAppStore.CreateMiniApp(&request)
+	result, err := store.MiniAppStore.CreateMiniApp(request)
 
 	if err != nil {
 		utils.RespondBadRequest(c, err, "")
@@ -54,7 +55,9 @@ func UpdateActivateAndDeactive(c *gin.Context) {
 		utils.RespondBadRequest(c, err, "")
 		return
 	}
-
+	fmt.Println("Request ID:", request.ID)
+	fmt.Println("Request key:", request.Key)
+	fmt.Println("Request value:", request.Value)
 	result, err := stores.MiniAppStore.ActivateSomekey(request)
 	if err != nil {
 		utils.RespondBadRequest(c, err, "")
@@ -62,22 +65,6 @@ func UpdateActivateAndDeactive(c *gin.Context) {
 	}
 
 	utils.RespondOK(c, result, "Updated Successfully", "")
-}
-
-func GetAllMiniApps(c *gin.Context) {
-	stores, err := stores.GetStores(c)
-	if err != nil {
-		utils.RespondBadRequest(c, err, "")
-		return
-	}
-
-	result, err := stores.MiniAppStore.GetAllMiniApps()
-	if err != nil {
-		utils.RespondBadRequest(c, err, "")
-		return
-	}
-
-	utils.RespondOK(c, result, "Get All MiniApp Successfully", "")
 }
 
 func SearchMiniApp(c *gin.Context) {
@@ -101,23 +88,6 @@ func SearchMiniApp(c *gin.Context) {
 	}
 
 	utils.RespondOK(c, result, "fetched successfully", "")
-}
-
-func DeleteMiniApp(c *gin.Context) {
-	store, err := stores.GetStores(c)
-	if err != nil {
-		utils.RespondBadRequest(c, err, "")
-		return
-	}
-
-	id := c.Param("id")
-	result, err := store.MiniAppStore.DeletMniApp(id)
-	if err != nil {
-		utils.RespondBadRequest(c, err, "")
-		return
-	}
-
-	utils.RespondOK(c, result, "MiniApp Deleted Successfully", "")
 }
 
 func GetStoresByCategory(c *gin.Context) {
@@ -166,4 +136,27 @@ func GenrateSubid(c *gin.Context) {
 		return
 	}
 	utils.RespondOK(c, result, "Generate SubID Successfully", "")
+}
+
+func GetStoreByID(c *gin.Context) {
+	store, err := stores.GetStores(c)
+	if err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	request := request.NewMiniAppRequest()
+
+	if err := c.ShouldBindJSON(request); err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+	fmt.Println("Request ID:", request.ID)
+	result, err := store.MiniAppStore.GetStoreByID(request.ID)
+	if err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	utils.RespondOK(c, result, "Get Store By ID Successfully", "")
 }

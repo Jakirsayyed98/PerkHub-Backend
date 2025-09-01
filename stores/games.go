@@ -5,9 +5,6 @@ import (
 	"PerkHub/services"
 	"database/sql"
 	"fmt"
-	"log"
-
-	"github.com/google/uuid"
 )
 
 type GamesStore struct {
@@ -158,30 +155,22 @@ func (s *GamesStore) RefreshGames() (interface{}, error) {
 }
 
 func (s *GamesStore) SetGameStatus(game *model.SetGameStatus) error {
-	parsedUUID, err := uuid.Parse(game.Id)
-	if err != nil {
-		log.Fatal(err)
-	}
 
-	updateData := model.NewGamesResponse()
-	updateData.Id = parsedUUID
-	switch game.StatusType {
-	case "Trending":
-		updateData.Trending = game.Status
-	case "Popular":
-		updateData.Popular = game.Status
-	case "Status":
-		updateData.Status = game.Status
-	}
-
-	if err := model.UpdateGameStatus(s.db, updateData, game.StatusType, game.Status); err != nil {
-
+	if err := model.UpdateGameStatus(s.db, string(game.StatusType), game.Id, game.Status); err != nil {
 		return err
 	}
 
 	return nil
 }
 
+func (s *GamesStore) SetGameCategoryStatus(game *model.SetGameStatus) error {
+
+	if err := model.ActivateDeactiveGameCategoryKey(s.db, game.Id, game.Status); err != nil {
+		return err
+	}
+
+	return nil
+}
 
 func (s *GamesStore) GetAdminGameCategories() (interface{}, error) {
 	result, err := model.AdminGetGameCategories(s.db)
@@ -199,5 +188,3 @@ func (s *GamesStore) GetAdminGames() (interface{}, error) {
 
 	return result, nil
 }
-
-

@@ -4,10 +4,7 @@ import (
 	"PerkHub/request"
 	"database/sql"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"strconv"
-	"strings"
 
 	"github.com/google/uuid"
 )
@@ -59,10 +56,18 @@ func NewGameSearch() *GameSearch {
 	return &GameSearch{}
 }
 
+type StatusType string
+
+const (
+	StatusTypeStatus   StatusType = "status"
+	StatusTypePopular  StatusType = "popular"
+	StatusTypeTrending StatusType = "trending"
+)
+
 type SetGameStatus struct {
-	Id         string `json:"id"`
-	Status     bool   `json:"status"`
-	StatusType string `json:"StatusType"`
+	Id         string     `json:"id"`
+	Status     bool       `json:"status"`
+	StatusType StatusType `json:"key"`
 }
 
 func NewSetGameStatus() *SetGameStatus {
@@ -433,42 +438,14 @@ func GetGameSearch(db *sql.DB, search string) ([]GamesResponse, error) {
 	return games, nil
 }
 
-func UpdateGameStatus(db *sql.DB, update *GamesResponse, gameStatusType string, status bool) error {
-	var clauses []string
-	var params []interface{}
+func UpdateGameStatus(db *sql.DB, key, id string, value bool) error {
 
-	if update.Id.String() != "" {
-		clauses = append(clauses, "id = $"+strconv.Itoa(len(clauses)+1))
-		params = append(params, update.Id.String())
+	query := fmt.Sprintf("UPDATE games_data SET %s = $1 WHERE id = $2", key)
+	if _, err := db.Exec(query, value, id); err != nil {
+		return err
 	}
-
-	switch gameStatusType {
-	case "Trending":
-		clauses = append(clauses, "trending = $"+strconv.Itoa(len(clauses)+1))
-		params = append(params, status)
-	case "Popular":
-		clauses = append(clauses, "popular = $"+strconv.Itoa(len(clauses)+1))
-		params = append(params, status)
-	case "Status":
-		clauses = append(clauses, "status = $"+strconv.Itoa(len(clauses)+1))
-		params = append(params, status)
-	}
-
-	if len(clauses) > 0 {
-
-		clauses = append(clauses, "updated_at = NOW()")
-		query := "UPDATE games_data SET " + strings.Join(clauses, ", ") + " WHERE id =$" + strconv.Itoa(len(params)+1)
-		params = append(params, update.Id.String())
-		if _, err := db.Exec(query, params...); err != nil {
-			return err
-		}
-
-		return nil
-	}
-
-	return errors.New("nothing to update")
+	return nil
 }
-
 
 func AdminGetAllGames(db *sql.DB) ([]GamesResponse, error) {
 	query := `SELECT id, code, url, name, isPortrait, description, gamepreviews, assets, category_id, colorMuted, colorVibrant, status, privateAllowed, rating, numberOfRatings, gamePlays, hasIntegratedAds, width, height,trending,popular FROM games_data`
@@ -523,5 +500,3 @@ func AdminGetAllGames(db *sql.DB) ([]GamesResponse, error) {
 
 	return games, nil
 }
-
-

@@ -155,3 +155,11 @@ func GetCategoryByID(db *sql.DB, id string) (*Category, error) {
 	// category.Image = utils.ImageUrlGenerator(category.Image)
 	return &category, nil
 }
+
+func ActivateDeactiveCategorykey(db *sql.DB, key, id string, value bool) error {
+	query := fmt.Sprintf("UPDATE miniapp_data SET %s = $1 WHERE id = $2", key)
+	if _, err := db.Exec(query, value, id); err != nil {
+		return err
+	}
+	return nil
+}

@@ -64,3 +64,10 @@ func (s *CategoryStore) GetCategoryByID(id string) (interface{}, error) {
 	}
 	return result, nil
 }
+
+func (s *CategoryStore) ActiveDeactiveCategory(req *request.CategoryActiveDeactive) (interface{}, error) {
+	if err := model.ActivateDeactiveCategorykey(s.db, req.Key, req.CategoryId, req.Value); err != nil {
+		return nil, err
+	}
+	return nil, nil
+}
