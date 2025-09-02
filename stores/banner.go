@@ -3,6 +3,7 @@ package stores
 import (
 	"PerkHub/model"
 	"PerkHub/request"
+	"PerkHub/responses"
 	"database/sql"
 )
 
@@ -90,20 +91,20 @@ func (s *BannerStore) GetBannersByCategoryID(categoryId string) (interface{}, er
 	return data, nil
 }
 
-// func (s *BannerStore) GetBannerbyId(id string) (interface{}, error) {
+func (s *BannerStore) GetBannerbyId(id string) (interface{}, error) {
 
-// 	data, err := model.GetAllBanners(s.db)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	data, err := model.GetBannerbyId(s.db, id)
+	if err != nil {
+		return nil, err
+	}
 
-// 	res := response.NewBanner()
+	res := responses.NewBanner()
 
-// 	result, err := res.BindMultipleUsers(data)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+	err = res.ResponsesBind(data)
+	if err != nil {
+		return nil, err
+	}
 
-// 	return result, nil
+	return res, nil
 
-// }
+}

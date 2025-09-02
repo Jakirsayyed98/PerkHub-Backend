@@ -2,6 +2,7 @@ package admin
 
 import (
 	"PerkHub/stores"
+	"PerkHub/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -9,43 +10,34 @@ import (
 func GetAdminDashBoard(c *gin.Context) {
 	store, err := stores.GetStores(c)
 	if err != nil {
-		c.JSON(400, gin.H{
-			"error": err.Error(),
-		})
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
 	result, err := store.AdminStore.GetAdminDashBoardData()
 	if err != nil {
-		c.JSON(400, gin.H{
-			"error": err.Error(),
-		})
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 	c.JSON(200, gin.H{
 		"data":    result,
 		"message": "Admin Dashboard",
 	})
+	utils.RespondOK(c, result, "Get Dashboard Data Successfully", "")
 }
 
 func GetUserList(c *gin.Context) {
 	store, err := stores.GetStores(c)
 	if err != nil {
-		c.JSON(400, gin.H{
-			"error": err.Error(),
-		})
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
 	result, err := store.LoginStore.GetAllUserDetail()
 	if err != nil {
-		c.JSON(400, gin.H{
-			"error": err.Error(),
-		})
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
-	c.JSON(200, gin.H{
-		"data":    result,
-		"message": "Admin Dashboard",
-	})
+
+	utils.RespondOK(c, result, "Get User List Successfully", "")
 }
