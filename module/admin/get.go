@@ -19,10 +19,6 @@ func GetAdminDashBoard(c *gin.Context) {
 		utils.RespondBadRequest(c, err, "")
 		return
 	}
-	c.JSON(200, gin.H{
-		"data":    result,
-		"message": "Admin Dashboard",
-	})
 	utils.RespondOK(c, result, "Get Dashboard Data Successfully", "")
 }
 

@@ -1,7 +1,6 @@
 package games
 
 import (
-	"PerkHub/settings"
 	"PerkHub/stores"
 	"PerkHub/utils"
 
@@ -22,7 +21,7 @@ func GetGameCategories(c *gin.Context) {
 		return
 	}
 
-	settings.StatusOk(c, result, "Successfully get games categories", "")
+	utils.RespondOK(c, result, "Successfully get games categories", "")
 }
 
 func GetGames(c *gin.Context) {
@@ -39,7 +38,7 @@ func GetGames(c *gin.Context) {
 		return
 	}
 
-	settings.StatusOk(c, result, "Successfully get games", "")
+	utils.RespondOK(c, result, "Successfully get games", "")
 }
 
 func GetPopulargames(c *gin.Context) {
@@ -56,7 +55,7 @@ func GetPopulargames(c *gin.Context) {
 		return
 	}
 
-	settings.StatusOk(c, result, "Successfully get games", "")
+	utils.RespondOK(c, result, "Successfully get games", "")
 }
 
 func GetTrendingGames(c *gin.Context) {
@@ -73,7 +72,7 @@ func GetTrendingGames(c *gin.Context) {
 		return
 	}
 
-	settings.StatusOk(c, result, "Successfully get games", "")
+	utils.RespondOK(c, result, "Successfully get games", "")
 }
 
 func RefreshGameCategories(c *gin.Context) {
@@ -90,7 +89,7 @@ func RefreshGameCategories(c *gin.Context) {
 		return
 	}
 
-	settings.StatusOk(c, nil, "Games Category refresh successfully", "")
+	utils.RespondOK(c, nil, "Games Category refresh successfully", "")
 }
 func RefreshGames(c *gin.Context) {
 	store, err := stores.GetStores(c)
@@ -106,7 +105,7 @@ func RefreshGames(c *gin.Context) {
 		return
 	}
 
-	settings.StatusOk(c, result, "Games refresh successfully", "")
+	utils.RespondOK(c, result, "Games refresh successfully", "")
 }
 
 func AdminGetGameCategories(c *gin.Context) {

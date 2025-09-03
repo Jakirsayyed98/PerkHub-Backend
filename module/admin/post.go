@@ -53,6 +53,7 @@ func RegisterAdmin(c *gin.Context) {
 	store, err := stores.GetStores(c)
 	if err != nil {
 		utils.RespondBadRequest(c, err, "")
+		return
 	}
 
 	var register request.AdminRegister
@@ -64,6 +65,7 @@ func RegisterAdmin(c *gin.Context) {
 
 	_, err = store.AdminStore.AdminRegister(&register)
 	if err != nil {
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 	utils.RespondOK(c, nil, "Registration successful", "")

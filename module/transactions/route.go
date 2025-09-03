@@ -12,6 +12,12 @@ func Routes(api *gin.RouterGroup) {
 	app.Use(middlewear.UserMiddleware())
 
 	app.GET("/getTxnList", GetMiniAppTransaction)
-	app.POST("/affiliate-transactions", AdminTransactionList)
+	// app.POST("/affiliate-transactions", AdminTransactionList)
+
+	admin := api.Group("/admin")
+	admin.Use(middlewear.UserMiddleware())
+	{
+		admin.POST("/affiliate-transactions/:status", AdminTransactionList)
+	}
 
 }
