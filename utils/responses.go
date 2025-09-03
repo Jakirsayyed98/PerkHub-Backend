@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"reflect"
 
 	"github.com/gin-gonic/gin"
 )
@@ -48,10 +49,18 @@ func NewAPIError(err error, code string) *APIError {
 // -----------------------------
 // Generic JSON Response Writer
 // -----------------------------
-
 func Respond(c *gin.Context, statusCode int, message string, data interface{}, err *APIError, token string) {
 	if token != "" {
 		c.Header("Authorization", fmt.Sprintf("Bearer %s", token))
+	}
+
+	// Fix: only use reflection if data is not nil
+	if data != nil {
+		v := reflect.ValueOf(data)
+		if v.Kind() == reflect.Slice && v.IsNil() {
+			// Convert nil slice to empty slice
+			data = reflect.MakeSlice(v.Type(), 0, 0).Interface()
+		}
 	}
 
 	response := APIResponse{

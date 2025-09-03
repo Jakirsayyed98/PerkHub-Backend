@@ -54,6 +54,7 @@ func (banner *Banner) Bind(c *gin.Context, awsInstance *connection.Aws) error {
 	}
 
 	image, _ := utils.UploadFileOnServer(form.File["image"], awsInstance)
+	fmt.Println("image", image)
 	banner.Image = image
 
 	banner.ID = c.PostForm("id")
@@ -67,7 +68,7 @@ func (banner *Banner) Bind(c *gin.Context, awsInstance *connection.Aws) error {
 	statusStr := c.PostForm("status")
 	status, err := strconv.ParseBool(statusStr)
 	if err != nil {
-		return fmt.Errorf("invalid value for popular: %s", statusStr)
+		return fmt.Errorf("invalid value for banner status: %s", statusStr)
 	}
 	banner.Status = status
 

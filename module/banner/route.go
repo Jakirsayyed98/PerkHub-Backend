@@ -9,11 +9,10 @@ import (
 func Routes(api *gin.RouterGroup) {
 	app := api.Group("/admin")
 	app.Use(middlewear.UserMiddleware())
-	app.POST("/create-banner-category", CreateBannerCategory)
-	app.GET("/banner-category", GetBannerCategory)
 	app.POST("/create-banner", CreateBanner)
 	app.POST("/update-banner", UpdateBanner)
 	app.POST("/delete-banner/:id", DeleteBanner)
-	app.GET("/get-banners/:id", GetBanners)
+	app.GET("/get-banner-by-id/:id", GetBannerByID)
+	app.GET("/get-banner-by-category-id/:id", GetBannerByCategoryID)
 
 }

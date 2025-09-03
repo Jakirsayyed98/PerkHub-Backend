@@ -5,7 +5,6 @@ import (
 	"PerkHub/settings"
 	"PerkHub/stores"
 	"PerkHub/utils"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -55,9 +54,7 @@ func UpdateActivateAndDeactive(c *gin.Context) {
 		utils.RespondBadRequest(c, err, "")
 		return
 	}
-	fmt.Println("Request ID:", request.ID)
-	fmt.Println("Request key:", request.Key)
-	fmt.Println("Request value:", request.Value)
+
 	result, err := stores.MiniAppStore.ActivateSomekey(request)
 	if err != nil {
 		utils.RespondBadRequest(c, err, "")
@@ -151,7 +148,7 @@ func GetStoreByID(c *gin.Context) {
 		utils.RespondBadRequest(c, err, "")
 		return
 	}
-	fmt.Println("Request ID:", request.ID)
+
 	result, err := store.MiniAppStore.GetStoreByID(request.ID)
 	if err != nil {
 		utils.RespondBadRequest(c, err, "")

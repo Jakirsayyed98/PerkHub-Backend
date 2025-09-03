@@ -2,12 +2,13 @@ package model
 
 import (
 	"PerkHub/request"
-	"PerkHub/utils"
 	"database/sql"
 	"errors"
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type BannerCategory struct {
@@ -122,6 +123,12 @@ func UpdateBannerData(db *sql.DB, item *request.Banner) error {
 		paramIndex++
 	}
 
+	if item.Image != "" {
+		clauses = append(clauses, fmt.Sprintf("image = $%d", paramIndex))
+		params = append(params, item.Image)
+		paramIndex++
+	}
+
 	// Add the updated_at timestamp field
 	clauses = append(clauses, fmt.Sprintf("updated_at = $%d", paramIndex))
 	params = append(params, time.Now())
@@ -157,7 +164,7 @@ func GetBannersByCategoryID(db *sql.DB, categoryID string) ([]*Banner, error) {
 	// Execute the query with the provided categoryID as a parameter
 	rows, err := db.Query(query, categoryID)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("no data found")
 	}
 	defer rows.Close()
 
@@ -182,7 +189,7 @@ func GetBannersByCategoryID(db *sql.DB, categoryID string) ([]*Banner, error) {
 		if err != nil {
 			return nil, err
 		}
-		banner.Image = utils.ImageUrlGenerator(banner.Image)
+
 		banners = append(banners, banner)
 	}
 
@@ -195,47 +202,42 @@ func GetBannersByCategoryID(db *sql.DB, categoryID string) ([]*Banner, error) {
 	return banners, nil
 }
 
-func GetBannerbyId(db *sql.DB, id string) ([]*Banner, error) {
-	// Modify the query to filter by banner_category_id
-	query := "SELECT id, name, banner_category_id, image, url, status, start_date, end_date, created_at, updated_at FROM banner_data WHERE banner_category_id = $1"
+func GetBannerbyId(db *sql.DB, id string) (*Banner, error) {
+	parsedID, err := uuid.Parse(id)
+	if err != nil {
+		return nil, fmt.Errorf("invalid UUID: %v", err)
+	}
 
+	query := "SELECT id,name, banner_category_id, image, url, status, start_date, end_date, created_at, updated_at FROM banner_data WHERE id = $1"
 	// Execute the query with the provided categoryID as a parameter
-	rows, err := db.Query(query)
+	row := db.QueryRow(query, parsedID)
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
 	// Initialize a slice to hold the banners
-	var banners []*Banner
 
-	// Loop through the result set and scan the data into Banner structs
-	for rows.Next() {
-		banner := &Banner{}
-		err := rows.Scan(
-			&banner.ID,
-			&banner.Name,
-			&banner.BannerCategoryId,
-			&banner.Image,
-			&banner.Url,
-			&banner.Status,
-			&banner.StartDate,
-			&banner.EndDate,
-			&banner.CreatedAt,
-			&banner.UpdatedAt,
-		)
-		if err != nil {
-			return nil, err
-		}
-		banner.Image = utils.ImageUrlGenerator(banner.Image)
-		banners = append(banners, banner)
+	banner := &Banner{}
+	err = row.Scan(
+		&banner.ID,
+		&banner.Name,
+		&banner.BannerCategoryId,
+		&banner.Image,
+		&banner.Url,
+		&banner.Status,
+		&banner.StartDate,
+		&banner.EndDate,
+		&banner.CreatedAt,
+		&banner.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
 	}
-
 	// Check if there were any errors while scanning rows
-	if err := rows.Err(); err != nil {
+	if err := row.Err(); err != nil {
 		return nil, err
 	}
 
 	// Return the list of banners for the specified category
-	return banners, nil
+	return banner, nil
 }
