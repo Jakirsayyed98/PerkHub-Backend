@@ -20,6 +20,7 @@ type Stores struct {
 	GamesStore              *GamesStore
 	Withdrawal              *WithdrawalStore
 	AdminStore              *AdminStore
+	TicketStore             *TicketStore
 }
 
 func NewStores(db *sql.DB) *Stores {
@@ -34,6 +35,7 @@ func NewStores(db *sql.DB) *Stores {
 		GamesStore:              NewGameStore(db),
 		Withdrawal:              NewWithdrawalStore(db),
 		AdminStore:              NewAdminStoreStore(db),
+		TicketStore:             NewTicketStore(db),
 	}
 }
 
@@ -50,6 +52,7 @@ func (s *Stores) BindStore(awsIstance *connection.Aws) gin.HandlerFunc {
 		ctx.Set("withdrawal_store", s.Withdrawal)
 		ctx.Set("aws_instance", awsIstance)
 		ctx.Set("admin_store", s.AdminStore)
+		ctx.Set("ticket_store", s.TicketStore)
 		ctx.Next()
 	}
 }
@@ -109,6 +112,10 @@ func GetStores(c *gin.Context) (*Stores, error) {
 	if !err {
 		return nil, errors.New("Admin Store Error")
 	}
+	ticketStore, err := c.MustGet("ticket_store").(*TicketStore)
+	if !err {
+		return nil, errors.New("Ticket Store Error")
+	}
 
 	return &Stores{
 		LoginStore:              loginStore,
@@ -121,6 +128,7 @@ func GetStores(c *gin.Context) (*Stores, error) {
 		GamesStore:              gamestore,
 		Withdrawal:              withdrawalStore,
 		AdminStore:              adminStore,
+		TicketStore:             ticketStore,
 	}, nil
 }
 

@@ -94,6 +94,42 @@ func GetWithdrawalByUser(db *sql.DB, userID string) ([]WithdrawalRequest, error)
 
 	return withdrawalRequest, nil
 }
+
+func GetAdminWithdrawalByStatus(db *sql.DB, status string) ([]WithdrawalRequest, error) {
+	query := `SELECT id,user_id,requested_amt,processed_amt,payment_method_id, status,reason,txn_id,txn_time,created_at FROM withdrawal_requests WHERE status = $1 ORDER BY created_at DESC;`
+	rows, err := db.Query(query, status)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var withdrawalRequest []WithdrawalRequest
+	for rows.Next() {
+		var wr WithdrawalRequest
+		if err := rows.Scan(
+			&wr.ID,
+			&wr.UserID,
+			&wr.RequestedAmt,
+			&wr.ProcessedAmt,
+			&wr.PaymentMethodID,
+			&wr.Status,
+			&wr.Reason,
+			&wr.TxnID,
+			&wr.TxnTime,
+			&wr.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		withdrawalRequest = append(withdrawalRequest, wr)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return withdrawalRequest, nil
+}
+
 func ApproveWithdrawal(db *sql.DB, withdrawalID string, processedAmt float64, adminID uuid.UUID, txnID string) error {
 	query := `
         UPDATE withdrawal_requests

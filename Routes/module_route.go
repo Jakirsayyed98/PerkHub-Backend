@@ -9,6 +9,7 @@ import (
 	miniapp "PerkHub/module/miniApp"
 	"PerkHub/module/mobile"
 	reglogin "PerkHub/module/reg_login"
+	"PerkHub/module/tickets"
 	"PerkHub/module/transactions"
 	"PerkHub/module/withdrawal"
 	"time"
@@ -31,6 +32,7 @@ func Endpoints(app *gin.Engine) {
 		transactions.Routes(api)
 		games.Routes(api)
 		withdrawal.Routes(api)
+		tickets.RegisterRoutes(api)
 	}
 
 	// ---------- ADMIN PANEL ROUTES ----------
