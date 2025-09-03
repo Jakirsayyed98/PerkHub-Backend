@@ -1,9 +1,11 @@
 package model
 
 import (
+	"PerkHub/constants"
 	"PerkHub/request"
 	"database/sql"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -139,7 +141,6 @@ func FindMiniAppTransactionBySubID(db *sql.DB, req *request.CueLinkCallBackReque
 		&transaction.UpdatedAt,
 	)
 	if err != nil {
-
 		if err == sql.ErrNoRows {
 			return nil, fmt.Errorf("transaction not found")
 		}
@@ -149,23 +150,15 @@ func FindMiniAppTransactionBySubID(db *sql.DB, req *request.CueLinkCallBackReque
 }
 
 func UpdateMiniAppTransaction(db *sql.DB, req *request.CueLinkCallBackRequest) error {
-	query := "UPDATE miniapp_transactions SET status = $1 AND updated_at = $5  WHERE subid = $2 AND subid1 = $3 AND subid2 = $4"
-
-	status := "0"
-	if req.Status == "Pending" || req.Status == "pending" {
-		status = "0"
-	} else if req.Status == "Payable" || req.Status == "payable" {
-		status = "1"
-	} else if req.Status == "Validated" || req.Status == "validated" {
-		status = "1"
-	} else if req.Status == "Rejected" || req.Status == "rejected" {
-		status = "2"
-	} else {
-		status = "0"
+	query := "UPDATE miniapp_transactions SET status = $1 , updated_at = $5  WHERE subid = $2 AND subid1 = $3 AND subid2 = $4"
+	status := "pending" // default
+	if val, ok := constants.StatusMap[strings.ToLower(req.Status)]; ok {
+		status = val
 	}
-
+	fmt.Println("Updating transaction with status:", status)
 	_, err := db.Exec(query, status, req.SubID, req.SubID1, req.SubID2, time.Now())
 	if err != nil {
+		fmt.Println("Error updating transaction:", err)
 		return err
 	}
 	return nil
@@ -175,23 +168,16 @@ func InsertMiniAppTransaction(db *sql.DB, req *MiniAppTransactions) error {
 	sqlQuery := `INSERT INTO miniapp_transactions ( campaign_id, commission, user_commission, user_id,order_id, reference_id, sale_amount, status, subid, subid1, subid2,miniapp_id, commission_percentage, transaction_date, transaction_id, created_at, updated_at )
 	 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`
 
-	status := "0"
-	if req.Status == "Pending" || req.Status == "pending" {
-		status = "0"
-	} else if req.Status == "Payable" || req.Status == "payable" {
-		status = "1"
-	} else if req.Status == "Validated" || req.Status == "validated" {
-		status = "1"
-	} else if req.Status == "Rejected" || req.Status == "rejected" {
-		status = "2"
-	} else {
-		status = "0"
+	status := "0" // default
+	if val, ok := constants.StatusMap[strings.ToLower(req.Status)]; ok {
+		status = val
 	}
+
 	_, err := db.Exec(sqlQuery, req.CampaignID, req.Commission, req.UserCommission, req.UserId, req.OrderID, req.ReferenceID, req.SaleAmount, status, req.SubID, req.SubID1, req.SubID2, req.MiniAppName, req.CommissionPercentage, req.TransactionDate, req.TransactionID, time.Now(), time.Now())
 
 	return err
 }
-func GetAllAffiliateTransactions(db *sql.DB, page int, limit int) ([]MiniAppTransactions, error) {
+func GetAllAffiliateTransactions(db *sql.DB, page, limit int, status string) ([]MiniAppTransactions, error) {
 	// Calculate offset
 	// 	offset := (page - 1) * limit
 	// 	// SQL query with LIMIT and OFFSET for pagination
@@ -203,14 +189,17 @@ func GetAllAffiliateTransactions(db *sql.DB, page int, limit int) ([]MiniAppTran
 	// ORDER BY created_at DESC
 	// LIMIT 10 OFFSET 0
 	// `)
+	if val, ok := constants.StatusMap[strings.ToLower(status)]; ok {
+		status = val
+	}
 	query := `
 			SELECT id, campaign_id, commission, user_commission, user_id, order_id, reference_id,
 	       sale_amount, status, subid, subid1, subid2, miniapp_id, commission_percentage,
 	       transaction_date, transaction_id, created_at, updated_at
-	FROM miniapp_transactions
+	FROM miniapp_transactions WHERE status=$1
 	ORDER BY created_at DESC
 	`
-	rows, err := db.Query(query)
+	rows, err := db.Query(query, status)
 	if err != nil {
 		return nil, err
 	}

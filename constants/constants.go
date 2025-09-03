@@ -91,3 +91,10 @@ var (
 	IMAGE_BASE_URL     = getImageBaseUrl()
 	FAST2SMS_API_KEY   = getFast2SMSKey()
 )
+
+var StatusMap = map[string]string{
+	"pending":   "pending",
+	"payable":   "verified",
+	"validated": "verified",
+	"rejected":  "rejected",
+}

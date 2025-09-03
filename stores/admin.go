@@ -71,9 +71,9 @@ func (s *AdminStore) GetAdminDashBoardData() (interface{}, error) {
 	return response, nil
 }
 
-func (S *AdminStore) AffiliateTransactions(request *request.AdminAffiliateTransactionsRequest) (interface{}, error) {
+func (S *AdminStore) AffiliateTransactions(request *request.AdminAffiliateTransactionsRequest, status string) (interface{}, error) {
 
-	data, err := model.GetAllAffiliateTransactions(S.db, request.PageNo, request.Limit)
+	data, err := model.GetAllAffiliateTransactions(S.db, request.PageNo, request.Limit, status)
 	if err != nil {
 		return nil, err
 	}

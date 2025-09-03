@@ -2,7 +2,6 @@ package reglogin
 
 import (
 	"PerkHub/request"
-	"PerkHub/settings"
 	"PerkHub/stores"
 	"PerkHub/utils"
 	"errors"
@@ -72,11 +71,11 @@ func VerifyOTP(c *gin.Context) {
 
 	result, err := s.LoginStore.VerifyOTP(&login)
 	if err != nil {
-		settings.StatusBadRequest(c, err.Error(), "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
-	settings.StatusOk(c, result, "OTP verified Successfully", "")
+	utils.RespondOK(c, result, "OTP verified Successfully", "")
 
 }
 

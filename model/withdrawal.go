@@ -1,7 +1,6 @@
 package model
 
 import (
-	"PerkHub/request"
 	"database/sql"
 	"fmt"
 	"time"
@@ -9,129 +8,125 @@ import (
 	"github.com/google/uuid"
 )
 
-type UserCashWithdrawal struct {
-	Id            uuid.UUID `json:"id"`
-	Requested_Amt string    `json:"requested_amt"`
-	UserId        string    `json:"user_id"`
-	Reason        string    `json:"reason"`
-	VPA_ID        string    `json:"vpa_id"`
-	Status        string    `json:"status"`
-	TxnId         string    `json:"txn_id"`
-	TxnTime       string    `json:"txn_time"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
+type WithdrawalRequest struct {
+	ID              uuid.UUID  `db:"id"`
+	UserID          string     `db:"user_id"`
+	RequestedAmt    float64    `db:"requested_amt"`
+	ProcessedAmt    *float64   `db:"processed_amt"`
+	PaymentMethodID uuid.UUID  `db:"payment_method_id"`
+	Status          string     `db:"status"` // 'pending', 'approved', 'rejected'
+	Reason          *string    `db:"reason"`
+	AdminID         *uuid.UUID `db:"admin_id"`
+	TxnID           *string    `db:"txn_id"`
+	TxnTime         *time.Time `db:"txn_time"`
+	CreatedAt       time.Time  `db:"created_at"`
+	UpdatedAt       time.Time  `db:"updated_at"`
 }
 
-func NewUserCashWithdrawal() *UserCashWithdrawal {
-	return &UserCashWithdrawal{}
+func NewWithdrawalRequest() *WithdrawalRequest {
+	return &WithdrawalRequest{}
 }
 
-func InserWithdrawalRequest(sql *sql.DB, req request.WithdrawalRequest, userId string) error {
-	query := `INSERT INTO user_cash_withdrawal (requested_amt, VPA_ID,user_id, status, created_at, updated_at) 
-				VALUES ($1, $2,$3, $4, NOW(), NOW());`
-	_, err := sql.Exec(query, req.RequestedAmt, req.Upi, userId, "0")
+func (wr *WithdrawalRequest) Bind(userId, PaymentMethodID string, requestAmount float64) error {
+	paymentModeID, err := uuid.Parse(PaymentMethodID)
 	if err != nil {
 		return err
 	}
+	wr.UserID = userId
+	wr.RequestedAmt = requestAmount
+	wr.PaymentMethodID = paymentModeID
 	return nil
 }
 
-func WithdrawalTxnList(db *sql.DB, userId string) ([]UserCashWithdrawal, error) {
-	var reason sql.NullString
-	var txnId sql.NullString
-	var txnTime sql.NullString
-	query := "SELECT id,requested_amt,user_id, reason, vpa_id,status,txn_id,txn_time, created_at, updated_at FROM user_cash_withdrawal WHERE user_id = $1"
+func InsertWithdrawalRequest(db *sql.DB, wr *WithdrawalRequest) (string, error) {
+	query := `
+        INSERT INTO withdrawal_requests (user_id, requested_amt, payment_method_id)
+VALUES ($1, $2, $3)
+        RETURNING id;
+    `
 
-	rows, err := db.Query(query, userId)
-	defer rows.Close()
+	var id string
+	err := db.QueryRow(
+		query,
+		wr.UserID,
+		wr.RequestedAmt,
+		wr.PaymentMethodID,
+	).Scan(&id)
 
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("transaction not found")
-		}
-		return nil, err
+		return "", err
 	}
 
-	var transactions []UserCashWithdrawal
-
-	for rows.Next() {
-		var transaction UserCashWithdrawal
-
-		err := rows.Scan(
-			&transaction.Id,
-			&transaction.Requested_Amt,
-			&transaction.UserId,
-			&reason,
-			&transaction.VPA_ID,
-			&transaction.Status,
-			&txnId,
-			&txnTime,
-			&transaction.CreatedAt,
-			&transaction.UpdatedAt,
-		)
-		if err != nil {
-			return nil, err
-		}
-		if reason.Valid {
-			transaction.Reason = reason.String
-		} else {
-			transaction.Reason = ""
-		}
-		if txnId.Valid {
-			transaction.TxnId = txnId.String
-		} else {
-			transaction.TxnId = ""
-		}
-		if txnTime.Valid {
-			transaction.TxnTime = txnTime.String
-		} else {
-			transaction.TxnTime = ""
-		}
-		transactions = append(transactions, transaction)
-	}
-
-	return transactions, nil
+	return id, nil
 }
 
-func WithdrawalCompletedTxnList(db *sql.DB, userId string) ([]UserCashWithdrawal, error) {
-	var reason sql.NullString
-	query := "SELECT id,requested_amt,user_id, reason, vpa_id,status, created_at, updated_at FROM user_cash_withdrawal WHERE user_id = $1 AND status='1'"
-
-	rows, err := db.Query(query, userId)
+func GetWithdrawalByUser(db *sql.DB, userID string) ([]WithdrawalRequest, error) {
+	query := `SELECT id,user_id,requested_amt,processed_amt,payment_method_id, status,reason,txn_id,txn_time,created_at FROM withdrawal_requests WHERE user_id = $1 ORDER BY created_at DESC;`
+	rows, err := db.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
 	defer rows.Close()
 
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("transaction not found")
+	var withdrawalRequest []WithdrawalRequest
+	for rows.Next() {
+		var wr WithdrawalRequest
+		if err := rows.Scan(
+			&wr.ID,
+			&wr.UserID,
+			&wr.RequestedAmt,
+			&wr.ProcessedAmt,
+			&wr.PaymentMethodID,
+			&wr.Status,
+			&wr.Reason,
+			&wr.TxnID,
+			&wr.TxnTime,
+			&wr.CreatedAt,
+		); err != nil {
+			return nil, err
 		}
+		withdrawalRequest = append(withdrawalRequest, wr)
+	}
+
+	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 
-	var transactions []UserCashWithdrawal
+	return withdrawalRequest, nil
+}
+func ApproveWithdrawal(db *sql.DB, withdrawalID string, processedAmt float64, adminID uuid.UUID, txnID string) error {
+	query := `
+        UPDATE withdrawal_requests
+        SET status = 'approved',
+            processed_amt = $2,
+            admin_id = $3,
+            txn_id = $4,
+            txn_time = NOW(),
+            updated_at = NOW()
+        WHERE id = $1;
+    `
 
-	for rows.Next() {
-		var transaction UserCashWithdrawal
-
-		err := rows.Scan(
-			&transaction.Id,
-			&transaction.Requested_Amt,
-			&transaction.UserId,
-			&reason,
-			&transaction.VPA_ID,
-			&transaction.Status,
-			&transaction.CreatedAt,
-			&transaction.UpdatedAt,
-		)
-		if err != nil {
-			return nil, err
-		}
-		if reason.Valid {
-			transaction.Reason = reason.String
-		} else {
-			transaction.Reason = ""
-		}
-		transactions = append(transactions, transaction)
+	_, err := db.Exec(query, withdrawalID, processedAmt, adminID, txnID)
+	if err != nil {
+		return fmt.Errorf("failed to approve withdrawal %s: %w", withdrawalID, err)
 	}
 
-	return transactions, nil
+	return nil
+}
+
+func RejectWithdrawal(db *sql.DB, withdrawalID uuid.UUID, reason string, adminID uuid.UUID) error {
+	query := `
+	  UPDATE withdrawal_requests SET status = 'rejected',
+	  reason = $2,
+	  admin_id = $3,
+	  updated_at = NOW()
+	  WHERE id = $1;
+    `
+
+	_, err := db.Exec(query, withdrawalID, reason, adminID)
+	if err != nil {
+		return fmt.Errorf("failed to reject withdrawal %s: %w", withdrawalID, err)
+	}
+
+	return nil
 }

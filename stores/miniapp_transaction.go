@@ -49,12 +49,12 @@ func (s *MiniAppTransactionStore) GetMiniAppTransaction(userId string) (interfac
 
 	}
 
-	withdrawalList, err := model.WithdrawalCompletedTxnList(s.db, userId)
+	withdrawalList, err := model.GetWithdrawalByUser(s.db, userId)
 	if err != nil {
 		return nil, err
 	}
 	for _, v := range withdrawalList {
-		amt, _ := strconv.ParseFloat(v.Requested_Amt, 64)
+		amt := v.RequestedAmt
 		withdrawal += amt
 	}
 	return gin.H{

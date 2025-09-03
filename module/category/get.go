@@ -1,8 +1,8 @@
 package category
 
 import (
-	"PerkHub/settings"
 	"PerkHub/stores"
+	"PerkHub/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,16 +11,16 @@ func GetAllCategory(c *gin.Context) {
 
 	store, err := stores.GetStores(c)
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
 	result, err := store.CategoryStore.GetAllCategory()
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
-	settings.StatusOk(c, result, "Category fetched Successfully", "")
+	utils.RespondOK(c, result, "Category fetched Successfully", "")
 }
 
 func GetCategoryByID(c *gin.Context) {
@@ -28,14 +28,14 @@ func GetCategoryByID(c *gin.Context) {
 
 	store, err := stores.GetStores(c)
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
 
 	result, err := store.CategoryStore.GetCategoryByID(id)
 	if err != nil {
-		settings.StatusBadRequest(c, err, "")
+		utils.RespondBadRequest(c, err, "")
 		return
 	}
-	settings.StatusOk(c, result, "Category fetched Successfully", "")
+	utils.RespondOK(c, result, "Category fetched Successfully", "")
 }
