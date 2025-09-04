@@ -16,6 +16,7 @@ type MiniAppStore struct {
 }
 
 func NewMiniAppStore(dbs *sql.DB) *MiniAppStore {
+
 	return &MiniAppStore{
 		db: dbs,
 	}

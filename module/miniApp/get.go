@@ -39,3 +39,19 @@ func GetAllMiniApps(c *gin.Context) {
 
 	utils.RespondOK(c, result, "Get All MiniApp Successfully", "")
 }
+
+func GetStoresCategoryRefresh(c *gin.Context) {
+	stores, err := stores.GetStores(c)
+	if err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	result, err := stores.CategoryStore.GetStoresCategoryRefresh()
+	if err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	utils.RespondOK(c, result, "Category Updated Succesfully", "")
+}

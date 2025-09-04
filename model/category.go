@@ -41,13 +41,13 @@ func DeleteCategoryByID(db *sql.DB, id string) error {
 
 func UpdateCategory(db *sql.DB, item *request.Category) error {
 	query := `
-		UPDATE miniapp_categories 
-SET 
-    name = $1, 
-    description = $2, 
-    image = $3, 
-    status = $4, 
-    homepage_visible = $5, 
+		UPDATE miniapp_categories
+SET
+    name = $1,
+    description = $2,
+    image = $3,
+    status = $4,
+    homepage_visible = $5,
     updated_at = $6
 WHERE id = $7`
 	_, err := db.Exec(query, item.Name, item.Description, item.Image, item.Status, item.HomepageVisible, time.Now(), item.ID)
@@ -162,4 +162,20 @@ func ActivateDeactiveCategorykey(db *sql.DB, key, id string, value bool) error {
 		return err
 	}
 	return nil
+}
+
+func CategoryExists(db *sql.DB, name string) (bool, error) {
+	query := "SELECT 1 FROM miniapp_categories WHERE name = $1 LIMIT 1"
+	row := db.QueryRow(query, name)
+
+	var exists int
+	err := row.Scan(&exists)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false, nil // category does not exist
+		}
+		return false, err // some other error
+	}
+
+	return true, nil // category exists
 }
