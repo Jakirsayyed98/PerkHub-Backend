@@ -79,9 +79,9 @@ func GetTicketsByUserId(db *sql.DB, userId string) ([]*Ticket, error) {
 
 func GetTicketMessagesByTicketID(db *sql.DB, ticketId string) ([]TicketMessage, error) {
 	query := `
-		SELECT id, ticket_id, author_type, body, created_at 
-		FROM ticket_messages 
-		WHERE ticket_id = $1 
+		SELECT id, ticket_id, author_type, body, created_at
+		FROM ticket_messages
+		WHERE ticket_id = $1
 		ORDER BY created_at ASC;`
 
 	rows, err := db.Query(query, ticketId)
@@ -105,4 +105,23 @@ func GetTicketMessagesByTicketID(db *sql.DB, ticketId string) ([]TicketMessage, 
 	}
 
 	return messages, nil
+}
+
+func GetTicketsByStatus(db *sql.DB, ticketStatus string) ([]*Ticket, error) {
+	query := "SELECT id, user_id, subject, status, created_at FROM tickets WHERE status = $1;"
+	rows, err := db.Query(query, ticketStatus)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var tickets []*Ticket
+	for rows.Next() {
+		ticket := NewTicket()
+		if err := rows.Scan(&ticket.ID, &ticket.UserID, &ticket.Subject, &ticket.Status, &ticket.CreatedAt); err != nil {
+			return nil, err
+		}
+		tickets = append(tickets, ticket)
+	}
+	return tickets, nil
 }

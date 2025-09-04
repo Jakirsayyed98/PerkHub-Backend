@@ -12,3 +12,21 @@ type GetTicketRequest struct {
 func NewCreateTicketRequest() *CreateTicketRequest {
 	return &CreateTicketRequest{}
 }
+
+type SendTicketMsg struct {
+	TicketId string `json:"ticketId" binding:"required"`
+	Message  string `json:"msg" binding:"required"`
+}
+
+func NewSendTicketMsg() *SendTicketMsg {
+	return &SendTicketMsg{}
+}
+
+type AdminReplyTicketMsg struct {
+	TicketId string `json:"ticketId" binding:"required"`
+	Message  string `json:"msg" binding:"required"`
+}
+
+func NewAdminReplyTicketMsg() *AdminReplyTicketMsg {
+	return &AdminReplyTicketMsg{}
+}

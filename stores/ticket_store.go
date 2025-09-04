@@ -36,6 +36,24 @@ func (s *TicketStore) CreateTicket(req *request.CreateTicketRequest, userId stri
 	return ticketId, nil
 }
 
+func (s *TicketStore) SendTicketMessage(req *request.SendTicketMsg, userId string) (string, error) {
+	ticketMsg := model.NewTicketMessage(req.TicketId, "user", req.Message)
+	err := model.InsertTicketMessage(s.db, ticketMsg)
+	if err != nil {
+		return "", err
+	}
+	return ticketMsg.TicketID, nil
+}
+
+func (s *TicketStore) AdminSentTicketReply(req *request.AdminReplyTicketMsg, userId string) (string, error) {
+	ticketMsg := model.NewTicketMessage(req.TicketId, "admin", req.Message)
+	err := model.InsertTicketMessage(s.db, ticketMsg)
+	if err != nil {
+		return "", err
+	}
+	return ticketMsg.TicketID, nil
+}
+
 func (s *TicketStore) GetTicketsByUserId(userId string) ([]*model.Ticket, error) {
 	if userId == "" {
 		return nil, errors.New("user ID is required")
@@ -48,4 +66,16 @@ func (s *TicketStore) GetTicketMessagesByTicketID(ticketId string) ([]model.Tick
 		return nil, errors.New("ticket ID is required")
 	}
 	return model.GetTicketMessagesByTicketID(s.db, ticketId)
+}
+
+func (s *TicketStore) GetTicketsByStatus(ticketStatus string) ([]*model.Ticket, error) {
+	if ticketStatus == "" {
+		return nil, errors.New("ticket Status is required")
+	}
+
+	result, err := model.GetTicketsByStatus(s.db, ticketStatus)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }

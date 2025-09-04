@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"net/url"
 )
 
 type MiniAppStore struct {
@@ -23,11 +24,11 @@ func NewMiniAppStore(dbs *sql.DB) *MiniAppStore {
 func (s *MiniAppStore) CreateMiniApp(req *request.MiniAppRequest) (interface{}, error) {
 
 	if req.ID != "" {
-		if err := model.UpdateMiniAppData(s.db, req); err != nil {
+		if err := model.UpdateMiniApp(s.db, req); err != nil {
 			return nil, err
 		}
 	} else {
-		if err := model.InsertMiniAppData(s.db, req); err != nil {
+		if err := model.InsertMiniApp(s.db, req); err != nil {
 			return nil, err
 		}
 	}
@@ -36,7 +37,7 @@ func (s *MiniAppStore) CreateMiniApp(req *request.MiniAppRequest) (interface{}, 
 }
 
 func (s *MiniAppStore) ActivateSomekey(req *request.ActiveDeactiveMiniAppReq) (interface{}, error) {
-	if err := model.ActivateSomekey(s.db, req.Key, req.ID, req.Value); err != nil {
+	if err := model.ToggleMiniAppFlag(s.db, req.Key, req.ID, req.Value); err != nil {
 		return nil, err
 	}
 
@@ -63,7 +64,7 @@ func (s *MiniAppStore) GetAllMiniApps() (interface{}, error) {
 
 func (s *MiniAppStore) GetStoreByID(id string) (interface{}, error) {
 
-	data, err := model.GetStoreByID(s.db, id)
+	data, err := model.GetMiniAppByID(s.db, id)
 
 	if err != nil {
 		return nil, err
@@ -137,11 +138,48 @@ func (s *MiniAppStore) GenrateSubid(miniAppName, userID string) (interface{}, er
 	}
 	subid2 := userID
 	subid3 := data[0].Name
-	url := fmt.Sprintf("%s&subid=%s&subid2=%s&subid3=%s", data[0].Url, subid1, subid2, subid3)
+	// Encode the original store URL for Cuelinks
+	encodedURL := url.QueryEscape(data[0].Url)
+
+	affiliateURL := fmt.Sprintf(
+		"https://linksredirect.com/?cid=198215&source=linkkit&url=%s&subid=%s&subid2=%s&subid3=%s",
+		encodedURL, subid1, subid2, subid3,
+	)
+
+	// url := fmt.Sprintf("%s&subid=%s&subid2=%s&subid3=%s", data[0].Url, subid1, subid2, subid3)
 
 	err = model.InsertGenratedSubId(s.db, miniAppName, userID, subid1, subid2)
 	if err != nil {
 		return nil, err
 	}
-	return url, nil
+	// Wrap with your own domain (short redirect link)
+	// finalURL := fmt.Sprintf("https://www.perkhub.in/r?u=%s", url.QueryEscape(affiliateURL))
+	// finalURL := fmt.Sprintf("http://3.7.77.135:4215/r?u=%s", url.QueryEscape(affiliateURL))
+	finalURL := fmt.Sprintf("http://localhost:4215/r?u=%s", url.QueryEscape(affiliateURL))
+
+	return finalURL, nil
 }
+
+// func (s *MiniAppStore) GenrateSubid(miniAppName, userID string) (interface{}, error) {
+// 	data, err := model.SearchMiniApps(s.db, miniAppName)
+
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	if data == nil {
+// 		return nil, errors.New("App not found")
+// 	}
+// 	subid1, err := utils.GenerateRandomUUID(20)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	subid2 := userID
+// 	subid3 := data[0].Name
+// 	url := fmt.Sprintf("%s&subid=%s&subid2=%s&subid3=%s", data[0].Url, subid1, subid2, subid3)
+
+// 	err = model.InsertGenratedSubId(s.db, miniAppName, userID, subid1, subid2)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	return url, nil
+// }

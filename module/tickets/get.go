@@ -46,3 +46,39 @@ func GetTicketMessagesByTicketID(c *gin.Context) {
 
 	utils.RespondOK(c, result, "Tickets retrieved successfully", "")
 }
+
+func GetTicketsByStatus(c *gin.Context) {
+	store, err := stores.GetStores(c)
+	if err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	ticketStatus := c.Param("status")
+
+	result, err := store.TicketStore.GetTicketsByStatus(ticketStatus)
+	if err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	utils.RespondOK(c, result, "Tickets retrieved successfully", "")
+}
+
+func AdminTicketClosed(c *gin.Context) {
+	store, err := stores.GetStores(c)
+	if err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	ticketId := c.Param("id")
+
+	result, err := store.TicketStore.GetTicketsByStatus(ticketId)
+	if err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	utils.RespondOK(c, result, "Tickets retrieved successfully", "")
+}

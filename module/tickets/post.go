@@ -33,3 +33,55 @@ func CreateTicket(c *gin.Context) {
 
 	utils.RespondOK(c, result, "Ticket created successfully", "")
 }
+
+func SendMsg(c *gin.Context) {
+	// Handler logic
+	store, err := stores.GetStores(c)
+	if err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	// Validate and bind the request
+	req := request.NewSendTicketMsg()
+	if err := c.ShouldBindJSON(req); err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	userId := c.MustGet("user_id").(string)
+
+	result, err := store.TicketStore.SendTicketMessage(req, userId)
+	if err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	utils.RespondOK(c, result, "Ticket message sent successfully.", "")
+}
+
+func AdminSentTicketReply(c *gin.Context) {
+	// Handler logic
+	store, err := stores.GetStores(c)
+	if err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	// Validate and bind the request
+	req := request.NewAdminReplyTicketMsg()
+	if err := c.ShouldBindJSON(req); err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	userId := c.MustGet("user_id").(string)
+
+	result, err := store.TicketStore.AdminSentTicketReply(req, userId)
+	if err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	utils.RespondOK(c, result, "Ticket message sent successfully.", "")
+}

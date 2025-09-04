@@ -12,30 +12,25 @@ import (
 )
 
 type MiniApp struct {
-	ID                   uuid.UUID `db:"id" json:"id"`                                         // Unique identifier
-	MiniAppCategoryID    string    `db:"miniapp_category_id" json:"miniapp_category_id"`       // Category ID
-	MiniAppSubcategoryID string    `db:"miniapp_subcategory_id" json:"miniapp_subcategory_id"` // Subcategory ID
-	Name                 string    `db:"name" json:"name"`                                     // Name of the miniapp
-	Icon                 string    `db:"icon" json:"icon"`                                     // URL or path to the icon
-	Description          string    `db:"description" json:"description"`                       // Description of the miniapp
-	CashbackTerms        string    `db:"cashback_terms" json:"cashback_terms"`                 // Terms for cashback
-	CashbackRates        string    `db:"cashback_rates" json:"cashback_rates"`                 // Rates for cashback
-	Status               bool      `db:"status" json:"status"`                                 // Status: '0' for inactive, '1' for active
-	UrlType              string    `db:"url_type" json:"url_type"`                             // Type of URL
-	CBActive             bool      `db:"cb_active" json:"cb_active"`                           // Cashback active status
-	CBPercentage         string    `db:"cb_percentage" json:"cb_percentage"`                   // Cashback percentage
-	Url                  string    `db:"url" json:"url"`                                       // URL of the miniapp
-	Label                string    `db:"label" json:"label"`                                   // Label for the miniapp
-	Banner               string    `db:"banner" json:"banner"`                                 // Banner URL
-	Logo                 string    `db:"logo" json:"logo"`                                     // Logo URL
-	MacroPublisher       string    `db:"macro_publisher" json:"macro_publisher"`               // Publisher name
-	Popular              bool      `db:"popular" json:"popular"`                               // Popular status
-	Trending             bool      `db:"trending" json:"trending"`                             // Trending status
-	TopCashback          bool      `db:"top_cashback" json:"top_cashback"`                     // Top cashback status
-	About                string    `db:"about" json:"about"`                                   // About information
-	HowItsWork           string    `db:"howitswork" json:"howitswork"`                         // How it works information
-	CreatedAt            time.Time `db:"created_at" json:"created_at"`                         // Creation timestamp
-	UpdatedAt            time.Time `db:"updated_at" json:"updated_at"`
+	ID                uuid.UUID `db:"id" json:"id"`
+	MiniAppCategoryID uuid.UUID `db:"miniapp_category_id" json:"miniapp_category_id"`
+	Name              string    `db:"name" json:"name"`
+	Icon              string    `db:"icon" json:"icon"`
+	Logo              string    `db:"logo" json:"logo"`
+	Description       string    `db:"description" json:"description"`
+	About             string    `db:"about" json:"about"`
+	CashbackTerms     string    `db:"cashback_terms" json:"cashback_terms"`
+	CBActive          bool      `db:"is_cb_active" json:"is_cb_active"`
+	CBPercentage      float64   `db:"cb_percentage" json:"cb_percentage"`
+	Url               string    `db:"url" json:"url"`
+	UrlType           string    `db:"url_type" json:"url_type"`
+	MacroPublisher    uuid.UUID `db:"macro_publisher" json:"macro_publisher"`
+	Active            bool      `db:"is_active" json:"is_active"`
+	Popular           bool      `db:"is_popular" json:"is_popular"`
+	Trending          bool      `db:"is_trending" json:"is_trending"`
+	TopCashback       bool      `db:"is_top_cashback" json:"is_top_cashback"`
+	CreatedAt         time.Time `db:"created_at" json:"created_at"`
+	UpdatedAt         time.Time `db:"updated_at" json:"updated_at"`
 }
 
 type GenerateSubId struct {
@@ -48,812 +43,177 @@ type GenerateSubId struct {
 	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
 }
 
-func InsertGenratedSubId(db *sql.DB, miniapp_id, userId, subid1, subid2 string) error {
-
+func InsertGenratedSubId(db *sql.DB, miniappID, userID, subID1, subID2 string) error {
 	query := `
-    INSERT INTO genratedsubid_data (
-        miniapp_id,user_id,subid1,subid2,created_at,updated_at
-    ) VALUES (
-        $1, $2, $3, $4, $5, $6
-    )`
-
-	_, err := db.Exec(query,
-		miniapp_id, userId, subid1, subid2,
-		time.Now(),
-		time.Now(),
-	)
-
+		INSERT INTO genratedsubid_data (miniapp_id, user_id, subid1, subid2, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6)`
+	_, err := db.Exec(query, miniappID, userID, subID1, subID2, time.Now(), time.Now())
 	return err
 }
 
-func InsertMiniAppData(db *sql.DB, req *request.MiniAppRequest) error {
+// -------------------- Insert --------------------
+
+func InsertMiniApp(db *sql.DB, req *request.MiniAppRequest) error {
 	query := `
-    INSERT INTO miniapp_data (
-        miniapp_category_id,
-        miniapp_subcategory_id,
-        name,
-        icon,
-        description,
-        cashback_terms,
-        cashback_rates,
-        status,
-        url_type,
-        cb_active,
-        cb_percentage,
-        url,
-        label,
-        banner,
-        logo,
-        macro_publisher,
-        popular,
-        trending,
-        top_cashback,
-        about,
-        howitswork,
-        created_at,
-        updated_at
-    ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13,
-        $14, $15, $16, $17, $18, $19, $20, $21, $22, $23
-    )`
-
+	INSERT INTO miniapp_data (
+		miniapp_category_id, name, icon, logo, description, about,
+		cashback_terms, is_cb_active, cb_percentage, url, url_type,
+		macro_publisher, is_active, is_popular, is_trending, is_top_cashback,
+		created_at, updated_at
+	) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)
+	`
 	_, err := db.Exec(query,
-		req.MiniAppCategoryID,
-		req.MiniAppSubcategoryID,
-		req.Name,
-		req.Icon,
-		req.Description,
-		req.CashbackTerms,
-		req.CashbackRates,
-		req.Status,
-		req.UrlType,
-		req.CBActive,
-		req.CBPercentage,
-		req.Url,
-		req.Label,
-		req.Banner,
-		req.Logo,
-		req.MacroPublisher,
-		req.Popular,
-		req.Trending,
-		req.TopCashback,
-		req.About,
-		req.HowItsWork,
-		req.CreatedAt,
-		req.UpdatedAt,
+		req.MiniAppCategoryID, req.Name, req.Icon, req.Logo, req.Description, req.About,
+		req.CashbackTerms, req.CBActive, req.CBPercentage, req.Url, req.UrlType,
+		req.MacroPublisher, req.Status, req.Popular, req.Trending, req.TopCashback,
+		time.Now(), time.Now(),
 	)
-
 	return err
 }
-func UpdateMiniAppData(db *sql.DB, update *request.MiniAppRequest) error {
-	var clauses []string
-	var params []interface{}
-	paramIndex := 1 // Start the parameter index from 1
 
-	// Check if any field is being updated and add it to the clauses
-	if update.MiniAppCategoryID != "" {
-		clauses = append(clauses, fmt.Sprintf("miniapp_category_id = $%d", paramIndex))
-		params = append(params, update.MiniAppCategoryID)
-		paramIndex++
-	}
-	if update.MiniAppSubcategoryID != "" {
-		clauses = append(clauses, fmt.Sprintf("miniapp_subcategory_id = $%d", paramIndex))
-		params = append(params, update.MiniAppSubcategoryID)
-		paramIndex++
-	}
-	if update.Name != "" {
-		clauses = append(clauses, fmt.Sprintf("name = $%d", paramIndex))
-		params = append(params, update.Name)
-		paramIndex++
-	}
-	if update.Icon != "" {
-		clauses = append(clauses, fmt.Sprintf("icon = $%d", paramIndex))
-		params = append(params, update.Icon)
-		paramIndex++
-	}
-	if update.Description != "" {
-		clauses = append(clauses, fmt.Sprintf("description = $%d", paramIndex))
-		params = append(params, update.Description)
-		paramIndex++
-	}
-	if update.CashbackTerms != "" {
-		clauses = append(clauses, fmt.Sprintf("cashback_terms = $%d", paramIndex))
-		params = append(params, update.CashbackTerms)
-		paramIndex++
-	}
-	if update.CashbackRates != "" {
-		clauses = append(clauses, fmt.Sprintf("cashback_rates = $%d", paramIndex))
-		params = append(params, update.CashbackRates)
-		paramIndex++
-	}
-	if update.UrlType != "" {
-		clauses = append(clauses, fmt.Sprintf("url_type = $%d", paramIndex))
-		params = append(params, update.UrlType)
-		paramIndex++
-	}
-	if update.CBPercentage != "" {
-		clauses = append(clauses, fmt.Sprintf("cb_percentage = $%d", paramIndex))
-		params = append(params, update.CBPercentage)
-		paramIndex++
-	}
-	if update.Url != "" {
-		clauses = append(clauses, fmt.Sprintf("url = $%d", paramIndex))
-		params = append(params, update.Url)
-		paramIndex++
-	}
-	if update.Label != "" {
-		clauses = append(clauses, fmt.Sprintf("label = $%d", paramIndex))
-		params = append(params, update.Label)
-		paramIndex++
-	}
-	if update.MacroPublisher != "" {
-		clauses = append(clauses, fmt.Sprintf("macro_publisher = $%d", paramIndex))
-		params = append(params, update.MacroPublisher)
-		paramIndex++
-	}
-	if update.Banner != "" {
-		clauses = append(clauses, fmt.Sprintf("banner = $%d", paramIndex))
-		params = append(params, update.Banner)
-		paramIndex++
-	}
-	if update.Logo != "" {
-		clauses = append(clauses, fmt.Sprintf("logo = $%d", paramIndex))
-		params = append(params, update.Logo)
-		paramIndex++
-	}
-	if update.About != "" {
-		clauses = append(clauses, fmt.Sprintf("about = $%d", paramIndex))
-		params = append(params, update.About)
-		paramIndex++
-	}
-	if update.HowItsWork != "" {
-		clauses = append(clauses, fmt.Sprintf("howitswork = $%d", paramIndex))
-		params = append(params, update.HowItsWork)
-		paramIndex++
-	}
+// -------------------- Update --------------------
 
-	// Add the updated_at timestamp field
-	clauses = append(clauses, fmt.Sprintf("updated_at = $%d", paramIndex))
-	params = append(params, "NOW()")
-	paramIndex++
-
-	// Handle boolean fields properly (Popular, Trending, TopCashback, Status, CBActive)
-	if update.Popular {
-		clauses = append(clauses, fmt.Sprintf("popular = $%d", paramIndex))
-		params = append(params, update.Popular)
-		paramIndex++
-	} else {
-		clauses = append(clauses, fmt.Sprintf("popular = $%d", paramIndex))
-		params = append(params, false)
-		paramIndex++
-	}
-
-	if update.Trending {
-		clauses = append(clauses, fmt.Sprintf("trending = $%d", paramIndex))
-		params = append(params, update.Trending)
-		paramIndex++
-	} else {
-		clauses = append(clauses, fmt.Sprintf("trending = $%d", paramIndex))
-		params = append(params, false)
-		paramIndex++
-	}
-
-	if update.TopCashback {
-		clauses = append(clauses, fmt.Sprintf("top_cashback = $%d", paramIndex))
-		params = append(params, update.TopCashback)
-		paramIndex++
-	} else {
-		clauses = append(clauses, fmt.Sprintf("top_cashback = $%d", paramIndex))
-		params = append(params, false)
-		paramIndex++
-	}
-
-	if update.Status {
-		clauses = append(clauses, fmt.Sprintf("status = $%d", paramIndex))
-		params = append(params, update.Status)
-		paramIndex++
-	} else {
-		clauses = append(clauses, fmt.Sprintf("status = $%d", paramIndex))
-		params = append(params, false)
-		paramIndex++
-	}
-
-	if update.CBActive {
-		clauses = append(clauses, fmt.Sprintf("cb_active = $%d", paramIndex))
-		params = append(params, update.CBActive)
-		paramIndex++
-	} else {
-		clauses = append(clauses, fmt.Sprintf("cb_active = $%d", paramIndex))
-		params = append(params, false)
-		paramIndex++
-	}
-
-	// Ensure that the MiniApp ID is provided for the update query
+func UpdateMiniApp(db *sql.DB, update *request.MiniAppRequest) error {
 	if update.ID == "" {
 		return errors.New("missing MiniApp ID for update")
 	}
 
-	// Append the WHERE clause at the end
-	// clauses = append(clauses, fmt.Sprintf("WHERE id = $%d", paramIndex))
-	// params = append(params, update.ID)
+	clauses := []string{}
+	params := []interface{}{}
+	i := 1
 
-	// Construct the final query
-	query := "UPDATE miniapp_data SET " + strings.Join(clauses, ", ") + " WHERE id = " + "'" + update.ID + "'"
-
-	// Execute the update query
-	_, err := db.Exec(query, params...)
-	if err != nil {
-		return fmt.Errorf("error executing query: %v", err)
+	addField := func(name string, value interface{}) {
+		if value != nil {
+			clauses = append(clauses, fmt.Sprintf("%s=$%d", name, i))
+			params = append(params, value)
+			i++
+		}
 	}
 
-	return nil
+	addField("miniapp_category_id", update.MiniAppCategoryID)
+	addField("name", update.Name)
+	addField("icon", update.Icon)
+	addField("logo", update.Logo)
+	addField("description", update.Description)
+	addField("about", update.About)
+	addField("cashback_terms", update.CashbackTerms)
+	addField("is_cb_active", update.CBActive)
+	addField("cb_percentage", update.CBPercentage)
+	addField("url", update.Url)
+	addField("url_type", update.UrlType)
+	addField("macro_publisher", update.MacroPublisher)
+	addField("is_active", update.Status)
+	addField("is_popular", update.Popular)
+	addField("is_trending", update.Trending)
+	addField("is_top_cashback", update.TopCashback)
+	addField("updated_at", time.Now())
+
+	query := "UPDATE miniapp_data SET " +
+		strings.Join(clauses, ", ") +
+		fmt.Sprintf(" WHERE id=$%d", i)
+	params = append(params, update.ID)
+
+	_, err := db.Exec(query, params...)
+	return err
 }
 
-func ActivateSomekey(db *sql.DB, key, id string, value bool) error {
-	query := fmt.Sprintf("UPDATE miniapp_data SET %s = $1 WHERE id = $2", key)
-	if _, err := db.Exec(query, value, id); err != nil {
-		return err
+// -------------------- Toggle Boolean --------------------
+
+func ToggleMiniAppFlag(db *sql.DB, field string, id string, value bool) error {
+	query := fmt.Sprintf("UPDATE miniapp_data SET %s=$1 WHERE id=$2", field)
+	_, err := db.Exec(query, value, id)
+	return err
+}
+
+// -------------------- Scan Helper --------------------
+
+func scanMiniApp(rowScanner interface {
+	Scan(dest ...interface{}) error
+}) (MiniApp, error) {
+	var m MiniApp
+	err := rowScanner.Scan(
+		&m.ID, &m.MiniAppCategoryID, &m.Name, &m.Icon, &m.Logo,
+		&m.Description, &m.About, &m.CashbackTerms, &m.CBActive, &m.CBPercentage,
+		&m.Url, &m.UrlType, &m.MacroPublisher, &m.Active, &m.Popular,
+		&m.Trending, &m.TopCashback, &m.CreatedAt, &m.UpdatedAt,
+	)
+	return m, err
+}
+
+// -------------------- Get Helpers --------------------
+
+func GetMiniAppByID(db *sql.DB, id string) (*MiniApp, error) {
+	parsedID, err := uuid.Parse(id)
+	if err != nil {
+		return nil, err
 	}
-	return nil
+
+	query := `SELECT id, miniapp_category_id, name, icon, logo, description, about,
+		cashback_terms, is_cb_active, cb_percentage, url, url_type, macro_publisher,
+		is_active, is_popular, is_trending, is_top_cashback, created_at, updated_at
+		FROM miniapp_data WHERE id=$1`
+	row := db.QueryRow(query, parsedID)
+	m, err := scanMiniApp(row)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, sql.ErrNoRows
+		}
+		return nil, err
+	}
+	return &m, nil
 }
 
 func GetAllMiniApps(db *sql.DB) ([]MiniApp, error) {
-	query := `
-		SELECT 
-			id, 
-			miniapp_category_id, 
-			miniapp_subcategory_id, 
-			name, 
-			icon, 
-			description, 
-			cashback_terms, 
-			cashback_rates, 
-			status, 
-			url_type, 
-			cb_active, 
-			cb_percentage, 
-			url, 
-			label, 
-			banner, 
-			logo, 
-			macro_publisher, 
-			popular, 
-			trending, 
-			top_cashback, 
-			about, 
-			howitswork, 
-			created_at, 
-			updated_at 
-		FROM miniapp_data` // Adjust the table name as per your database schema
+	return GetMiniAppsByCondition(db, "")
+}
 
+func GetMiniAppsByCondition(db *sql.DB, condition string) ([]MiniApp, error) {
+	query := `SELECT id, miniapp_category_id, name, icon, logo, description, about,
+		cashback_terms, is_cb_active, cb_percentage, url, url_type, macro_publisher,
+		is_active, is_popular, is_trending, is_top_cashback, created_at, updated_at
+		FROM miniapp_data ` + condition
 	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var miniApps []MiniApp
-
+	var apps []MiniApp
 	for rows.Next() {
-		var miniApp MiniApp
-
-		err := rows.Scan(
-			&miniApp.ID,
-			&miniApp.MiniAppCategoryID,
-			&miniApp.MiniAppSubcategoryID,
-			&miniApp.Name,
-			&miniApp.Icon,
-			&miniApp.Description,
-			&miniApp.CashbackTerms,
-			&miniApp.CashbackRates,
-			&miniApp.Status,
-			&miniApp.UrlType,
-			&miniApp.CBActive,
-			&miniApp.CBPercentage,
-			&miniApp.Url,
-			&miniApp.Label,
-			&miniApp.Banner,
-			&miniApp.Logo,
-			&miniApp.MacroPublisher,
-			&miniApp.Popular,
-			&miniApp.Trending,
-			&miniApp.TopCashback,
-			&miniApp.About,
-			&miniApp.HowItsWork,
-			&miniApp.CreatedAt,
-			&miniApp.UpdatedAt,
-		)
+		m, err := scanMiniApp(rows)
 		if err != nil {
 			return nil, err
 		}
-		miniApps = append(miniApps, miniApp)
+		apps = append(apps, m)
 	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return miniApps, nil
+	return apps, rows.Err()
 }
+
+// -------------------- Specific Queries --------------------
 
 func GetMiniAppsPopular(db *sql.DB) ([]MiniApp, error) {
-	query := `
-		SELECT 
-			id, 
-			miniapp_category_id, 
-			miniapp_subcategory_id, 
-			name, 
-			icon, 
-			description, 
-			cashback_terms, 
-			cashback_rates, 
-			status, 
-			url_type, 
-			cb_active, 
-			cb_percentage, 
-			url, 
-			label, 
-			banner, 
-			logo, 
-			macro_publisher, 
-			popular, 
-			trending, 
-			top_cashback, 
-			about, 
-			howitswork, 
-			created_at, 
-			updated_at 
-		FROM miniapp_data WHERE popular=true AND status=true`
-
-	rows, err := db.Query(query)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var miniApps []MiniApp
-
-	for rows.Next() {
-		var miniApp MiniApp
-		err := rows.Scan(
-			&miniApp.ID,
-			&miniApp.MiniAppCategoryID,
-			&miniApp.MiniAppSubcategoryID,
-			&miniApp.Name,
-			&miniApp.Icon,
-			&miniApp.Description,
-			&miniApp.CashbackTerms,
-			&miniApp.CashbackRates,
-			&miniApp.Status,
-			&miniApp.UrlType,
-			&miniApp.CBActive,
-			&miniApp.CBPercentage,
-			&miniApp.Url,
-			&miniApp.Label,
-			&miniApp.Banner,
-			&miniApp.Logo,
-			&miniApp.MacroPublisher,
-			&miniApp.Popular,
-			&miniApp.Trending,
-			&miniApp.TopCashback,
-			&miniApp.About,
-			&miniApp.HowItsWork,
-			&miniApp.CreatedAt,
-			&miniApp.UpdatedAt,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		miniApps = append(miniApps, miniApp)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return miniApps, nil
-}
-
-func GetMiniAppsTopCashback(db *sql.DB) ([]MiniApp, error) {
-	query := `
-		SELECT 
-			id, 
-			miniapp_category_id, 
-			miniapp_subcategory_id, 
-			name, 
-			icon, 
-			description, 
-			cashback_terms, 
-			cashback_rates, 
-			status, 
-			url_type, 
-			cb_active, 
-			cb_percentage, 
-			url, 
-			label, 
-			banner, 
-			logo, 
-			macro_publisher, 
-			popular, 
-			trending, 
-			top_cashback, 
-			about, 
-			howitswork, 
-			created_at, 
-			updated_at 
-		FROM miniapp_data WHERE top_cashback=true AND status=true`
-
-	rows, err := db.Query(query)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var miniApps []MiniApp
-
-	for rows.Next() {
-		var miniApp MiniApp
-		err := rows.Scan(
-			&miniApp.ID,
-			&miniApp.MiniAppCategoryID,
-			&miniApp.MiniAppSubcategoryID,
-			&miniApp.Name,
-			&miniApp.Icon,
-			&miniApp.Description,
-			&miniApp.CashbackTerms,
-			&miniApp.CashbackRates,
-			&miniApp.Status,
-			&miniApp.UrlType,
-			&miniApp.CBActive,
-			&miniApp.CBPercentage,
-			&miniApp.Url,
-			&miniApp.Label,
-			&miniApp.Banner,
-			&miniApp.Logo,
-			&miniApp.MacroPublisher,
-			&miniApp.Popular,
-			&miniApp.Trending,
-			&miniApp.TopCashback,
-			&miniApp.About,
-			&miniApp.HowItsWork,
-			&miniApp.CreatedAt,
-			&miniApp.UpdatedAt,
-		)
-		if err != nil {
-			return nil, err
-		}
-		miniApps = append(miniApps, miniApp)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return miniApps, nil
+	return GetMiniAppsByCondition(db, "WHERE is_popular=true AND is_active=true")
 }
 
 func GetMiniAppsTrending(db *sql.DB) ([]MiniApp, error) {
-	var miniApps []MiniApp
-	query := `
-		SELECT 
-			id, 
-			miniapp_category_id, 
-			miniapp_subcategory_id, 
-			name, 
-			icon, 
-			description, 
-			cashback_terms, 
-			cashback_rates, 
-			status, 
-			url_type, 
-			cb_active, 
-			cb_percentage, 
-			url, 
-			label, 
-			banner, 
-			logo, 
-			macro_publisher, 
-			popular, 
-			trending, 
-			top_cashback, 
-			about, 
-			howitswork, 
-			created_at, 
-			updated_at 
-		FROM miniapp_data WHERE trending=true AND status=true`
+	return GetMiniAppsByCondition(db, "WHERE is_trending=true AND is_active=true")
+}
 
-	rows, err := db.Query(query)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return miniApps, nil
-		}
-		return nil, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var miniApp MiniApp
-		err := rows.Scan(
-			&miniApp.ID,
-			&miniApp.MiniAppCategoryID,
-			&miniApp.MiniAppSubcategoryID,
-			&miniApp.Name,
-			&miniApp.Icon,
-			&miniApp.Description,
-			&miniApp.CashbackTerms,
-			&miniApp.CashbackRates,
-			&miniApp.Status,
-			&miniApp.UrlType,
-			&miniApp.CBActive,
-			&miniApp.CBPercentage,
-			&miniApp.Url,
-			&miniApp.Label,
-			&miniApp.Banner,
-			&miniApp.Logo,
-			&miniApp.MacroPublisher,
-			&miniApp.Popular,
-			&miniApp.Trending,
-			&miniApp.TopCashback,
-			&miniApp.About,
-			&miniApp.HowItsWork,
-			&miniApp.CreatedAt,
-			&miniApp.UpdatedAt,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		miniApps = append(miniApps, miniApp)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return miniApps, nil
+func GetMiniAppsTopCashback(db *sql.DB) ([]MiniApp, error) {
+	return GetMiniAppsByCondition(db, "WHERE is_top_cashback=true AND is_active=true")
 }
 
 func SearchMiniApps(db *sql.DB, name string) ([]MiniApp, error) {
-	// Prepare the query to search for mini apps by name
-	query := `
-		SELECT 
-			id, 
-			miniapp_category_id, 
-			miniapp_subcategory_id, 
-			name, 
-			icon, 
-			description, 
-			cashback_terms, 
-			cashback_rates, 
-			status, 
-			url_type, 
-			cb_active, 
-			cb_percentage, 
-			url, 
-			label, 
-			banner, 
-			logo, 
-			macro_publisher, 
-			popular, 
-			trending, 
-			top_cashback, 
-			about, 
-			howitswork, 
-			created_at, 
-			updated_at 
-		FROM miniapp_data
-		WHERE name ILIKE $1 AND status=true` // Use ILIKE for case-insensitive matching
-
-	rows, err := db.Query(query, "%"+name+"%") // Use wildcards for searching
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var miniApps []MiniApp
-
-	for rows.Next() {
-		var miniApp MiniApp
-
-		err := rows.Scan(
-			&miniApp.ID,
-			&miniApp.MiniAppCategoryID,
-			&miniApp.MiniAppSubcategoryID,
-			&miniApp.Name,
-			&miniApp.Icon,
-			&miniApp.Description,
-			&miniApp.CashbackTerms,
-			&miniApp.CashbackRates,
-			&miniApp.Status,
-			&miniApp.UrlType,
-			&miniApp.CBActive,
-			&miniApp.CBPercentage,
-			&miniApp.Url,
-			&miniApp.Label,
-			&miniApp.Banner,
-			&miniApp.Logo,
-			&miniApp.MacroPublisher,
-			&miniApp.Popular,
-			&miniApp.Trending,
-			&miniApp.TopCashback,
-			&miniApp.About,
-			&miniApp.HowItsWork,
-			&miniApp.CreatedAt,
-			&miniApp.UpdatedAt,
-		)
-		if err != nil {
-			return nil, err
-		}
-
-		miniApps = append(miniApps, miniApp)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return miniApps, nil
+	return GetMiniAppsByCondition(db, fmt.Sprintf("WHERE name ILIKE '%%%s%%' AND is_active=true", name))
 }
 
 func GetStoresByCategory(db *sql.DB, categoryID string) ([]MiniApp, error) {
-	// Prepare the query to search for mini apps by category ID
-	query := `
-		SELECT 
-			id, 
-			miniapp_category_id, 
-			miniapp_subcategory_id, 
-			name, 
-			icon, 
-			description, 
-			cashback_terms, 
-			cashback_rates, 
-			status, 
-			url_type, 
-			cb_active, 
-			cb_percentage, 
-			url, 
-			label, 
-			banner, 
-			logo, 
-			macro_publisher, 
-			popular, 
-			trending, 
-			top_cashback, 
-			about, 
-			howitswork, 
-			created_at, 
-			updated_at 
-		FROM miniapp_data
-		WHERE miniapp_category_id = $1 AND status=true` // Match by category ID
-
-	rows, err := db.Query(query, categoryID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var miniApps []MiniApp
-
-	for rows.Next() {
-		var miniApp MiniApp
-
-		if err := rows.Scan(
-			&miniApp.ID,
-			&miniApp.MiniAppCategoryID,
-			&miniApp.MiniAppSubcategoryID,
-			&miniApp.Name,
-			&miniApp.Icon,
-			&miniApp.Description,
-			&miniApp.CashbackTerms,
-			&miniApp.CashbackRates,
-			&miniApp.Status,
-			&miniApp.UrlType,
-			&miniApp.CBActive,
-			&miniApp.CBPercentage,
-			&miniApp.Url,
-			&miniApp.Label,
-			&miniApp.Banner,
-			&miniApp.Logo,
-			&miniApp.MacroPublisher,
-			&miniApp.Popular,
-			&miniApp.Trending,
-			&miniApp.TopCashback,
-			&miniApp.About,
-			&miniApp.HowItsWork,
-			&miniApp.CreatedAt,
-			&miniApp.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-
-		miniApps = append(miniApps, miniApp)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return miniApps, nil
+	return GetMiniAppsByCondition(db, fmt.Sprintf("WHERE miniapp_category_id='%s' AND is_active=true", categoryID))
 }
+
+// -------------------- Delete --------------------
 
 func DeleteMiniAppByID(db *sql.DB, id string) error {
-	query := "DELETE FROM miniapp_data WHERE id = $1;"
-	_, err := db.Exec(query, id)
+	_, err := db.Exec("DELETE FROM miniapp_data WHERE id=$1", id)
 	return err
-
-}
-
-func GetStoreByID(db *sql.DB, id string) (*MiniApp, error) {
-	parsedID, err := uuid.Parse(id)
-	if err != nil {
-		return nil, fmt.Errorf("invalid UUID: %v", err)
-	}
-	query := `
-		SELECT 
-			id, 
-			miniapp_category_id, 
-			miniapp_subcategory_id, 
-			name, 
-			icon, 
-			description, 
-			cashback_terms, 
-			cashback_rates, 
-			status, 
-			url_type, 
-			cb_active, 
-			cb_percentage, 
-			url, 
-			label, 
-			banner, 
-			logo, 
-			macro_publisher, 
-			popular, 
-			trending, 
-			top_cashback, 
-			about, 
-			howitswork, 
-			created_at, 
-			updated_at 
-		FROM miniapp_data 
-		WHERE id=$1
-	`
-
-	row := db.QueryRow(query, parsedID)
-
-	var miniApp MiniApp
-	err = row.Scan(
-		&miniApp.ID,
-		&miniApp.MiniAppCategoryID,
-		&miniApp.MiniAppSubcategoryID,
-		&miniApp.Name,
-		&miniApp.Icon,
-		&miniApp.Description,
-		&miniApp.CashbackTerms,
-		&miniApp.CashbackRates,
-		&miniApp.Status,
-		&miniApp.UrlType,
-		&miniApp.CBActive,
-		&miniApp.CBPercentage,
-		&miniApp.Url,
-		&miniApp.Label,
-		&miniApp.Banner,
-		&miniApp.Logo,
-		&miniApp.MacroPublisher,
-		&miniApp.Popular,
-		&miniApp.Trending,
-		&miniApp.TopCashback,
-		&miniApp.About,
-		&miniApp.HowItsWork,
-		&miniApp.CreatedAt,
-		&miniApp.UpdatedAt,
-	)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, sql.ErrNoRows // no record found
-		}
-		return nil, err
-	}
-
-	return &miniApp, nil
 }
