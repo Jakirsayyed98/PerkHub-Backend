@@ -22,6 +22,7 @@ func Routes(api *gin.RouterGroup) {
 		app.GET("/delete-miniapp/:id", DeleteMiniApp)
 		app.GET("/AllMiniApps", GetAllMiniApps)
 		app.GET("/miniAppCategory-refresh", GetStoresCategoryRefresh)
+		app.GET("/miniApp-refresh", GetStoresRefresh)
 
 	}
 }

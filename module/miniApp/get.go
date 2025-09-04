@@ -55,3 +55,19 @@ func GetStoresCategoryRefresh(c *gin.Context) {
 
 	utils.RespondOK(c, result, "Category Updated Succesfully", "")
 }
+
+func GetStoresRefresh(c *gin.Context) {
+	stores, err := stores.GetStores(c)
+	if err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	result, err := stores.MiniAppStore.GetStoresRefresh()
+	if err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	utils.RespondOK(c, result, "Stores Updated Succesfully", "")
+}

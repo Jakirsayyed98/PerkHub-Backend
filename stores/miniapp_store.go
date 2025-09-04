@@ -4,6 +4,7 @@ import (
 	"PerkHub/model"
 	"PerkHub/request"
 	"PerkHub/responses"
+	"PerkHub/services"
 	"PerkHub/utils"
 	"database/sql"
 	"errors"
@@ -12,13 +13,15 @@ import (
 )
 
 type MiniAppStore struct {
-	db *sql.DB
+	db             *sql.DB
+	cueLinkService *services.CueLinkAffiliateService
 }
 
 func NewMiniAppStore(dbs *sql.DB) *MiniAppStore {
-
+	cuelinkService := services.NewCueLinkAffiliateService()
 	return &MiniAppStore{
-		db: dbs,
+		db:             dbs,
+		cueLinkService: cuelinkService,
 	}
 }
 
@@ -184,3 +187,62 @@ func (s *MiniAppStore) GenrateSubid(miniAppName, userID string) (interface{}, er
 // 	}
 // 	return url, nil
 // }
+
+func (s *MiniAppStore) GetStoresRefresh() (interface{}, error) {
+	page := 1
+	perPage := 100
+	affiliateProviderID, err := model.GetAffiliateByName(s.db, "cuelink")
+	if err != nil {
+		return nil, err
+	}
+	for {
+		// Fetch campaigns for the current page
+		data, err := s.cueLinkService.GetAllCampaigns(page, perPage)
+		if err != nil {
+			return nil, err
+		}
+
+		// Stop if no campaigns are returned
+		if len(data.Campaigns) == 0 {
+			break
+		}
+
+		for _, v := range data.Campaigns {
+			isExist, err := model.MiniAppExists(s.db, v.Name)
+			if err != nil {
+				return nil, err
+			}
+			if !isExist {
+				categoryId, err := model.CategoryByName(s.db, v.Categories[0].Name)
+				if err != nil {
+					return nil, err
+				}
+				err = model.InsertMiniApp(s.db, &request.MiniAppRequest{
+					MiniAppCategoryID: categoryId, // default or your desired category ID
+					Name:              v.Name,
+					Icon:              v.Image, // optional
+					Logo:              "",      // optional
+					Description:       "",
+					About:             "",                            // optional
+					CashbackTerms:     v.PayoutType,                  // optional
+					CBActive:          true,                          // default false
+					CBPercentage:      fmt.Sprintf("%.2f", v.Payout), // default 0
+					Url:               v.Domain,                      // optional
+					UrlType:           "internal",                    // optional
+					MacroPublisher:    affiliateProviderID,           // optional
+					Status:            true,                          // active by default
+					Popular:           false,                         // default false
+					Trending:          false,                         // default false
+					TopCashback:       false,                         // default false
+				})
+				if err != nil {
+					fmt.Println("Error inserting category:", err)
+					return nil, err
+				}
+			}
+		}
+		// Move to the next page
+		page++
+	}
+	return nil, nil
+}

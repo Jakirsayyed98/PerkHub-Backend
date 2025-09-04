@@ -125,6 +125,15 @@ func ToggleMiniAppFlag(db *sql.DB, field string, id string, value bool) error {
 	return err
 }
 
+func MiniAppExists(db *sql.DB, name string) (bool, error) {
+	var exists bool
+	err := db.QueryRow("SELECT EXISTS(SELECT 1 FROM miniapp_data WHERE name=$1)", name).Scan(&exists)
+	if err != nil {
+		return false, fmt.Errorf("failed to check existence: %w", err)
+	}
+	return exists, nil
+}
+
 // -------------------- Scan Helper --------------------
 
 func scanMiniApp(rowScanner interface {

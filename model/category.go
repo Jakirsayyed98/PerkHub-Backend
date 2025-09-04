@@ -179,3 +179,19 @@ func CategoryExists(db *sql.DB, name string) (bool, error) {
 
 	return true, nil // category exists
 }
+
+func CategoryByName(db *sql.DB, name string) (string, error) {
+	query := "SELECT id FROM miniapp_categories WHERE name = $1 LIMIT 1"
+	row := db.QueryRow(query, name)
+
+	var id string
+	err := row.Scan(&id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", nil // category does not exist
+		}
+		return "", err // some other error
+	}
+
+	return id, nil // category exists
+}
