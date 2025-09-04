@@ -195,3 +195,38 @@ func CategoryByName(db *sql.DB, name string) (string, error) {
 
 	return id, nil // category exists
 }
+
+func GetAllActiveCategories(db *sql.DB) ([]*Category, error) {
+	query := "SELECT id, name, description, image, status, homepage_visible, created_at, updated_at FROM miniapp_categories WHERE status='1'"
+
+	rows, err := db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var category []*Category
+	for rows.Next() {
+		categorym := NewCategorymodel()
+		err := rows.Scan(
+			&categorym.ID,
+			&categorym.Name,
+			&categorym.Description,
+			&categorym.Image,
+			&categorym.Status,
+			&categorym.HomepageVisible,
+			&categorym.CreatedAt,
+			&categorym.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		category = append(category, &categorym)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return category, nil
+}

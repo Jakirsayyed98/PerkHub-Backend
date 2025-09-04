@@ -21,7 +21,7 @@ type MiniApp struct {
 	About             string    `db:"about" json:"about"`
 	CashbackTerms     string    `db:"cashback_terms" json:"cashback_terms"`
 	CBActive          bool      `db:"is_cb_active" json:"is_cb_active"`
-	CBPercentage      float64   `db:"cb_percentage" json:"cb_percentage"`
+	CBPercentage      string    `db:"cb_percentage" json:"cb_percentage"`
 	Url               string    `db:"url" json:"url"`
 	UrlType           string    `db:"url_type" json:"url_type"`
 	MacroPublisher    uuid.UUID `db:"macro_publisher" json:"macro_publisher"`
@@ -120,6 +120,7 @@ func UpdateMiniApp(db *sql.DB, update *request.MiniAppRequest) error {
 // -------------------- Toggle Boolean --------------------
 
 func ToggleMiniAppFlag(db *sql.DB, field string, id string, value bool) error {
+	fmt.Printf("Toggling field %s to %v for MiniApp ID %s\n", field, value, id)
 	query := fmt.Sprintf("UPDATE miniapp_data SET %s=$1 WHERE id=$2", field)
 	_, err := db.Exec(query, value, id)
 	return err

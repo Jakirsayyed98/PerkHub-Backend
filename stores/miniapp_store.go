@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"strings"
 )
 
 type MiniAppStore struct {
@@ -217,23 +218,34 @@ func (s *MiniAppStore) GetStoresRefresh() (interface{}, error) {
 				if err != nil {
 					return nil, err
 				}
+				payoutClean := ""
+				if strings.Contains(v.PayoutType, "%") {
+					v.PayoutType = "Percentage"
+					formatted := fmt.Sprintf("%.2f%%", v.Payout) // "9.75%"
+					payoutClean = formatted
+				} else {
+					v.PayoutType = "Fixed"
+					payoutClean = fmt.Sprintf("₹%.2f", v.Payout) // e.g., "₹123.45"
+
+				}
+
 				err = model.InsertMiniApp(s.db, &request.MiniAppRequest{
 					MiniAppCategoryID: categoryId, // default or your desired category ID
 					Name:              v.Name,
 					Icon:              v.Image, // optional
 					Logo:              "",      // optional
 					Description:       "",
-					About:             "",                            // optional
-					CashbackTerms:     v.PayoutType,                  // optional
-					CBActive:          true,                          // default false
-					CBPercentage:      fmt.Sprintf("%.2f", v.Payout), // default 0
-					Url:               v.Domain,                      // optional
-					UrlType:           "internal",                    // optional
-					MacroPublisher:    affiliateProviderID,           // optional
-					Status:            true,                          // active by default
-					Popular:           false,                         // default false
-					Trending:          false,                         // default false
-					TopCashback:       false,                         // default false
+					About:             "",                  // optional
+					CashbackTerms:     v.PayoutType,        // optional
+					CBActive:          true,                // default false
+					CBPercentage:      payoutClean,         // default 0
+					Url:               v.Domain,            // optional
+					UrlType:           "internal",          // optional
+					MacroPublisher:    affiliateProviderID, // optional
+					Status:            true,                // active by default
+					Popular:           false,               // default false
+					Trending:          false,               // default false
+					TopCashback:       false,               // default false
 				})
 				if err != nil {
 					fmt.Println("Error inserting category:", err)

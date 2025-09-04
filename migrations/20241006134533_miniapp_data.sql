@@ -12,7 +12,7 @@ CREATE TABLE miniapp_data (
     about TEXT,
     cashback_terms TEXT,
     is_cb_active BOOLEAN NOT NULL DEFAULT true,        -- renamed for clarity
-    cb_percentage NUMERIC(5,2) NOT NULL DEFAULT 0,
+    cb_percentage NUMERIC(10,3) NOT NULL DEFAULT 0,
     url TEXT,
     url_type TEXT CHECK (url_type IN ('internal', 'external', 'deeplink')) DEFAULT 'external',
     macro_publisher UUID,

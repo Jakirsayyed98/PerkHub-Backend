@@ -61,11 +61,12 @@ func (m *MiniAppRes) ResponsesBind(dbMiniApp model.MiniApp) error {
 	m.Name = dbMiniApp.Name
 	m.Icon = dbMiniApp.Icon
 	m.Logo = dbMiniApp.Logo
+	m.MiniAppCategoryID = dbMiniApp.MiniAppCategoryID.String()
 	m.Description = dbMiniApp.Description
 	m.About = dbMiniApp.About
 	m.CashbackTerms = dbMiniApp.CashbackTerms
 	m.CBActive = dbMiniApp.CBActive
-	m.CBPercentage = fmt.Sprintf("%.2f", dbMiniApp.CBPercentage)
+	m.CBPercentage = dbMiniApp.CBPercentage
 	m.Url = dbMiniApp.Url
 	m.UrlType = dbMiniApp.UrlType
 	m.MacroPublisher = dbMiniApp.MacroPublisher.String()
