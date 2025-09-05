@@ -73,3 +73,27 @@ type AllowedMediums struct {
 	SEMBrandKeywords   bool `json:"sem_brand_keywords"`
 	SEMGenericKeywords bool `json:"sem_generic_keywords"`
 }
+
+// Offers Response Strucher
+type OfferResponse struct {
+	Status     string  `json:"status"`
+	TotalCount int     `json:"total_count"`
+	Offers     []Offer `json:"offers"`
+}
+
+type Offer struct {
+	ID                 int    `json:"id"`
+	CampaignID         int    `json:"campaign_id"`
+	CampaignName       string `json:"campaign_name"`
+	Title              string `json:"title"`
+	Description        string `json:"description"`
+	TermsAndConditions string `json:"terms_and_conditions,omitempty"`
+	CouponCode         string `json:"coupon_code,omitempty"`
+	ImageURL           string `json:"image_url"`
+	OfferType          string `json:"type"`
+	Status             string `json:"status"`
+	Url                string `json:"url"`
+	AffiliateUrl       string `json:"affiliate_url"`
+	StartDate          string `json:"start_date"`
+	EndDate            string `json:"end_date"`
+}

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"time"
 
 	_ "github.com/lib/pq" // PostgreSQL driver
 	"github.com/pressly/goose/v3"
@@ -26,6 +27,9 @@ func MakePotgressConn() (*sql.DB, error) {
 	if err := db.Ping(); err != nil {
 		return nil, err
 	}
+	db.SetMaxOpenConns(20)           // max 20 connections open at once
+	db.SetMaxIdleConns(5)            // keep up to 5 idle
+	db.SetConnMaxLifetime(time.Hour) // recycle connections after 1h
 
 	// Run migrations
 	if err := goose.Up(db, "migrations"); err != nil {
