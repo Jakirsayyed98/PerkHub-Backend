@@ -4,7 +4,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE offers (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    offer_id BIGINT NOT NULL,
+    offer_id varchar(255),
     store_id UUID NOT NULL,-- link to miniapp_data (UUID id)
     store_name TEXT,
     title TEXT NOT NULL,

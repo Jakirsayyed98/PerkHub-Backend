@@ -4,6 +4,7 @@ import (
 	"PerkHub/request"
 	"PerkHub/stores"
 	"PerkHub/utils"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -84,4 +85,28 @@ func AdminSentTicketReply(c *gin.Context) {
 	}
 
 	utils.RespondOK(c, result, "Ticket message sent successfully.", "")
+}
+
+func ChangeTicketStatus(c *gin.Context) {
+	// Handler logic
+	store, err := stores.GetStores(c)
+	if err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	// Validate and bind the request
+	req := request.NewChangeTicketStatusRequest()
+	if err := c.ShouldBindJSON(req); err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+	fmt.Println(req)
+	err = store.TicketStore.ChangeTicketStatus(req)
+	if err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	utils.RespondOK(c, nil, "Ticket status changed successfully.", "")
 }

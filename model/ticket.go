@@ -54,7 +54,12 @@ func InsertTicket(db *sql.DB, ticket *Ticket) (string, error) {
 
 func InsertTicketMessage(db *sql.DB, msg *TicketMessage) error {
 	query := "INSERT INTO ticket_messages (ticket_id, author_type, body) VALUES ($1, $2, $3);"
+	query2 := "UPDATE tickets SET updated_at = NOW(),status='ongoing' WHERE id = $1;"
 	_, err := db.Exec(query, msg.TicketID, msg.AuthorType, msg.Body)
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec(query2, msg.TicketID)
 	return err
 }
 
@@ -75,6 +80,29 @@ func GetTicketsByUserId(db *sql.DB, userId string) ([]*Ticket, error) {
 		tickets = append(tickets, ticket)
 	}
 	return tickets, nil
+}
+
+func GetTicketByTicketID(db *sql.DB, ticketId string) (*Ticket, error) {
+	query := `
+			SELECT id, user_id, subject, status, created_at
+			FROM tickets
+			WHERE id = $1;`
+
+	var ticket Ticket
+	err := db.QueryRow(query, ticketId).Scan(&ticket.ID, &ticket.UserID, &ticket.Subject, &ticket.Status, &ticket.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+	return &ticket, nil
+}
+
+func UpdateTicketStatus(db *sql.DB, ticketId string, status string) error {
+	query := `
+			UPDATE tickets
+			SET status = $1,  updated_at = NOW()
+			WHERE id = $2;`
+	_, err := db.Exec(query, status, ticketId)
+	return err
 }
 
 func GetTicketMessagesByTicketID(db *sql.DB, ticketId string) ([]TicketMessage, error) {

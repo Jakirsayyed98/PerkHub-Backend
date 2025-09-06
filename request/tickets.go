@@ -30,3 +30,12 @@ type AdminReplyTicketMsg struct {
 func NewAdminReplyTicketMsg() *AdminReplyTicketMsg {
 	return &AdminReplyTicketMsg{}
 }
+
+type ChangeTicketStatusRequest struct {
+	TicketId string `json:"ticketId" binding:"required"`
+	Status   string `json:"status" binding:"required,oneof=open closed"`
+}
+
+func NewChangeTicketStatusRequest() *ChangeTicketStatusRequest {
+	return &ChangeTicketStatusRequest{}
+}

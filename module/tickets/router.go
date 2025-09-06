@@ -15,6 +15,6 @@ func RegisterRoutes(api *gin.RouterGroup) {
 	admin.GET("/tickets/:status", GetTicketsByStatus)
 	admin.GET("/tickets-msg/:id", GetTicketMessagesByTicketID)
 	admin.POST("/tickets-msg/reply", AdminSentTicketReply)
-	admin.GET("/ticket-closed/:id", AdminTicketClosed)
+	admin.POST("/ticket-status-change", ChangeTicketStatus)
 
 }

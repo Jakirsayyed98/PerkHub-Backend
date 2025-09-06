@@ -71,7 +71,6 @@ func (s *CueLinkAffiliateService) RefreshAllOffers(startDate, endDate string, of
 
 	// Build URL with query parameters dynamically
 	url := fmt.Sprintf("%soffers.json?start_date=%s&end_date=%s&offer_types=%d&page=%d&per_page=%d", s.baseURL, startDate, endDate, offerType, page, perPage)
-	fmt.Println(url)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return result, err
@@ -80,7 +79,6 @@ func (s *CueLinkAffiliateService) RefreshAllOffers(startDate, endDate string, of
 	// Set headers
 	req.Header.Set("Authorization", "Bearer "+s.authToken)
 	req.Header.Set("Cookie", `DO-LB="ChAxMC4xMzkuMTIwLjI1OjgwEJrBtxc="; _mkra_stck=9b85040dec486f43e8f6afdad672d662%3A1756976050.725129`)
-	fmt.Println(req.Header)
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {

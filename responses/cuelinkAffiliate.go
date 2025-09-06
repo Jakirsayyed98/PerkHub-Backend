@@ -83,8 +83,8 @@ type OfferResponse struct {
 
 type Offer struct {
 	ID                 int    `json:"id"`
-	CampaignID         int    `json:"campaign_id"`
-	CampaignName       string `json:"campaign_name"`
+	CampaignID         string `json:"campaign_id"`
+	CampaignName       string `json:"campaign"`
 	Title              string `json:"title"`
 	Description        string `json:"description"`
 	TermsAndConditions string `json:"terms_and_conditions,omitempty"`
