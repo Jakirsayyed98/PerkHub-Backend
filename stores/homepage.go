@@ -29,6 +29,20 @@ func (s *HomePageStore) GetHomePagedata() (*responses.HomePageResponse, error) {
 		return nil, err
 	}
 
+	banner1, err := model.GetBannersByCategoryID(s.db, "1")
+	if err != nil {
+		return nil, err
+	}
+
+	banner2, err := model.GetBannersByCategoryID(s.db, "1")
+	if err != nil {
+		return nil, err
+	}
+	banner3, err := model.GetBannersByCategoryID(s.db, "1")
+	if err != nil {
+		return nil, err
+	}
+
 	categoriesres := responses.NewCategoryRes()
 	categories, err := categoriesres.BindMultipleUsers(categoryHomePage)
 	if err != nil {
@@ -88,7 +102,7 @@ func (s *HomePageStore) GetHomePagedata() (*responses.HomePageResponse, error) {
 
 	// Build final response
 	res := responses.NewHomePagedata()
-	data, err := res.Bind(category, nil, popular, trending, topcashback, finalCategory)
+	data, err := res.Bind(category, banner1, banner2, banner3, popular, trending, topcashback, finalCategory)
 	if err != nil {
 		return nil, err
 	}

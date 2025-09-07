@@ -160,7 +160,8 @@ func (s *MiniAppStore) GenrateSubid(miniAppName, userID string) (interface{}, er
 	// Wrap with your own domain (short redirect link)
 	// finalURL := fmt.Sprintf("https://www.perkhub.in/r?u=%s", url.QueryEscape(affiliateURL))
 	// finalURL := fmt.Sprintf("http://3.7.77.135:4215/r?u=%s", url.QueryEscape(affiliateURL))
-	finalURL := fmt.Sprintf("http://localhost:4215/r?u=%s", url.QueryEscape(affiliateURL))
+	// finalURL := fmt.Sprintf("http://localhost:4215/r?u=%s", url.QueryEscape(affiliateURL))
+	finalURL := fmt.Sprintf("https://blessed-pretty-mammal.ngrok-free.app/r?u=%s", url.QueryEscape(affiliateURL))
 
 	return finalURL, nil
 }
@@ -229,6 +230,13 @@ func (s *MiniAppStore) GetStoresRefresh() (interface{}, error) {
 
 				}
 
+				url := ""
+				if !strings.HasPrefix(v.Domain, "https") {
+					url = fmt.Sprintf("https://%s", v.Domain)
+				} else {
+					url = v.Domain
+				}
+				fmt.Println(url)
 				err = model.InsertMiniApp(s.db, &request.MiniAppRequest{
 					MiniAppCategoryID: categoryId, // default or your desired category ID
 					Name:              v.Name,
@@ -239,7 +247,7 @@ func (s *MiniAppStore) GetStoresRefresh() (interface{}, error) {
 					CashbackTerms:     v.PayoutType,        // optional
 					CBActive:          true,                // default false
 					CBPercentage:      payoutClean,         // default 0
-					Url:               v.Domain,            // optional
+					Url:               url,                 // optional
 					UrlType:           "internal",          // optional
 					MacroPublisher:    affiliateProviderID, // optional
 					Status:            true,                // active by default
