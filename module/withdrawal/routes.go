@@ -15,4 +15,7 @@ func Routes(api *gin.RouterGroup) {
 	app.POST("/request", RequestWithdrawal)
 	app.GET("/txnList", WithdrawalTxnList)
 
+	admin := api.Group("/admin")
+	admin.Use(middlewear.UserMiddleware())
+	admin.GET("/transaction-list/:status", AdminWithdrawalTxnList)
 }

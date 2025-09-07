@@ -9,6 +9,7 @@ import (
 	"PerkHub/stores"
 	"context"
 	"fmt"
+	"net/url"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -73,6 +74,7 @@ func main() {
 
 	// Initialize API routes
 	routes.Endpoints(app)
+	app.GET("/r", RedirectHandler)
 
 	// Serve static files (like images, CSS, JS)
 	app.Static("/files", "./files") // This will map /files/* to the ./files directory
@@ -80,4 +82,20 @@ func main() {
 	// corsHandler := handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(http.DefaultServeMux)
 	// http.ListenAndServe(fmt.Sprintf("localhost:%d", constants.Port), corsHandler) // Start the Gin server on the specified port
 	app.Run(fmt.Sprintf(":%d", constants.Port))
+}
+
+func RedirectHandler(c *gin.Context) {
+	raw := c.Query("u")
+	if raw == "" {
+		c.String(400, "missing u param")
+		return
+	}
+
+	decoded, err := url.QueryUnescape(raw)
+	if err != nil {
+		c.String(400, "invalid url encoding")
+		return
+	}
+
+	c.Redirect(302, decoded)
 }

@@ -1,6 +1,8 @@
 module PerkHub
 
-go 1.22.5
+go 1.23.0
+
+toolchain go1.23.1
 
 require (
 	github.com/aws/aws-sdk-go v1.55.6
@@ -12,6 +14,7 @@ require (
 	github.com/leebenson/conform v1.2.2
 	github.com/lib/pq v1.10.9
 	github.com/pressly/goose/v3 v3.22.1
+	golang.org/x/sync v0.11.0
 )
 
 require (
@@ -41,11 +44,10 @@ require (
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/arch v0.12.0 // indirect
-	golang.org/x/crypto v0.31.0 // indirect
+	golang.org/x/crypto v0.35.0 // indirect
 	golang.org/x/net v0.33.0 // indirect
-	golang.org/x/sync v0.10.0 // indirect
-	golang.org/x/sys v0.28.0 // indirect
-	golang.org/x/text v0.21.0 // indirect
+	golang.org/x/sys v0.30.0 // indirect
+	golang.org/x/text v0.22.0 // indirect
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
 	google.golang.org/protobuf v1.36.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect

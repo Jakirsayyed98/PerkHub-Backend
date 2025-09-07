@@ -42,3 +42,21 @@ func GetPaymentMethodsByUserID(c *gin.Context) {
 
 	utils.RespondOK(c, result, "Withdrawal request list get successfully", "")
 }
+
+func AdminWithdrawalTxnList(c *gin.Context) {
+
+	store, err := stores.GetStores(c)
+	if err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	status := c.Param("status")
+	result, err := store.Withdrawal.AdminWithdrawalTxnList(status)
+	if err != nil {
+		utils.RespondBadRequest(c, err, "")
+		return
+	}
+
+	utils.RespondOK(c, result, "Withdrawal request list get successfully", "")
+}

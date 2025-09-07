@@ -3,31 +3,30 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE miniapp_data (
-    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-    miniapp_category_id TEXT NOT NULL, -- Changed to INTEGER if applicable
-    miniapp_subcategory_id TEXT NOT NULL, -- Changed to INTEGER if applicable
-    name VARCHAR(255) NOT NULL,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    miniapp_category_id UUID NOT NULL,
+    name TEXT NOT NULL,
     icon VARCHAR(255),
-    description TEXT,
-    cashback_terms TEXT,
-    cashback_rates TEXT,
-    status BOOLEAN DEFAULT FALSE,
-    url_type VARCHAR(50),
-    cb_active BOOLEAN DEFAULT FALSE,
-    cb_percentage TEXT,
-    url VARCHAR(255),
-    label VARCHAR(255),
-    banner VARCHAR(255),
     logo VARCHAR(255),
-    macro_publisher VARCHAR(255),
-    popular  BOOLEAN DEFAULT FALSE,
-    trending BOOLEAN DEFAULT FALSE,
-    top_cashback BOOLEAN DEFAULT FALSE,
+    description TEXT,
     about TEXT,
-    howitswork TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(), -- Creation timestamp
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()  -- Last update timestamp
+    cashback_terms TEXT,
+    is_cb_active BOOLEAN NOT NULL DEFAULT true,        -- renamed for clarity
+    cb_percentage VARCHAR(55),
+    url TEXT,
+    url_type TEXT CHECK (url_type IN ('internal', 'external', 'deeplink')) DEFAULT 'external',
+    macro_publisher UUID,
+    is_active BOOLEAN NOT NULL DEFAULT true,           -- renamed for clarity
+    is_popular BOOLEAN NOT NULL DEFAULT false,        -- renamed for clarity
+    is_trending BOOLEAN NOT NULL DEFAULT false,       -- renamed for clarity
+    is_top_cashback BOOLEAN NOT NULL DEFAULT false,   -- renamed for clarity
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE INDEX idx_miniapp_category_id ON miniapp_data(miniapp_category_id);
+CREATE INDEX idx_macro_publisher ON miniapp_data(macro_publisher);
+CREATE INDEX idx_is_cb_active ON miniapp_data(is_cb_active);
 
 -- Add comments after the table creation
 -- +goose StatementEnd

@@ -92,7 +92,6 @@ func (s *LoginStore) GetAuthToken(login *request.GetAuthToken) (interface{}, err
 	if login.Number == "" {
 		return nil, errors.New("number required")
 	}
-
 	userDetail, err := model.UserDetailByMobileNumber(s.db, login.Number)
 	if err != nil {
 		return nil, err
@@ -100,7 +99,7 @@ func (s *LoginStore) GetAuthToken(login *request.GetAuthToken) (interface{}, err
 	token := responses.Token{}
 	res, err := utils.GenerateJWTToken(userDetail.User_id.String, time.Minute*15)
 	if err != nil {
-
+		return nil, err
 	}
 	token.Token = res
 	return token, nil

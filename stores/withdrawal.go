@@ -57,6 +57,15 @@ func (s *WithdrawalStore) WithdrawalTxnList(userId string) (interface{}, error) 
 
 }
 
+func (s *WithdrawalStore) AdminWithdrawalTxnList(status string) (interface{}, error) {
+	result, err := model.GetAdminWithdrawalByStatus(s.db, status)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+
+}
+
 func (s *WithdrawalStore) GetPaymentMethodsByUserID(userId string) (interface{}, error) {
 	if userId == "" {
 		return nil, errors.New("Invalid request")
