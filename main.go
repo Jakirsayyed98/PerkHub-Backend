@@ -9,10 +9,9 @@ import (
 	"PerkHub/stores"
 	"context"
 	"fmt"
+	"net/http"
 	"net/url"
-	"time"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,21 +27,13 @@ func main() {
 
 	// Initialize Gin
 	app := gin.Default()
+	app.Use(CORSMiddleware())
 
-	app.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173"}, // your React dev server
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
+	// Debug logging middleware
 	app.Use(func(c *gin.Context) {
-		println("Request:", c.Request.Method, c.Request.URL.Path)
+		fmt.Printf("Request: %s %s\n", c.Request.Method, c.Request.URL.Path)
 		c.Next()
 	})
-	// CORS middleware setup
-	app.Use(cors.Default())
 
 	// AWS setup
 	awsKeyId := constants.AWSAccessKeyID
@@ -58,15 +49,18 @@ func main() {
 		constants.AWSCloudFrontURL,
 	)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("Failed to initialize AWS: %v\n", err)
+		return
 	}
 
 	// Connect to the database
 	db, err := connection.MakePotgressConn()
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Printf("Failed to connect to database: %v\n", err)
+		return
 	}
 	defer db.Close()
+
 	store := stores.NewStores(db)
 
 	// Bind the store with AWS instance
@@ -74,28 +68,57 @@ func main() {
 
 	// Initialize API routes
 	routes.Endpoints(app)
+
+	// Example redirect route
 	app.GET("/r", RedirectHandler)
 
 	// Serve static files (like images, CSS, JS)
-	app.Static("/files", "./files") // This will map /files/* to the ./files directory
-	// Enable CORS for all origins (this allows all websites to access your resources)
-	// corsHandler := handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(http.DefaultServeMux)
-	// http.ListenAndServe(fmt.Sprintf("localhost:%d", constants.Port), corsHandler) // Start the Gin server on the specified port
-	app.Run(fmt.Sprintf(":%d", constants.Port))
+
+	app.Static("/files", "./files")
+
+	// Start Gin server
+	if err := app.Run(fmt.Sprintf("localhost:%d", constants.Port)); err != nil {
+		fmt.Printf("Failed to start server: %v\n", err)
+	}
 }
 
 func RedirectHandler(c *gin.Context) {
 	raw := c.Query("u")
 	if raw == "" {
-		c.String(400, "missing u param")
+		c.String(http.StatusBadRequest, "missing u param")
 		return
 	}
 
 	decoded, err := url.QueryUnescape(raw)
 	if err != nil {
-		c.String(400, "invalid url encoding")
+		c.String(http.StatusBadRequest, "invalid url encoding")
 		return
 	}
 
-	c.Redirect(302, decoded)
+	c.Redirect(http.StatusFound, decoded)
+}
+func CORSMiddleware() gin.HandlerFunc {
+	allowedOrigins := map[string]bool{
+		"http://localhost:5173":                        true,
+		"https://blessed-pretty-mammal.ngrok-free.app": true,
+	}
+
+	return func(c *gin.Context) {
+		origin := c.GetHeader("Origin")
+		if allowedOrigins[origin] {
+			c.Header("Access-Control-Allow-Origin", origin)
+			c.Header("Vary", "Origin")
+			c.Header("Access-Control-Allow-Credentials", "true")
+			c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+			c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		}
+
+		// ✅ Preflight requests must return early
+		if c.Request.Method == http.MethodOptions {
+			c.AbortWithStatus(http.StatusNoContent) // 204
+			return
+		}
+
+		c.Next()
+	}
 }

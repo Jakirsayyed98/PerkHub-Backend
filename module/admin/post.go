@@ -4,6 +4,7 @@ import (
 	"PerkHub/request"
 	"PerkHub/stores"
 	"PerkHub/utils"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -38,7 +39,7 @@ func AdminLogin(c *gin.Context) {
 
 	data := gin.H{}
 	data["user"] = result
-
+	fmt.Println("data:", result)
 	c.JSON(http.StatusOK, gin.H{
 		"status":  http.StatusOK,
 		"token":   res,
