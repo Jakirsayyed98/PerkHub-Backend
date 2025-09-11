@@ -73,6 +73,7 @@ func main() {
 	app.GET("/r", RedirectHandler)
 
 	// Serve static files (like images, CSS, JS)
+
 	app.Static("/files", "./files")
 
 	// Start Gin server
