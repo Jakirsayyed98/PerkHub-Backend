@@ -76,7 +76,7 @@ func main() {
 	app.Static("/files", "./files")
 
 	// Start Gin server
-	if err := app.Run(fmt.Sprintf("localhost:%d", constants.Port)); err != nil {
+	if err := app.Run(fmt.Sprintf(":%d", constants.Port)); err != nil {
 		fmt.Printf("Failed to start server: %v\n", err)
 	}
 }
