@@ -8,6 +8,7 @@ CREATE TABLE miniapp_data (
     name TEXT NOT NULL,
     icon VARCHAR(255),
     logo VARCHAR(255),
+    banner VARCHAR(255),
     description TEXT,
     about TEXT,
     cashback_terms TEXT,

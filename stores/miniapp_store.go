@@ -58,13 +58,12 @@ func (s *MiniAppStore) GetAllMiniApps() (interface{}, error) {
 	}
 	res := responses.NewMiniAppRes()
 
-	result, err := res.BindMultipleUsers(data)
+	result, err := res.BindMiniAppResponse(data)
 	if err != nil {
 		return nil, err
 	}
 
 	return result, nil
-
 }
 
 func (s *MiniAppStore) GetStoreByID(id string) (interface{}, error) {
@@ -75,7 +74,15 @@ func (s *MiniAppStore) GetStoreByID(id string) (interface{}, error) {
 		return nil, err
 	}
 
-	return data, nil
+	res := responses.NewMiniAppRes()
+
+	err = res.ResponsesBind(data)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+	// return data, nil
 }
 
 func (s *MiniAppStore) GetStoresByCategory(category_id string) (interface{}, error) {
@@ -91,7 +98,7 @@ func (s *MiniAppStore) GetStoresByCategory(category_id string) (interface{}, err
 	}
 	res := responses.NewMiniAppRes()
 
-	result, err := res.BindMultipleUsers(data)
+	result, err := res.BindMiniAppResponse(data)
 	if err != nil {
 		return nil, err
 	}
@@ -112,7 +119,7 @@ func (s *MiniAppStore) SearchMiniApps(req *request.MiniAppSearchReq) (interface{
 		return nil, errors.New("Store not found")
 	}
 
-	result, err := res.BindMultipleUsers(data)
+	result, err := res.BindMiniAppResponse(data)
 	if err != nil {
 		return nil, err
 	}
@@ -210,6 +217,7 @@ func (s *MiniAppStore) GetStoresRefresh() (interface{}, error) {
 		}
 
 		for _, v := range data.Campaigns {
+
 			isExist, err := model.MiniAppExists(s.db, v.Name)
 			if err != nil {
 				return nil, err
@@ -236,30 +244,32 @@ func (s *MiniAppStore) GetStoresRefresh() (interface{}, error) {
 				} else {
 					url = v.Domain
 				}
-				fmt.Println(url)
+
 				err = model.InsertMiniApp(s.db, &request.MiniAppRequest{
 					MiniAppCategoryID: categoryId, // default or your desired category ID
 					Name:              v.Name,
 					Icon:              v.Image, // optional
 					Logo:              "",      // optional
+					Banner:            "",      // optional
 					Description:       "",
-					About:             "",                  // optional
-					CashbackTerms:     v.PayoutType,        // optional
-					CBActive:          true,                // default false
-					CBPercentage:      payoutClean,         // default 0
-					Url:               url,                 // optional
-					UrlType:           "internal",          // optional
-					MacroPublisher:    affiliateProviderID, // optional
-					Status:            true,                // active by default
-					Popular:           false,               // default false
-					Trending:          false,               // default false
-					TopCashback:       false,               // default false
+					About:             "",                                                 // optional
+					CashbackTerms:     v.PayoutType,                                       // optional
+					CBActive:          strings.ToLower(v.ApplicationStatus) == "approved", // default false
+					CBPercentage:      payoutClean,                                        // default 0
+					Url:               url,                                                // optional
+					UrlType:           "internal",                                         // optional
+					MacroPublisher:    affiliateProviderID,                                // optional
+					Status:            true,                                               // active by default
+					Popular:           false,                                              // default false
+					Trending:          false,                                              // default false
+					TopCashback:       false,                                              // default false
 				})
 				if err != nil {
 					fmt.Println("Error inserting category:", err)
 					return nil, err
 				}
 			}
+
 		}
 		// Move to the next page
 		page++

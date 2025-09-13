@@ -38,7 +38,7 @@ func NewMiniAppRes() *MiniAppRes {
 	return &MiniAppRes{}
 }
 
-func (u *MiniAppRes) BindMultipleUsers(miniapps []model.MiniApp) ([]MiniAppRes, error) {
+func (u *MiniAppRes) BindMiniAppResponse(miniapps []model.MiniApp) ([]MiniAppRes, error) {
 	var responses []MiniAppRes
 
 	if len(miniapps) == 0 {
@@ -47,7 +47,7 @@ func (u *MiniAppRes) BindMultipleUsers(miniapps []model.MiniApp) ([]MiniAppRes, 
 
 	for _, dbUser := range miniapps {
 		var response MiniAppRes
-		err := response.ResponsesBind(dbUser)
+		err := response.ResponsesBind(&dbUser)
 		if err != nil {
 			return nil, fmt.Errorf("error binding user detail: %w", err)
 		}
@@ -56,7 +56,7 @@ func (u *MiniAppRes) BindMultipleUsers(miniapps []model.MiniApp) ([]MiniAppRes, 
 
 	return responses, nil
 }
-func (m *MiniAppRes) ResponsesBind(dbMiniApp model.MiniApp) error {
+func (m *MiniAppRes) ResponsesBind(dbMiniApp *model.MiniApp) error {
 	m.ID = dbMiniApp.ID
 	m.Name = dbMiniApp.Name
 	m.Icon = dbMiniApp.Icon

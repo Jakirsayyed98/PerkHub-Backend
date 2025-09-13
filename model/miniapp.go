@@ -17,6 +17,7 @@ type MiniApp struct {
 	Name              string    `db:"name" json:"name"`
 	Icon              string    `db:"icon" json:"icon"`
 	Logo              string    `db:"logo" json:"logo"`
+	Banner            string    `db:"banner" json:"banner"`
 	Description       string    `db:"description" json:"description"`
 	About             string    `db:"about" json:"about"`
 	CashbackTerms     string    `db:"cashback_terms" json:"cashback_terms"`
@@ -58,14 +59,14 @@ func InsertMiniApp(db *sql.DB, req *request.MiniAppRequest) error {
 	INSERT INTO miniapp_data (
 		miniapp_category_id, name, icon, logo, description, about,
 		cashback_terms, is_cb_active, cb_percentage, url, url_type,
-		macro_publisher, is_active, is_popular, is_trending, is_top_cashback,
+		macro_publisher, is_active, is_popular, is_trending, is_top_cashback,banner,
 		created_at, updated_at
-	) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)
+	) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)
 	`
 	_, err := db.Exec(query,
 		req.MiniAppCategoryID, req.Name, req.Icon, req.Logo, req.Description, req.About,
 		req.CashbackTerms, req.CBActive, req.CBPercentage, req.Url, req.UrlType,
-		req.MacroPublisher, req.Status, req.Popular, req.Trending, req.TopCashback,
+		req.MacroPublisher, req.Status, req.Popular, req.Trending, req.TopCashback, req.Banner,
 		time.Now(), time.Now(),
 	)
 	return err
@@ -101,6 +102,7 @@ func UpdateMiniApp(db *sql.DB, update *request.MiniAppRequest) error {
 	addField("cb_percentage", update.CBPercentage)
 	addField("url", update.Url)
 	addField("url_type", update.UrlType)
+	addField("banner", update.Banner)
 	addField("macro_publisher", update.MacroPublisher)
 	addField("is_active", update.Status)
 	addField("is_popular", update.Popular)
@@ -142,7 +144,7 @@ func scanMiniApp(rowScanner interface {
 }) (MiniApp, error) {
 	var m MiniApp
 	err := rowScanner.Scan(
-		&m.ID, &m.MiniAppCategoryID, &m.Name, &m.Icon, &m.Logo,
+		&m.ID, &m.MiniAppCategoryID, &m.Name, &m.Icon, &m.Logo, &m.Banner,
 		&m.Description, &m.About, &m.CashbackTerms, &m.CBActive, &m.CBPercentage,
 		&m.Url, &m.UrlType, &m.MacroPublisher, &m.Active, &m.Popular,
 		&m.Trending, &m.TopCashback, &m.CreatedAt, &m.UpdatedAt,
@@ -158,7 +160,7 @@ func GetMiniAppByID(db *sql.DB, id string) (*MiniApp, error) {
 		return nil, err
 	}
 
-	query := `SELECT id, miniapp_category_id, name, icon, logo, description, about,
+	query := `SELECT id, miniapp_category_id, name, icon, logo,banner, description, about,
 		cashback_terms, is_cb_active, cb_percentage, url, url_type, macro_publisher,
 		is_active, is_popular, is_trending, is_top_cashback, created_at, updated_at
 		FROM miniapp_data WHERE id=$1`
@@ -178,7 +180,7 @@ func GetAllMiniApps(db *sql.DB) ([]MiniApp, error) {
 }
 
 func GetMiniAppsByCondition(db *sql.DB, condition string) ([]MiniApp, error) {
-	query := `SELECT id, miniapp_category_id, name, icon, logo, description, about,
+	query := `SELECT id, miniapp_category_id, name, icon, logo,banner, description, about,
 		cashback_terms, is_cb_active, cb_percentage, url, url_type, macro_publisher,
 		is_active, is_popular, is_trending, is_top_cashback, created_at, updated_at
 		FROM miniapp_data ` + condition
