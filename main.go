@@ -9,8 +9,9 @@ import (
 	"PerkHub/stores"
 	"context"
 	"fmt"
+	"log"
 	"net/http"
-	"net/url"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -89,13 +90,29 @@ func RedirectHandler(c *gin.Context) {
 		return
 	}
 
-	decoded, err := url.QueryUnescape(raw)
+	// decoded, err := url.QueryUnescape(raw)
+	// if err != nil {
+	// 	c.String(http.StatusBadRequest, "invalid url encoding")
+	// 	return
+	// }
+
+	// c.Redirect(http.StatusFound, decoded)
+	// Get the store name (optional)
+	storeName := c.Query("store")
+	if storeName == "" {
+		storeName = "the store" // fallback
+	}
+
+	htmlContent, err := os.ReadFile("./assets/redirectionpage.html")
 	if err != nil {
-		c.String(http.StatusBadRequest, "invalid url encoding")
+		log.Printf("Error reading redirect.html: %v", err)
+		c.String(500, "Internal server error")
 		return
 	}
 
-	c.Redirect(http.StatusFound, decoded)
+	// Serve the HTML page with query parameters intact
+	c.Header("Content-Type", "text/html; charset=utf-8")
+	c.String(200, string(htmlContent))
 }
 func CORSMiddleware() gin.HandlerFunc {
 	allowedOrigins := map[string]bool{
