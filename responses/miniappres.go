@@ -76,6 +76,7 @@ func (m *MiniAppRes) ResponsesBind(dbMiniApp *model.MiniApp) error {
 	m.TopCashback = dbMiniApp.TopCashback
 	m.CreatedAt = dbMiniApp.CreatedAt
 	m.UpdatedAt = dbMiniApp.UpdatedAt
+	m.Banner = dbMiniApp.Banner
 
 	return nil
 }
