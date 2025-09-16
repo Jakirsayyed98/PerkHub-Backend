@@ -83,32 +83,73 @@ func UpdateMiniApp(db *sql.DB, update *request.MiniAppRequest) error {
 	params := []interface{}{}
 	i := 1
 
+	// helper to reduce repetition
 	addField := func(name string, value interface{}) {
-		if value != nil {
-			clauses = append(clauses, fmt.Sprintf("%s=$%d", name, i))
-			params = append(params, value)
-			i++
-		}
+		clauses = append(clauses, fmt.Sprintf("%s=$%d", name, i))
+		params = append(params, value)
+		i++
 	}
 
-	addField("miniapp_category_id", update.MiniAppCategoryID)
-	addField("name", update.Name)
-	addField("icon", update.Icon)
-	addField("logo", update.Logo)
-	addField("description", update.Description)
-	addField("about", update.About)
-	addField("cashback_terms", update.CashbackTerms)
+	// only update if non-empty/non-nil
+	if update.MiniAppCategoryID != "" {
+		addField("miniapp_category_id", update.MiniAppCategoryID)
+	}
+	if update.Name != "" {
+		addField("name", update.Name)
+	}
+	if update.Icon != "" {
+		addField("icon", update.Icon)
+	}
+	if update.Logo != "" {
+		addField("logo", update.Logo)
+	}
+
+	if update.Description != "" {
+		addField("description", update.Description)
+	}
+	if update.About != "" {
+		addField("about", update.About)
+	}
+	if update.CashbackTerms != "" {
+		addField("cashback_terms", update.CashbackTerms)
+	}
+	// if update.CBActive != nil {
 	addField("is_cb_active", update.CBActive)
-	addField("cb_percentage", update.CBPercentage)
-	addField("url", update.Url)
-	addField("url_type", update.UrlType)
-	addField("banner", update.Banner)
-	addField("macro_publisher", update.MacroPublisher)
+	// }
+	if update.CBPercentage != "" {
+		addField("cb_percentage", update.CBPercentage)
+	}
+	if update.Url != "" {
+		addField("url", update.Url)
+	}
+	if update.UrlType != "" {
+		addField("url_type", update.UrlType)
+	}
+	if update.Banner != "" {
+		addField("banner", update.Banner)
+	}
+	if update.MacroPublisher != "" {
+		addField("macro_publisher", update.MacroPublisher)
+	}
+	// if update.Status != nil {
 	addField("is_active", update.Status)
+	// }
+	// if update.Popular != nil {
 	addField("is_popular", update.Popular)
+	// }
+	// if update.Trending != nil {
 	addField("is_trending", update.Trending)
+	// }
+	// if update.TopCashback != nil {
 	addField("is_top_cashback", update.TopCashback)
+	// }
+
+	// always update timestamp
 	addField("updated_at", time.Now())
+
+	if len(clauses) == 0 {
+		return errors.New("no valid fields to update")
+	}
 
 	query := "UPDATE miniapp_data SET " +
 		strings.Join(clauses, ", ") +
