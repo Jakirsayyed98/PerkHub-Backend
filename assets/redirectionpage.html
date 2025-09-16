@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PerkHub - Activating Cashback</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #fff, #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .store-info {
+            margin-bottom: 2rem;
+        }
+
+        .status-text {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.9;
+        }
+
+        .store-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .loading-container {
+            margin: 2rem 0;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #fff, #f0f0f0);
+            border-radius: 10px;
+            width: 0%;
+            animation: fillProgress 3s ease-out forwards;
+        }
+
+        @keyframes fillProgress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        .loading-text {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 1rem;
+        }
+
+        .fallback-link {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .fallback-link a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .fallback-link a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        .dots {
+            display: inline-block;
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+
+        .dots::after {
+            content: '';
+            animation: dots 1.5s infinite;
+        }
+
+            /* Mobile optimizations */
+            @media (max-width: 480px) {
+                .container {
+                    padding: 1.5rem;
+                }
+                
+                .logo {
+                    font-size: 2rem;
+                }
+                
+                .status-text {
+                    font-size: 1rem;
+                }
+                
+                .store-name {
+                    font-size: 1.1rem;
+                }
+            }
+
+        /* Background animation */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="g"><stop offset="0%" stop-color="rgba(255,255,255,0.1)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient></defs><circle cx="20" cy="20" r="2" fill="url(%23g)"><animate attributeName="cy" values="20;80;20" dur="3s" repeatCount="indefinite"/></circle><circle cx="50" cy="50" r="3" fill="url(%23g)"><animate attributeName="cy" values="50;10;50" dur="4s" repeatCount="indefinite"/></circle><circle cx="80" cy="30" r="2" fill="url(%23g)"><animate attributeName="cy" values="30;90;30" dur="5s" repeatCount="indefinite"/></circle></svg>') repeat;
+            opacity: 0.1;
+            z-index: -1;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-100px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">PerkHub</div>
+        
+        <div class="store-info">
+            <div class="status-text">PerkHub is activating your cashback</div>
+            <div class="store-name">Redirecting you to <span id="storeName">the store</span><span class="dots"></span></div>
+        </div>
+
+        <div class="loading-container">
+            <div class="spinner"></div>
+            <div class="progress-bar">
+                <div class="progress-fill"></div>
+            </div>
+            <div class="loading-text">Please wait while we prepare your cashback link</div>
+        </div>
+
+        <div class="fallback-link">
+            <a href="#" id="fallbackLink">Click here if you are not redirected automatically</a>
+        </div>
+    </div>
+
+    <script>
+        // Get URL parameters
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Decode URL parameter
+        function decodeUrlParameter(param) {
+            try {
+                return decodeURIComponent(param);
+            } catch (e) {
+                console.error('Error decoding URL parameter:', e);
+                return param;
+            }
+        }
+
+        // Store logos/icons mapping - removed since icons are not used
+
+        // Initialize page
+        function initializePage() {
+            const affiliateUrl = getUrlParameter('u');
+            const storeName = getUrlParameter('store') || 'the store';
+            
+            if (!affiliateUrl) {
+                console.error('No affiliate URL provided');
+                document.querySelector('.loading-text').textContent = 'Error: No redirect URL provided';
+                return;
+            }
+
+            // Decode the affiliate URL
+            const decodedUrl = decodeUrlParameter(affiliateUrl);
+            
+            // Update store name in UI
+            document.getElementById('storeName').textContent = storeName;
+            
+            // Set fallback link
+            document.getElementById('fallbackLink').href = decodedUrl;
+            
+            // Auto-redirect after 3 seconds
+            setTimeout(() => {
+                window.location.href = decodedUrl;
+            }, 3000);
+
+            // Add click handler for immediate redirect
+            document.getElementById('fallbackLink').addEventListener('click', (e) => {
+                e.preventDefault();
+                window.location.href = decodedUrl;
+            });
+        }
+
+        // Start when DOM is loaded
+        document.addEventListener('DOMContentLoaded', initializePage);
+
+        // Handle potential errors
+        window.addEventListener('error', (e) => {
+            console.error('Page error:', e);
+            document.querySelector('.loading-text').textContent = 'Something went wrong. Please click the link below.';
+        });
+    </script>
+</body>
+</html>
