@@ -165,10 +165,10 @@ func (s *MiniAppStore) GenrateSubid(miniAppName, userID string) (interface{}, er
 		return nil, err
 	}
 	// Wrap with your own domain (short redirect link)
-	// finalURL := fmt.Sprintf("https://www.perkhub.in/r?u=%s", url.QueryEscape(affiliateURL))
+	finalURL := fmt.Sprintf("https://api.perkhub.in/r?u=%s", url.QueryEscape(affiliateURL))
 	// finalURL := fmt.Sprintf("http://3.7.77.135:4215/r?u=%s", url.QueryEscape(affiliateURL))
 	// finalURL := fmt.Sprintf("http://localhost:4215/r?u=%s", url.QueryEscape(affiliateURL))
-	finalURL := fmt.Sprintf("https://blessed-pretty-mammal.ngrok-free.app/r?u=%s", url.QueryEscape(affiliateURL))
+	// finalURL := fmt.Sprintf("https://blessed-pretty-mammal.ngrok-free.app/r?u=%s", url.QueryEscape(affiliateURL))
 
 	return finalURL, nil
 }
