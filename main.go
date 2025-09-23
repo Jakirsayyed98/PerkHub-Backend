@@ -103,7 +103,10 @@ func RedirectHandler(c *gin.Context) {
 		storeName = "the store" // fallback
 	}
 
-	htmlContent, err := os.ReadFile("./assets/redirectionpage.html")
+	dir, _ := os.Getwd()
+	htmlContent, err := os.ReadFile(filepath.Join(dir, "assets/redirectionpage.html"))
+
+	// htmlContent, err := os.ReadFile("./assets/redirectionpage.html")
 	if err != nil {
 		log.Printf("Error reading redirect.html: %v", err)
 		c.String(500, "Internal server error")
