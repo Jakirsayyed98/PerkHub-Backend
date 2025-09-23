@@ -51,22 +51,22 @@ func (s *HomePageStore) GetHomePagedata() (*responses.HomePageResponse, error) {
 
 	// Attach mini apps to categories
 	finalCategory := make([]responses.CategoryResponse, 0, len(categories))
-	// for _, cat := range categories {
-	// 	miniApps, err := model.GetStoresByCategory(s.db, cat.ID)
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-	// 	if miniApps != nil {
-	// 		if len(miniApps) > 6 {
-	// 			cat.Data = miniApps[:6] // take only first 6 items
-	// 		} else {
-	// 			cat.Data = miniApps
-	// 		}
-	// 	} else {
-	// 		cat.Data = []model.MiniApp{}
-	// 	}
-	// 	finalCategory = append(finalCategory, cat)
-	// }
+	for _, cat := range categories {
+		miniApps, err := model.GetStoresByCategory(s.db, cat.ID)
+		if err != nil {
+			return nil, err
+		}
+		if miniApps != nil {
+			if len(miniApps) > 6 {
+				cat.Data = miniApps[:6] // take only first 6 items
+			} else {
+				cat.Data = miniApps
+			}
+		} else {
+			cat.Data = []model.MiniApp{}
+		}
+		finalCategory = append(finalCategory, cat)
+	}
 
 	// Run popular/trending/topcashback queries in parallel
 	var (

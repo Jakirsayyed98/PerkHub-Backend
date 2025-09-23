@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -53,10 +54,13 @@ func (awsInstance *Aws) UploadFile(reader io.Reader, fileName string) (string, e
 	bucketName := constants.AWSBucketName
 	cloudFrontURL := constants.AWSCloudFrontURL
 	key := "images"
+	timestamp := time.Now().Format("20060102150405")
+	sanitizedFileName := strings.ReplaceAll(fileName, " ", "_")
+	filename := fmt.Sprintf("%s%s", timestamp, sanitizedFileName)
 
 	up, err := uploader.Upload(&s3manager.UploadInput{
 		Bucket:          aws.String(bucketName),
-		Key:             aws.String(key + "/" + fileName),
+		Key:             aws.String(key + "/" + filename),
 		ContentType:     aws.String("image/png"),
 		Body:            reader,
 		ContentEncoding: aws.String("base64"),

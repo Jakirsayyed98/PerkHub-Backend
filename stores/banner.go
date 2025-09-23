@@ -17,26 +17,6 @@ func NewBannerStore(dbs *sql.DB) *BannerStore {
 	}
 }
 
-func (s *BannerStore) SaveBannerCategory(req *request.BannerCategory) (interface{}, error) {
-	err := model.InsertBannerCategory(s.db, req)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return nil, nil
-}
-
-func (s *BannerStore) GetBannerCategory() (interface{}, error) {
-	result, err := model.GetAllBannersCategory(s.db)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return result, nil
-}
-
 func (s *BannerStore) SaveBanner(req *request.Banner) (interface{}, error) {
 	if req.ID == "" {
 		err := model.InsertBanner(s.db, req)
