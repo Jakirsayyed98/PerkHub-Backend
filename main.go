@@ -12,6 +12,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 )
@@ -104,7 +105,6 @@ func RedirectHandler(c *gin.Context) {
 	}
 
 	dir, _ := os.Getwd()
-	log.Printf("Directory reading redirect.html: %v", dir)
 	htmlContent, err := os.ReadFile(filepath.Join(dir, "assets/redirectionpage.html"))
 
 	// htmlContent, err := os.ReadFile("./assets/redirectionpage.html")
