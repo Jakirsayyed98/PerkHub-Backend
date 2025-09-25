@@ -73,6 +73,10 @@ func getFast2SMSKey() string {
 	return settings.Config("FAST2SMS_API_KEY")
 }
 
+func getFcmKey() string {
+	return settings.Config("FCM_SERVER_KEY")
+}
+
 var (
 	Port               = GetPortNumber()
 	PostgresHost       = getPostgresHost()
@@ -90,6 +94,7 @@ var (
 	ADMIN_BASE_URL     = getAdminBaseUrl()
 	IMAGE_BASE_URL     = getImageBaseUrl()
 	FAST2SMS_API_KEY   = getFast2SMSKey()
+	FCM_SERVER_KEY     = getFcmKey()
 )
 
 var StatusMap = map[string]string{
