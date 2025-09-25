@@ -22,6 +22,7 @@ type Stores struct {
 	AdminStore              *AdminStore
 	TicketStore             *TicketStore
 	OffersStore             *OffersStore
+	NotificationStore       *NotificationStore
 }
 
 func NewStores(db *sql.DB) *Stores {
@@ -38,6 +39,7 @@ func NewStores(db *sql.DB) *Stores {
 		AdminStore:              NewAdminStoreStore(db),
 		TicketStore:             NewTicketStore(db),
 		OffersStore:             NewOffersStore(db),
+		NotificationStore:       NewNotificationStore(db),
 	}
 }
 
@@ -56,6 +58,7 @@ func (s *Stores) BindStore(awsIstance *connection.Aws) gin.HandlerFunc {
 		ctx.Set("admin_store", s.AdminStore)
 		ctx.Set("ticket_store", s.TicketStore)
 		ctx.Set("offers_store", s.OffersStore)
+		ctx.Set("notification_store", s.NotificationStore)
 		ctx.Next()
 	}
 }
@@ -124,6 +127,10 @@ func GetStores(c *gin.Context) (*Stores, error) {
 	if !err {
 		return nil, errors.New("Offer Store Error")
 	}
+	notificationStore, err := c.MustGet("notification_store").(*NotificationStore)
+	if !err {
+		return nil, errors.New("Notification Store Error")
+	}
 
 	return &Stores{
 		LoginStore:              loginStore,
@@ -138,6 +145,7 @@ func GetStores(c *gin.Context) (*Stores, error) {
 		AdminStore:              adminStore,
 		TicketStore:             ticketStore,
 		OffersStore:             offerStore,
+		NotificationStore:       notificationStore,
 	}, nil
 }
 
