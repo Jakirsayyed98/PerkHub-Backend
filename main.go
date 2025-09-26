@@ -2,6 +2,7 @@ package main
 
 import (
 	routes "PerkHub/Routes"
+	scheduler "PerkHub/Scheduler"
 	"PerkHub/connection"
 	amazon "PerkHub/connection"
 	"PerkHub/constants"
@@ -64,7 +65,8 @@ func main() {
 	defer db.Close()
 
 	store := stores.NewStores(db)
-
+	gameScheduler := scheduler.NewGameNotificationScheduler(db)
+	gameScheduler.Start()
 	// Bind the store with AWS instance
 	app.Use(store.BindStore(awsInstance))
 

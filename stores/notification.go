@@ -1,6 +1,7 @@
 package stores
 
 import (
+	"PerkHub/constants"
 	"PerkHub/model"
 	"PerkHub/request"
 	"PerkHub/services"
@@ -13,7 +14,9 @@ type NotificationStore struct {
 }
 
 func NewNotificationStore(dbs *sql.DB) *NotificationStore {
-	notificationService := services.NewNotificationService()
+	notificationService := services.NewNotificationService(
+		constants.FirebaseProjectID, constants.FireBaseFilePath,
+	)
 	return &NotificationStore{
 		db:                  dbs,
 		notificationService: notificationService,
@@ -73,8 +76,41 @@ func (s *NotificationStore) AdminSendNotification(id string) (interface{}, error
 	data := map[string]interface{}{
 		"click_action": notifications.ClickAction,
 		"event":        notifications.EventType,
+		"image":        notifications.Image,
 	}
 
-	s.notificationService.SendNotificationToAllUsers(notifications.Title, notifications.Message, data)
+	err = s.notificationService.SendNotificationToAllUsers(notifications.Title, notifications.Message, data)
+	if err != nil {
+		return nil, err
+	}
+
+	err = model.InsertUserNotificationHistory(s.db, &model.UserNotificationHistory{
+		Title:       notifications.Title,
+		Message:     notifications.Message,
+		Image:       notifications.Image,
+		ClickAction: notifications.ClickAction,
+		UserID:      "",
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return notifications, nil
+}
+
+func (s *NotificationStore) GetNotificationById(id string) (interface{}, error) {
+	notifications, err := model.GetNotificationByID(s.db, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return notifications, nil
+}
+
+func (s *NotificationStore) GetUserNotificationHistory(userId string) (interface{}, error) {
+	notifications, err := model.GetUserNotificationHistory(s.db, userId)
+	if err != nil {
+		return nil, err
+	}
 	return notifications, nil
 }

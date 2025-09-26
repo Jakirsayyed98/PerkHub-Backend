@@ -73,8 +73,16 @@ func getFast2SMSKey() string {
 	return settings.Config("FAST2SMS_API_KEY")
 }
 
-func getFcmKey() string {
-	return settings.Config("FCM_SERVER_KEY")
+func getFirebaseProjectID() string {
+	return settings.Config("FCM_PROJECT_ID")
+}
+
+func getFirebaseFilePath() string {
+	return settings.Config("FCM_FILE_PATH")
+}
+
+func getGameCron() string {
+	return settings.Config("GAME_CRON")
 }
 
 var (
@@ -94,7 +102,9 @@ var (
 	ADMIN_BASE_URL     = getAdminBaseUrl()
 	IMAGE_BASE_URL     = getImageBaseUrl()
 	FAST2SMS_API_KEY   = getFast2SMSKey()
-	FCM_SERVER_KEY     = getFcmKey()
+	FirebaseProjectID  = getFirebaseProjectID()
+	FireBaseFilePath   = getFirebaseFilePath()
+	GameCron           = getGameCron()
 )
 
 var StatusMap = map[string]string{

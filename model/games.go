@@ -500,3 +500,27 @@ func AdminGetAllGames(db *sql.DB) ([]GamesResponse, error) {
 
 	return games, nil
 }
+
+func GetRandomGame(db *sql.DB) (*GamesResponse, error) {
+	query := `SELECT id, name, assets, url, description
+		FROM games_data
+		ORDER BY RANDOM()
+		LIMIT 1;`
+	game := GamesResponse{}
+	var assetsJSON string
+	err := db.QueryRow(query).Scan(
+		&game.Id,
+		&game.Name,
+		&assetsJSON,
+		&game.URL,
+		&game.Description,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("query failed: %w", err)
+	}
+	err = json.Unmarshal([]byte(assetsJSON), &game.Assets)
+	if err != nil {
+		return nil, fmt.Errorf("row scan failed: %w", err)
+	}
+	return &game, nil
+}
