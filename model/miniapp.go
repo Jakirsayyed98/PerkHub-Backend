@@ -12,8 +12,8 @@ import (
 )
 
 type MiniApp struct {
-	ID                uuid.UUID `db:"id" json:"id"`
-	MiniAppCategoryID uuid.UUID `db:"miniapp_category_id" json:"miniapp_category_id"`
+	ID                string    `db:"id" json:"id"`
+	MiniAppCategoryID string    `db:"miniapp_category_id" json:"miniapp_category_id"`
 	Name              string    `db:"name" json:"name"`
 	Icon              string    `db:"icon" json:"icon"`
 	Logo              string    `db:"logo" json:"logo"`
@@ -25,7 +25,7 @@ type MiniApp struct {
 	CBPercentage      string    `db:"cb_percentage" json:"cb_percentage"`
 	Url               string    `db:"url" json:"url"`
 	UrlType           string    `db:"url_type" json:"url_type"`
-	MacroPublisher    uuid.UUID `db:"macro_publisher" json:"macro_publisher"`
+	MacroPublisher    string    `db:"macro_publisher" json:"macro_publisher"`
 	Active            bool      `db:"is_active" json:"is_active"`
 	Popular           bool      `db:"is_popular" json:"is_popular"`
 	Trending          bool      `db:"is_trending" json:"is_trending"`
@@ -50,6 +50,21 @@ func InsertGenratedSubId(db *sql.DB, miniappID, userID, subID1, subID2 string) e
 		VALUES ($1, $2, $3, $4, $5, $6)`
 	_, err := db.Exec(query, miniappID, userID, subID1, subID2, time.Now(), time.Now())
 	return err
+}
+
+func GetDatabySubId(db *sql.DB, subID1, subID2 string) (*GenerateSubId, error) {
+	query := `SELECT id, miniapp_id, user_id, subid1, subid2 FROM genratedsubid_data WHERE subid1=$1 AND subid2=$2`
+	row := db.QueryRow(query, subID1, subID2)
+
+	var data GenerateSubId
+	if err := row.Scan(&data.ID, &data.StoreID, &data.UserID, &data.SubID1, &data.SubID2); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, errors.New("subid not found")
+		}
+		return nil, err
+	}
+
+	return &data, nil
 }
 
 // -------------------- Insert --------------------

@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/google/uuid"
 )
@@ -21,35 +22,50 @@ func NewAffiliatesStore(dbs *sql.DB) *AffiliatesStore {
 }
 
 func (s *AffiliatesStore) CueLinkCallBack(req *request.CueLinkCallBackRequest) (interface{}, error) {
+	UserCommisionPercentage := "70"
+	if req.Commission == "" {
+		req.Commission = "0"
+	}
+	commission, err := strconv.ParseFloat(req.Commission, 64)
+	if err != nil {
+		return nil, err
+	}
 
-	_, err := model.FindMiniAppTransactionBySubID(s.db, req)
+	userCommissionPercentageInt, err := strconv.Atoi(UserCommisionPercentage)
+	if err != nil {
+		return nil, err
+	}
+
+	subIdData, err := model.GetDatabySubId(s.db, req.SubID, req.SubID2)
+	if err != nil {
+		return nil, err
+	}
+
+	usercommision := (commission / 100) * float64(userCommissionPercentageInt)
+
+	request := model.NewMiniAppTransaction()
+	if err := request.Bind(req, fmt.Sprintf("%.2f", usercommision), subIdData.UserID, subIdData.StoreID); err != nil {
+		return nil, err
+	}
+	request.CommissionPercentage = UserCommisionPercentage
+
+	miniAppData, err := model.GetMiniAppByID(s.db, subIdData.StoreID)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = model.FindMiniAppTransactionBySubID(s.db, req)
 	if err != nil {
 		if err.Error() != "transaction not found" {
 			return nil, err
 		}
-		UserCommisionPercentage := "70"
 
-		commission, err := strconv.ParseFloat(req.Commission, 64)
-		if err != nil {
-			return nil, err
-		}
-
-		userCommissionPercentageInt, err := strconv.Atoi(UserCommisionPercentage)
-		if err != nil {
-			return nil, err
-		}
-
-		usercommision := (commission / 100) * float64(userCommissionPercentageInt)
-
-		request := model.NewMiniAppTransaction()
-		if err := request.Bind(req, fmt.Sprintf("%.2f", usercommision)); err != nil {
-			return nil, err
-		}
-		request.CommissionPercentage = UserCommisionPercentage
 		err = model.InsertMiniAppTransaction(s.db, request)
 		if err != nil {
 			return nil, err
 		}
+
+		s.CashbackTrackedNotification(subIdData.UserID, miniAppData.Name, fmt.Sprintf("%.2f", usercommision), req.Status, miniAppData.Icon)
 
 		return nil, nil
 	}
@@ -57,8 +73,44 @@ func (s *AffiliatesStore) CueLinkCallBack(req *request.CueLinkCallBackRequest) (
 	if err != nil {
 		return nil, err
 	}
-
+	s.CashbackTrackedNotification(subIdData.UserID, miniAppData.Name, fmt.Sprintf("%.2f", usercommision), req.Status, miniAppData.Icon)
 	return nil, nil
+}
+
+func (s *AffiliatesStore) CashbackTrackedNotification(userID, storeName, userCommission, status, icon string) error {
+	var title, message string
+
+	switch strings.ToLower(status) {
+	case "pending":
+		title = fmt.Sprintf("💰 Cashback Tracked at %s", storeName)
+		message = fmt.Sprintf("🎉 You’ve earned ₹%s from %s! Your cashback has been tracked successfully. 🚀", userCommission, storeName)
+
+	case "validated":
+		title = fmt.Sprintf("💰 Cashback Validated at %s", storeName)
+		message = fmt.Sprintf("🎉 Good news! Your cashback of ₹%s from %s has been validated. Keep shopping to earn more! 💳", userCommission, storeName)
+
+	case "payable":
+		title = fmt.Sprintf("💰 Cashback Verified at %s", storeName)
+		message = fmt.Sprintf("✅ Your cashback of ₹%s from %s has been verified and is on its way! 🎊", userCommission, storeName)
+
+	case "rejected":
+		title = fmt.Sprintf("❌ Cashback Rejected at %s", storeName)
+		message = fmt.Sprintf("⚠️ Unfortunately, your cashback of ₹%s from %s has been rejected. Don’t worry—shop again and grab your rewards! 💳✨", userCommission, storeName)
+
+	default:
+		title = fmt.Sprintf("ℹ️ Cashback Update at %s", storeName)
+		message = fmt.Sprintf("Your cashback of ₹%s from %s has an update: %s", userCommission, storeName, status)
+	}
+
+	// Send notification
+	NewNotificationStore(s.db).SendNotificationToUser(
+		userID,
+		title,
+		message,
+		icon,
+		"order_history",
+	)
+	return nil
 }
 
 func (s *AffiliatesStore) CreateAffiliate(req *request.CreateAffiliateRequest) (interface{}, error) {

@@ -17,18 +17,20 @@ func NewCreateAffiliateRequest() *CreateAffiliateRequest {
 }
 
 type CueLinkCallBackRequest struct {
-	CampaignID           string `json:"campaign_id"`
-	Commission           string `json:"commission"` // Corrected spelling
-	ReferenceID          string `json:"reference_id"`
-	SaleAmount           string `json:"sale_amount"`
-	Status               string `json:"status"`
-	SubID                string `json:"subid"`
-	SubID1               string `json:"subid1"`
-	SubID2               string `json:"subid2"`                // Corrected spelling
-	SubID3               string `json:"subid3"`                // Corrected spelling
+	SubID         string `json:"subid"`
+	SubID2        string `json:"subId2"`
+	CampaignID    string `json:"campaign_id"`
+	TransactionID string `json:"transaction_id"`
+	Status        string `json:"status"`
+	OrderID       string `json:"order_id"`   // Corrected spelling
+	Commission    string `json:"commission"` // Corrected spelling
+	SaleAmount    string `json:"sale_amount"`
+
+	ReferenceID string `json:"reference_id"`
+
+	UserId               string `json:"user_id"`               // Corrected spelling
 	CommissionPercentage string `json:"commission_percentage"` // Corrected spelling
 	TransactionDate      string `json:"transaction_date"`
-	TransactionID        string `json:"transaction_id"`
 }
 
 func NewCueLinkCallBackRequest() *CueLinkCallBackRequest {
@@ -36,17 +38,15 @@ func NewCueLinkCallBackRequest() *CueLinkCallBackRequest {
 }
 
 func (req *CueLinkCallBackRequest) Bind(c *gin.Context) error {
+	req.SubID = c.Query("subId")
+	req.SubID2 = c.Query("subId2")
 	req.CampaignID = c.Query("campaign_id")
-	req.ReferenceID = c.Query("reference_id")
+	req.TransactionID = c.Query("transactionId")
 	req.Status = c.Query("status")
-	req.SubID = c.Query("subid")
-	req.SubID1 = c.Query("subid1")
-	req.SubID2 = c.Query("subid2")
-	req.SubID3 = c.Query("subid3")
-	req.TransactionDate = c.Query("transaction_date")
-	req.TransactionID = c.Query("transaction_id")
+	req.OrderID = c.Query("order_id")
 	req.Commission = c.Query("commission")
 	req.SaleAmount = c.Query("sale_amount")
+	req.TransactionDate = c.Query("transaction_date")
 
 	return nil
 }

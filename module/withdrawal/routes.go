@@ -13,7 +13,7 @@ func Routes(api *gin.RouterGroup) {
 	app.POST("/addPaymentMethod", AddPaymentMethod)
 	app.GET("/getPaymentMethod", GetPaymentMethodsByUserID)
 	app.POST("/request", RequestWithdrawal)
-	app.GET("/txnList", WithdrawalTxnList)
+	app.GET("/transactions", WithdrawalTxnList)
 
 	admin := api.Group("/admin")
 	admin.Use(middlewear.UserMiddleware())

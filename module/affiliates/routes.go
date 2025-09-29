@@ -7,6 +7,9 @@ import (
 )
 
 func Routes(api *gin.RouterGroup) {
+	callback := api.Group("/")
+	callback.GET("cuelink-callback", CueLinkCallBack)
+
 	app := api.Group("/admin")
 	app.Use(middlewear.UserMiddleware()) // Add any middleware if needed
 	{
@@ -15,7 +18,6 @@ func Routes(api *gin.RouterGroup) {
 		app.GET("/all-affiliates", ListAffiliates)
 		app.POST("/active-deactive-affiliate", UpdateAffiliateFlag)
 		app.POST("/delete-affiliate", DeleteAffiliate)
-		app.GET("/cuelink-callback", CueLinkCallBack)
 		app.POST("/affiliate", GetAffiliateByID)
 	}
 }

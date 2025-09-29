@@ -9,18 +9,18 @@ import (
 )
 
 type WithdrawalRequest struct {
-	ID              uuid.UUID  `db:"id"`
-	UserID          string     `db:"user_id"`
-	RequestedAmt    float64    `db:"requested_amt"`
-	ProcessedAmt    *float64   `db:"processed_amt"`
-	PaymentMethodID uuid.UUID  `db:"payment_method_id"`
-	Status          string     `db:"status"` // 'pending', 'approved', 'rejected'
-	Reason          *string    `db:"reason"`
-	AdminID         *uuid.UUID `db:"admin_id"`
-	TxnID           *string    `db:"txn_id"`
-	TxnTime         *time.Time `db:"txn_time"`
-	CreatedAt       time.Time  `db:"created_at"`
-	UpdatedAt       time.Time  `db:"updated_at"`
+	ID              uuid.UUID  `db:"id" json:"id"`
+	UserID          string     `db:"user_id" json:"user_id"`
+	RequestedAmt    float64    `db:"requested_amt" json:"requested_amt"`
+	ProcessedAmt    *float64   `db:"processed_amt" json:"processed_amt"`
+	PaymentMethodID uuid.UUID  `db:"payment_method_id" json:"payment_method_id"`
+	Status          string     `db:"status" json:"status"` // 'pending', 'approved', 'rejected'
+	Reason          *string    `db:"reason" json:"reason"`
+	AdminID         *uuid.UUID `db:"admin_id" json:"admin_id"`
+	TxnID           *string    `db:"txn_id" json:"txn_id"`
+	TxnTime         *string    `db:"txn_time" json:"txn_time"`
+	CreatedAt       time.Time  `db:"created_at" json:"created_at"`
+	UpdatedAt       time.Time  `db:"updated_at" json:"updated_at"`
 }
 
 func NewWithdrawalRequest() *WithdrawalRequest {

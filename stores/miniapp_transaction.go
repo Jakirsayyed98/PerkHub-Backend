@@ -33,13 +33,13 @@ func (s *MiniAppTransactionStore) GetMiniAppTransaction(userId string) (interfac
 
 	for _, v := range transaction {
 		switch v.Status {
-		case "0":
+		case "pending":
 			amt, _ := strconv.ParseFloat(v.UserCommission, 64)
 			pending += amt
-		case "1":
+		case "verified":
 			amt, _ := strconv.ParseFloat(v.UserCommission, 64)
 			verified += amt
-		case "2":
+		case "rejected":
 			amt, _ := strconv.ParseFloat(v.UserCommission, 64)
 			rejected += amt
 		case "3":

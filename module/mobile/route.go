@@ -9,6 +9,7 @@ import (
 func Routes(api *gin.RouterGroup) {
 	app := api.Group("/")
 	app.Use(middlewear.UserMiddleware())
-	api.GET("/getHomePage", GetHomePage)
+	app.GET("/getHomePage", GetHomePage)
+	app.POST("/updateNotificationToken", UpdateNotificationToken)
 
 }

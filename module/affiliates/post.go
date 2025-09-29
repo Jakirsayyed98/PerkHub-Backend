@@ -4,6 +4,7 @@ import (
 	"PerkHub/request"
 	"PerkHub/stores"
 	"PerkHub/utils"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,7 +22,7 @@ func CueLinkCallBack(c *gin.Context) {
 		utils.RespondBadRequest(c, err, "")
 		return
 	}
-
+	fmt.Printf("CueLink Callback Request: %+v\n", request)
 	result, err := store.AffiliatesStore.CueLinkCallBack(request)
 	if err != nil {
 		utils.RespondBadRequest(c, err, "")

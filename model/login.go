@@ -206,3 +206,8 @@ func MarkOtpVerified(db *sql.DB, number, otp string) error {
 	_, err := db.Exec("UPDATE otp_logs SET verified = true WHERE number = $1 AND otp = $2", number, otp)
 	return err
 }
+
+func UpdateUserNotificationToken(db *sql.DB, token, userID string) error {
+	_, err := db.Exec("UPDATE users SET fcm_token = $1 WHERE user_id = $2", token, userID)
+	return err
+}

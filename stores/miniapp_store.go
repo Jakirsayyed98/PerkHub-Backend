@@ -144,23 +144,27 @@ func (s *MiniAppStore) GenrateSubid(miniAppName, userID string) (interface{}, er
 	if data == nil {
 		return nil, errors.New("App not found")
 	}
-	subid1, err := utils.GenerateRandomUUID(20)
+	subid, err := utils.GenerateRandomUUID(20)
 	if err != nil {
 		return nil, err
 	}
-	subid2 := userID
-	subid3 := data[0].Name
+
+	subid2, err := utils.GenerateRandomUUID(20)
+	if err != nil {
+		return nil, err
+	}
+
 	// Encode the original store URL for Cuelinks
 	encodedURL := url.QueryEscape(data[0].Url)
 
 	affiliateURL := fmt.Sprintf(
-		"https://linksredirect.com/?cid=198215&source=linkkit&url=%s&subid=%s&subid2=%s&subid3=%s",
-		encodedURL, subid1, subid2, subid3,
+		"https://linksredirect.com/?cid=198215&source=linkkit&url=%s&subid=%s&subid2=%s",
+		encodedURL, subid, subid2,
 	)
 
 	// url := fmt.Sprintf("%s&subid=%s&subid2=%s&subid3=%s", data[0].Url, subid1, subid2, subid3)
 
-	err = model.InsertGenratedSubId(s.db, miniAppName, userID, subid1, subid2)
+	err = model.InsertGenratedSubId(s.db, data[0].ID, userID, subid, subid2)
 	if err != nil {
 		return nil, err
 	}

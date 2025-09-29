@@ -95,7 +95,7 @@ func (s *NotificationStore) AdminSendNotification(id string) (interface{}, error
 		return nil, err
 	}
 
-	return notifications, nil
+	return nil, nil
 }
 
 func (s *NotificationStore) GetNotificationById(id string) (interface{}, error) {
@@ -113,4 +113,29 @@ func (s *NotificationStore) GetUserNotificationHistory(userId string) (interface
 		return nil, err
 	}
 	return notifications, nil
+}
+
+func (s *NotificationStore) SendNotificationToUser(userId, title, message, icon, clickAction string) (interface{}, error) {
+	user, err := model.UserDetailByUserID(s.db, userId)
+	if err != nil {
+		return nil, err
+	}
+	data := map[string]interface{}{
+		"click_action": clickAction,
+		"event":        "shopping",
+		"image":        icon,
+	}
+	err = s.notificationService.SendNotificationToToken(user.FCMToken.String, title, message, data)
+
+	err = model.InsertUserNotificationHistory(s.db, &model.UserNotificationHistory{
+		Title:       title,
+		Message:     message,
+		Image:       icon,
+		ClickAction: clickAction,
+		UserID:      userId,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
 }

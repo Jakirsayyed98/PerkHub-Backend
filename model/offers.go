@@ -4,14 +4,12 @@ import (
 	"database/sql"
 	"fmt"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type Offer struct {
-	ID                uuid.UUID `db:"id" json:"id"`
+	ID                string    `db:"id" json:"id"`
 	OfferID           string    `db:"offer_id" json:"offer_id"`
-	StoreID           uuid.UUID `db:"store_id" json:"store_id"`
+	StoreID           string    `db:"store_id" json:"store_id"`
 	StoreName         string    `db:"store_name" json:"store_name"`
 	Title             string    `db:"title" json:"title"`
 	Description       string    `db:"description" json:"description"`

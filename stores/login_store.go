@@ -149,3 +149,11 @@ func (s *LoginStore) GetAllUserDetail() (interface{}, error) {
 
 	return result, nil
 }
+
+func (s *LoginStore) UpdateNotificationToken(userId, token string) error {
+
+	if err := model.UpdateUserNotificationToken(s.db, token, userId); err != nil {
+		return err
+	}
+	return nil
+}

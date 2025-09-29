@@ -4,12 +4,10 @@ import (
 	"PerkHub/model"
 	"fmt"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type MiniAppRes struct {
-	ID                uuid.UUID `db:"id" json:"id"`                                   // Unique identifier
+	ID                string    `db:"id" json:"id"`                                   // Unique identifier
 	MiniAppCategoryID string    `db:"miniapp_category_id" json:"miniapp_category_id"` // Category ID
 	Name              string    `db:"name" json:"name"`                               // Name of the miniapp
 	Icon              string    `db:"icon" json:"icon"`                               // URL or path to the icon
@@ -18,7 +16,7 @@ type MiniAppRes struct {
 	CashbackRates     string    `db:"cashback_rates" json:"cashback_rates"`           // Rates for cashback
 	Status            bool      `db:"status" json:"status"`                           // Status: '0' for inactive, '1' for active
 	UrlType           string    `db:"url_type" json:"url_type"`                       // Type of URL
-	CBActive          bool      `db:"cb_active" json:"cb_active"`                     // Cashback active status
+	CBActive          bool      `db:"is_cb_active" json:"is_cb_active"`               // Cashback active status
 	CBPercentage      string    `db:"cb_percentage" json:"cb_percentage"`             // Cashback percentage
 	Url               string    `db:"url" json:"url"`                                 // URL of the miniapp
 	Label             string    `db:"label" json:"label"`                             // Label for the miniapp
@@ -61,7 +59,7 @@ func (m *MiniAppRes) ResponsesBind(dbMiniApp *model.MiniApp) error {
 	m.Name = dbMiniApp.Name
 	m.Icon = dbMiniApp.Icon
 	m.Logo = dbMiniApp.Logo
-	m.MiniAppCategoryID = dbMiniApp.MiniAppCategoryID.String()
+	m.MiniAppCategoryID = dbMiniApp.MiniAppCategoryID
 	m.Description = dbMiniApp.Description
 	m.About = dbMiniApp.About
 	m.CashbackTerms = dbMiniApp.CashbackTerms
@@ -69,7 +67,7 @@ func (m *MiniAppRes) ResponsesBind(dbMiniApp *model.MiniApp) error {
 	m.CBPercentage = dbMiniApp.CBPercentage
 	m.Url = dbMiniApp.Url
 	m.UrlType = dbMiniApp.UrlType
-	m.MacroPublisher = dbMiniApp.MacroPublisher.String()
+	m.MacroPublisher = dbMiniApp.MacroPublisher
 	m.Status = dbMiniApp.Active
 	m.Popular = dbMiniApp.Popular
 	m.Trending = dbMiniApp.Trending

@@ -17,7 +17,7 @@ type UserNotificationHistory struct {
 }
 
 func GetUserNotificationHistory(db *sql.DB, userId string) ([]UserNotificationHistory, error) {
-	query := `SELECT * from user_notification_history WHERE user_id=$1  OR user_id IS NULL OR user_id = ''`
+	query := `SELECT id,title, message, image,click_action,status, created_at, updated_at, user_id from user_notification_history WHERE user_id=$1  OR user_id IS NULL OR user_id = '' ORDER BY created_at DESC`
 	result, err := db.Query(query, userId)
 	if err != nil {
 		return nil, err
