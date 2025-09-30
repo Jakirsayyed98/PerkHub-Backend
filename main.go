@@ -6,6 +6,7 @@ import (
 	"PerkHub/connection"
 	amazon "PerkHub/connection"
 	"PerkHub/constants"
+	"PerkHub/pkg/logger"
 	"PerkHub/settings"
 	"PerkHub/stores"
 	"context"
@@ -14,6 +15,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -24,6 +26,10 @@ var (
 )
 
 func main() {
+
+	// Initialize logger
+	logger.Init()
+
 	appCtx, appCancel = context.WithCancel(context.Background())
 	settings.LoadEnvFile()
 	defer appCancel()
@@ -31,11 +37,29 @@ func main() {
 	// Initialize Gin
 	app := gin.Default()
 	app.Use(CORSMiddleware())
+	app.Use(logger.RequestLogger())
 
 	// Debug logging middleware
 	app.Use(func(c *gin.Context) {
-		fmt.Printf("Request: %s %s\n", c.Request.Method, c.Request.URL.Path)
 		c.Next()
+	})
+
+	app.GET("/ping", func(c *gin.Context) {
+		start := time.Now()
+		userID := "user-123"
+		reqID := "req-001"
+
+		// Log success using LogData
+		logger.LogInfo(logger.LogData{
+			Message:   "Ping endpoint called successfully",
+			StartTime: start,
+			EndTime:   time.Now(),
+			Latency:   time.Since(start).Seconds(),
+			UserID:    userID,
+			ReqID:     reqID,
+		})
+
+		c.JSON(http.StatusOK, gin.H{"message": "pong"})
 	})
 
 	// AWS setup
