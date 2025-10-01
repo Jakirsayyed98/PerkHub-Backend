@@ -98,7 +98,9 @@ ORDER BY mt.created_at DESC`
 	//  FROM miniapp_transactions WHERE user_id = $1"
 
 	rows, err := db.Query(query, userId)
-
+	if err != nil {
+		return nil, err
+	}
 	defer rows.Close()
 
 	var transactions []MiniAppTransactions
@@ -139,13 +141,6 @@ ORDER BY mt.created_at DESC`
 		transactions = append(transactions, transaction)
 	}
 
-	if err != nil {
-
-		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("transaction not found")
-		}
-		return nil, err
-	}
 	return transactions, nil
 }
 

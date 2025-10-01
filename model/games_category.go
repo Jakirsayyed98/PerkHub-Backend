@@ -118,8 +118,7 @@ func AdminGetGameCategories(db *sql.DB) ([]GameCategory, error) {
 }
 
 func ActivateDeactiveGameCategoryKey(db *sql.DB, id string, value bool) error {
-	query := fmt.Sprintf("UPDATE game_categories SET status = $1 WHERE id = $2")
-	fmt.Println(query, value, id)
+	query := `UPDATE game_categories SET status = $1 WHERE id = $2`
 	_, err := db.Exec(query, value, id)
 	return err
 }

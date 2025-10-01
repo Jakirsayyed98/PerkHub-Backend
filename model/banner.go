@@ -211,9 +211,6 @@ func GetBannerbyId(db *sql.DB, id string) (*Banner, error) {
 	query := "SELECT id,name, banner_category_id, image, url, status, start_date, end_date, created_at, updated_at FROM banner_data WHERE id = $1"
 	// Execute the query with the provided categoryID as a parameter
 	row := db.QueryRow(query, parsedID)
-	if err != nil {
-		return nil, err
-	}
 
 	// Initialize a slice to hold the banners
 

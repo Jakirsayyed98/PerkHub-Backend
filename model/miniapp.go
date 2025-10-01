@@ -260,15 +260,15 @@ func GetMiniAppsByCondition(db *sql.DB, condition string) ([]MiniApp, error) {
 // -------------------- Specific Queries --------------------
 
 func GetMiniAppsPopular(db *sql.DB) ([]MiniApp, error) {
-	return GetMiniAppsByCondition(db, "WHERE is_popular=true AND is_active=true")
+	return GetMiniAppsByCondition(db, "WHERE is_popular=true AND is_active=true AND is_cb_active=true")
 }
 
 func GetMiniAppsTrending(db *sql.DB) ([]MiniApp, error) {
-	return GetMiniAppsByCondition(db, "WHERE is_trending=true AND is_active=true")
+	return GetMiniAppsByCondition(db, "WHERE is_trending=true AND is_active=true AND is_cb_active=true")
 }
 
 func GetMiniAppsTopCashback(db *sql.DB) ([]MiniApp, error) {
-	return GetMiniAppsByCondition(db, "WHERE is_top_cashback=true AND is_active=true")
+	return GetMiniAppsByCondition(db, "WHERE is_top_cashback=true AND is_active=true AND is_cb_active=true")
 }
 
 func SearchMiniApps(db *sql.DB, name string) ([]MiniApp, error) {

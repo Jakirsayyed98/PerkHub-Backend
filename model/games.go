@@ -97,6 +97,9 @@ func (s *GamesResponse) Bind(data request.GameResponse, categoryId string) error
 
 func (s *GamesResponse) InsertGames(db *sql.DB, item *GamesResponse, category_id string) error {
 	datas, err := json.Marshal(item.Assets)
+	if err != nil {
+		return err
+	}
 	query := `
 		INSERT INTO games_data (code, url, name, isPortrait, description, gamePreviews, assets, category_id, colorMuted, colorVibrant, status, privateAllowed, rating, numberOfRatings, gamePlays, hasIntegratedAds, width, height, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, now(), now())
@@ -173,7 +176,7 @@ func GetAllGames(db *sql.DB) ([]GamesResponse, error) {
 
 	rows, err := db.Query(query)
 	if err != nil {
-		return nil, fmt.Errorf("query failed: %w", err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -206,17 +209,17 @@ func GetAllGames(db *sql.DB) ([]GamesResponse, error) {
 			&game.Popular,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("row scan failed: %w", err)
+			return nil, err
 		}
 		err = json.Unmarshal([]byte(assetsJSON), &game.Assets)
 		if err != nil {
-			return nil, fmt.Errorf("row scan failed: %w", err)
+			return nil, err
 		}
 		games = append(games, game)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("rows iteration error: %w", err)
+		return nil, err
 	}
 
 	return games, nil
@@ -227,7 +230,7 @@ func GetPopularGames(db *sql.DB) ([]GamesResponse, error) {
 
 	rows, err := db.Query(query)
 	if err != nil {
-		return nil, fmt.Errorf("query failed: %w", err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -260,11 +263,11 @@ func GetPopularGames(db *sql.DB) ([]GamesResponse, error) {
 			&game.Popular,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("row scan failed: %w", err)
+			return nil, err
 		}
 		err = json.Unmarshal([]byte(assetsJSON), &game.Assets)
 		if err != nil {
-			return nil, fmt.Errorf("row scan failed: %w", err)
+			return nil, err
 		}
 		games = append(games, game)
 	}
@@ -281,7 +284,7 @@ func GetTrendingGames(db *sql.DB) ([]GamesResponse, error) {
 
 	rows, err := db.Query(query)
 	if err != nil {
-		return nil, fmt.Errorf("query failed: %w", err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -314,17 +317,17 @@ func GetTrendingGames(db *sql.DB) ([]GamesResponse, error) {
 			&game.Popular,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("row scan failed: %w", err)
+			return nil, err
 		}
 		err = json.Unmarshal([]byte(assetsJSON), &game.Assets)
 		if err != nil {
-			return nil, fmt.Errorf("row scan failed: %w", err)
+			return nil, err
 		}
 		games = append(games, game)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("rows iteration error: %w", err)
+		return nil, err
 	}
 
 	return games, nil
@@ -335,7 +338,7 @@ func GetAllGamesBycategory(db *sql.DB, category_id string) ([]GamesResponse, err
 
 	rows, err := db.Query(query, category_id)
 	if err != nil {
-		return nil, fmt.Errorf("query failed: %w", err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -368,17 +371,17 @@ func GetAllGamesBycategory(db *sql.DB, category_id string) ([]GamesResponse, err
 			&game.Popular,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("row scan failed: %w", err)
+			return nil, err
 		}
 		err = json.Unmarshal([]byte(assetsJSON), &game.Assets)
 		if err != nil {
-			return nil, fmt.Errorf("row scan failed: %w", err)
+			return nil, err
 		}
 		games = append(games, game)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("rows iteration error: %w", err)
+		return nil, err
 	}
 
 	return games, nil
@@ -389,7 +392,7 @@ func GetGameSearch(db *sql.DB, search string) ([]GamesResponse, error) {
 
 	rows, err := db.Query(query, search)
 	if err != nil {
-		return nil, fmt.Errorf("query failed: %w", err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -422,17 +425,17 @@ func GetGameSearch(db *sql.DB, search string) ([]GamesResponse, error) {
 			&game.Popular,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("row scan failed: %w", err)
+			return nil, err
 		}
 		err = json.Unmarshal([]byte(assetsJSON), &game.Assets)
 		if err != nil {
-			return nil, fmt.Errorf("row scan failed: %w", err)
+			return nil, err
 		}
 		games = append(games, game)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("rows iteration error: %w", err)
+		return nil, err
 	}
 
 	return games, nil
@@ -452,7 +455,7 @@ func AdminGetAllGames(db *sql.DB) ([]GamesResponse, error) {
 
 	rows, err := db.Query(query)
 	if err != nil {
-		return nil, fmt.Errorf("query failed: %w", err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -485,11 +488,11 @@ func AdminGetAllGames(db *sql.DB) ([]GamesResponse, error) {
 			&game.Popular,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("row scan failed: %w", err)
+			return nil, err
 		}
 		err = json.Unmarshal([]byte(assetsJSON), &game.Assets)
 		if err != nil {
-			return nil, fmt.Errorf("row scan failed: %w", err)
+			return nil, err
 		}
 		games = append(games, game)
 	}
@@ -516,11 +519,11 @@ func GetRandomGame(db *sql.DB) (*GamesResponse, error) {
 		&game.Description,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("query failed: %w", err)
+		return nil, err
 	}
 	err = json.Unmarshal([]byte(assetsJSON), &game.Assets)
 	if err != nil {
-		return nil, fmt.Errorf("row scan failed: %w", err)
+		return nil, err
 	}
 	return &game, nil
 }

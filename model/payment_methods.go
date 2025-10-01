@@ -101,7 +101,7 @@ func GetPaymentMethodsByUserID(db *sql.DB, userID string) ([]PaymentMethod, erro
 	return paymentMethods, nil
 }
 
-func UpdatePaymentMethodDefault(db sql.DB, userID string, pmID uuid.UUID, isDefault bool) error {
+func UpdatePaymentMethodDefault(db *sql.DB, userID string, pmID uuid.UUID, isDefault bool) error {
 	query := `UPDATE payment_methods SET is_default = $1, updated_at = NOW() WHERE id = $2 AND user_id= $3;`
 
 	_, err := db.Exec(query, isDefault, pmID, userID)

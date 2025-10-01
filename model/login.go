@@ -104,7 +104,6 @@ func UserDetailByMobileNumber(db *sql.DB, mobileNumber string) (*UserDetail, err
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			fmt.Println("no user found with the mobile number: %s", mobileNumber)
 			return nil, sql.ErrNoRows
 		}
 		return nil, err
