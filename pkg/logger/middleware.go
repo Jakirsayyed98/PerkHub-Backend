@@ -23,7 +23,7 @@ func RequestLogger() gin.HandlerFunc {
 		if Cfg().RequestBody && c.Request.Body != nil {
 			bodyBytes, _ := io.ReadAll(c.Request.Body)
 			_ = json.Unmarshal(bodyBytes, &reqBody)
-			c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes)) // reset
+			c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes)) // reset body for handlers
 		}
 
 		// Capture response using Gin writer
@@ -51,20 +51,29 @@ func RequestLogger() gin.HandlerFunc {
 			ReqID:     reqID,
 		}
 
-		// Log based on status
-		if status >= 200 && status < 400 {
+		// -------------------------
+		// Log by HTTP status level
+		// -------------------------
+		switch {
+		case status >= 400:
+			LogError(logData) // anything >=400 is treated as error
+		default:
 			LogInfo(logData)
-		} else {
-			LogWarn(logData)
 		}
 
+		// -------------------------
 		// Log slow requests
+		// -------------------------
 		if latency > Cfg().LatencyThreshold {
 			LogWarn(LogData{
-				Message: "slow request detected",
-				Latency: latency,
-				ReqID:   reqID,
-				UserID:  c.GetString("user_id"),
+				Message:   "slow request detected",
+				Latency:   latency,
+				ReqID:     reqID,
+				UserID:    c.GetString("user_id"),
+				Request:   reqBody,
+				Response:  respBody,
+				StartTime: start,
+				EndTime:   time.Now(),
 			})
 		}
 	}

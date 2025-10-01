@@ -56,12 +56,15 @@ func buildFields(data LogData) []zap.Field {
 	if !data.StartTime.IsZero() {
 		fields = append(fields, zap.Time("start_time", data.StartTime))
 	}
-	if !data.EndTime.IsZero() {
-		fields = append(fields, zap.Time("end_time", data.EndTime))
+
+	endTime := time.Now()
+	fields = append(fields, zap.Time("end_time", endTime))
+
+	if data.Latency <= 0 {
+		data.Latency = endTime.Sub(data.StartTime).Seconds()
 	}
-	if data.Latency > 0 {
-		fields = append(fields, zap.Float64("latency", data.Latency))
-	}
+	fields = append(fields, zap.Float64("latency", data.Latency))
+
 	if data.Request != nil {
 		fields = append(fields, zap.Any("request", data.Request))
 	}

@@ -7,7 +7,7 @@ run:
 	go run main.go
 
 build:
-	GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o bankapi
+	GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o myapp
 
 # $(MAKE) build-upload
 
@@ -26,7 +26,7 @@ swagger-generate:
 # goose migrations
 goose-create-new:
 	goose -dir ./migrations create $(MIGRATION_NAME) sql
-	
+
 
 create_migration:
 	@read -p "Enter migration name: " name; \
@@ -43,7 +43,7 @@ goose-version:
 
 test_run:
 	go test -v -tags unit ./test/unittest
-	
+
 test-integration:
 	go test -tags integration ./tests/integration_test
 

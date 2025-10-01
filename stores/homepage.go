@@ -2,8 +2,10 @@ package stores
 
 import (
 	"PerkHub/model"
+	"PerkHub/pkg/logger"
 	"PerkHub/responses"
 	"database/sql"
+	"time"
 
 	"golang.org/x/sync/errgroup"
 )
@@ -19,33 +21,64 @@ func NewHomePageStore(dbs *sql.DB) *HomePageStore {
 }
 
 func (s *HomePageStore) GetHomePagedata() (*responses.HomePageResponse, error) {
+	startTime := time.Now()
 	category, err := model.GetAllActiveCategories(s.db)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 	// Get categories for homepage
 	categoryHomePage, err := model.GetAllHomePageActive(s.db)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
 	banner1, err := model.GetBannersByCategoryID(s.db, "1")
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
 	banner2, err := model.GetBannersByCategoryID(s.db, "1")
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 	banner3, err := model.GetBannersByCategoryID(s.db, "1")
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
 	categoriesres := responses.NewCategoryRes()
 	categories, err := categoriesres.BindMultipleUsers(categoryHomePage)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
@@ -104,6 +137,11 @@ func (s *HomePageStore) GetHomePagedata() (*responses.HomePageResponse, error) {
 	res := responses.NewHomePagedata()
 	data, err := res.Bind(category, banner1, banner2, banner3, popular, trending, topcashback, finalCategory)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 

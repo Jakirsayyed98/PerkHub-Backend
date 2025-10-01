@@ -3,9 +3,11 @@ package stores
 import (
 	"PerkHub/constants"
 	"PerkHub/model"
+	"PerkHub/pkg/logger"
 	"PerkHub/request"
 	"PerkHub/services"
 	"database/sql"
+	"time"
 )
 
 type NotificationStore struct {
@@ -24,6 +26,7 @@ func NewNotificationStore(dbs *sql.DB) *NotificationStore {
 }
 
 func (s *NotificationStore) CreateNotification(request *request.NotificationRequest) error {
+	startTime := time.Now()
 	err := model.InsertNotification(s.db, &model.Notification{
 		Title:       request.Title,
 		Message:     request.Message,
@@ -36,12 +39,18 @@ func (s *NotificationStore) CreateNotification(request *request.NotificationRequ
 		Status:      request.Status,
 	})
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return err
 	}
 	return nil
 }
 
 func (s *NotificationStore) UpdateNotification(request *request.NotificationRequest) error {
+	startTime := time.Now()
 	err := model.UpdateNotification(s.db, &model.Notification{
 		ID:          request.Id,
 		Title:       request.Title,
@@ -55,21 +64,38 @@ func (s *NotificationStore) UpdateNotification(request *request.NotificationRequ
 		Status:      request.Status,
 	})
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return err
 	}
 	return nil
 }
 
 func (s *NotificationStore) GetAdminNotificationList() (interface{}, error) {
+	startTime := time.Now()
 	notifications, err := model.AdminGetAllNotification(s.db)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 	return notifications, nil
 }
 func (s *NotificationStore) AdminSendNotification(id string) (interface{}, error) {
+	startTime := time.Now()
 	notifications, err := model.GetNotificationByID(s.db, id)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
@@ -81,6 +107,11 @@ func (s *NotificationStore) AdminSendNotification(id string) (interface{}, error
 
 	err = s.notificationService.SendNotificationToAllUsers(notifications.Title, notifications.Message, data)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
@@ -92,6 +123,11 @@ func (s *NotificationStore) AdminSendNotification(id string) (interface{}, error
 		UserID:      "",
 	})
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
@@ -99,8 +135,14 @@ func (s *NotificationStore) AdminSendNotification(id string) (interface{}, error
 }
 
 func (s *NotificationStore) GetNotificationById(id string) (interface{}, error) {
+	startTime := time.Now()
 	notifications, err := model.GetNotificationByID(s.db, id)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
@@ -108,16 +150,28 @@ func (s *NotificationStore) GetNotificationById(id string) (interface{}, error) 
 }
 
 func (s *NotificationStore) GetUserNotificationHistory(userId string) (interface{}, error) {
+	startTime := time.Now()
 	notifications, err := model.GetUserNotificationHistory(s.db, userId)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 	return notifications, nil
 }
 
 func (s *NotificationStore) SendNotificationToUser(userId, title, message, icon, clickAction string) (interface{}, error) {
+	startTime := time.Now()
 	user, err := model.UserDetailByUserID(s.db, userId)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 	data := map[string]interface{}{
@@ -135,6 +189,11 @@ func (s *NotificationStore) SendNotificationToUser(userId, title, message, icon,
 		UserID:      userId,
 	})
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 	return nil, nil

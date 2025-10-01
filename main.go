@@ -15,7 +15,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -42,24 +41,6 @@ func main() {
 	// Debug logging middleware
 	app.Use(func(c *gin.Context) {
 		c.Next()
-	})
-
-	app.GET("/ping", func(c *gin.Context) {
-		start := time.Now()
-		userID := "user-123"
-		reqID := "req-001"
-
-		// Log success using LogData
-		logger.LogInfo(logger.LogData{
-			Message:   "Ping endpoint called successfully",
-			StartTime: start,
-			EndTime:   time.Now(),
-			Latency:   time.Since(start).Seconds(),
-			UserID:    userID,
-			ReqID:     reqID,
-		})
-
-		c.JSON(http.StatusOK, gin.H{"message": "pong"})
 	})
 
 	// AWS setup

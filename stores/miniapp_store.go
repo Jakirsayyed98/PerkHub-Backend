@@ -2,6 +2,7 @@ package stores
 
 import (
 	"PerkHub/model"
+	"PerkHub/pkg/logger"
 	"PerkHub/request"
 	"PerkHub/responses"
 	"PerkHub/services"
@@ -11,6 +12,7 @@ import (
 	"fmt"
 	"net/url"
 	"strings"
+	"time"
 )
 
 type MiniAppStore struct {
@@ -27,13 +29,23 @@ func NewMiniAppStore(dbs *sql.DB) *MiniAppStore {
 }
 
 func (s *MiniAppStore) CreateMiniApp(req *request.MiniAppRequest) (interface{}, error) {
-
+	startTime := time.Now()
 	if req.ID != "" {
 		if err := model.UpdateMiniApp(s.db, req); err != nil {
+			log := logger.LogData{
+				Message:   err.Error(),
+				StartTime: startTime,
+			}
+			logger.LogError(log)
 			return nil, err
 		}
 	} else {
 		if err := model.InsertMiniApp(s.db, req); err != nil {
+			log := logger.LogData{
+				Message:   err.Error(),
+				StartTime: startTime,
+			}
+			logger.LogError(log)
 			return nil, err
 		}
 	}
@@ -42,7 +54,13 @@ func (s *MiniAppStore) CreateMiniApp(req *request.MiniAppRequest) (interface{}, 
 }
 
 func (s *MiniAppStore) ActivateSomekey(req *request.ActiveDeactiveMiniAppReq) (interface{}, error) {
+	startTime := time.Now()
 	if err := model.ToggleMiniAppFlag(s.db, req.Key, req.ID, req.Value); err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
@@ -50,16 +68,26 @@ func (s *MiniAppStore) ActivateSomekey(req *request.ActiveDeactiveMiniAppReq) (i
 }
 
 func (s *MiniAppStore) GetAllMiniApps() (interface{}, error) {
-
+	startTime := time.Now()
 	data, err := model.GetAllMiniApps(s.db)
 
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 	res := responses.NewMiniAppRes()
 
 	result, err := res.BindMiniAppResponse(data)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
@@ -67,10 +95,15 @@ func (s *MiniAppStore) GetAllMiniApps() (interface{}, error) {
 }
 
 func (s *MiniAppStore) GetStoreByID(id string) (interface{}, error) {
-
+	startTime := time.Now()
 	data, err := model.GetMiniAppByID(s.db, id)
 
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
@@ -78,6 +111,11 @@ func (s *MiniAppStore) GetStoreByID(id string) (interface{}, error) {
 
 	err = res.ResponsesBind(data)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
@@ -86,20 +124,35 @@ func (s *MiniAppStore) GetStoreByID(id string) (interface{}, error) {
 }
 
 func (s *MiniAppStore) GetStoresByCategory(category_id string) (interface{}, error) {
-
+	startTime := time.Now()
 	data, err := model.GetStoresByCategory(s.db, category_id)
 
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
 	if len(data) == 0 {
+		log := logger.LogData{
+			Message:   "stores not found",
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, errors.New("Store not found")
 	}
 	res := responses.NewMiniAppRes()
 
 	result, err := res.BindMiniAppResponse(data)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
@@ -108,19 +161,34 @@ func (s *MiniAppStore) GetStoresByCategory(category_id string) (interface{}, err
 }
 
 func (s *MiniAppStore) SearchMiniApps(req *request.MiniAppSearchReq) (interface{}, error) {
-
+	startTime := time.Now()
 	data, err := model.SearchMiniApps(s.db, req.Name)
 
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 	res := responses.NewMiniAppRes()
 	if len(data) == 0 {
+		log := logger.LogData{
+			Message:   "store not found",
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, errors.New("Store not found")
 	}
 
 	result, err := res.BindMiniAppResponse(data)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
@@ -129,28 +197,55 @@ func (s *MiniAppStore) SearchMiniApps(req *request.MiniAppSearchReq) (interface{
 }
 
 func (s *MiniAppStore) DeletMniApp(id string) (interface{}, error) {
+	startTime := time.Now()
 	if err := model.DeleteMiniAppByID(s.db, id); err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 	return nil, nil
 }
 
 func (s *MiniAppStore) GenrateSubid(miniAppName, userID string) (interface{}, error) {
+	startTime := time.Now()
 	data, err := model.SearchMiniApps(s.db, miniAppName)
 
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 	if data == nil {
+		log := logger.LogData{
+			Message:   "store not found",
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, errors.New("App not found")
 	}
 	subid, err := utils.GenerateRandomUUID(20)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
 	subid2, err := utils.GenerateRandomUUID(20)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
@@ -166,6 +261,11 @@ func (s *MiniAppStore) GenrateSubid(miniAppName, userID string) (interface{}, er
 
 	err = model.InsertGenratedSubId(s.db, data[0].ID, userID, subid, subid2)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 	// Wrap with your own domain (short redirect link)
@@ -202,16 +302,27 @@ func (s *MiniAppStore) GenrateSubid(miniAppName, userID string) (interface{}, er
 // }
 
 func (s *MiniAppStore) GetStoresRefresh() (interface{}, error) {
+	startTime := time.Now()
 	page := 1
 	perPage := 100
 	affiliateProviderID, err := model.GetAffiliateByName(s.db, "cuelink")
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 	for {
 		// Fetch campaigns for the current page
 		data, err := s.cueLinkService.GetAllCampaigns(page, perPage)
 		if err != nil {
+			log := logger.LogData{
+				Message:   err.Error(),
+				StartTime: startTime,
+			}
+			logger.LogError(log)
 			return nil, err
 		}
 
@@ -224,6 +335,11 @@ func (s *MiniAppStore) GetStoresRefresh() (interface{}, error) {
 
 			isExist, err := model.MiniAppExists(s.db, v.Name)
 			if err != nil {
+				log := logger.LogData{
+					Message:   err.Error(),
+					StartTime: startTime,
+				}
+				logger.LogError(log)
 				return nil, err
 			}
 			if !isExist {
@@ -269,7 +385,11 @@ func (s *MiniAppStore) GetStoresRefresh() (interface{}, error) {
 					TopCashback:       false,                                              // default false
 				})
 				if err != nil {
-					fmt.Println("Error inserting category:", err)
+					log := logger.LogData{
+						Message:   err.Error(),
+						StartTime: startTime,
+					}
+					logger.LogError(log)
 					return nil, err
 				}
 			}

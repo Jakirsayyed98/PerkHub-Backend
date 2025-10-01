@@ -2,10 +2,12 @@ package stores
 
 import (
 	"PerkHub/model"
+	"PerkHub/pkg/logger"
 	"database/sql"
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,9 +23,14 @@ func NewMiniAppTransactionStore(dbs *sql.DB) *MiniAppTransactionStore {
 }
 
 func (s *MiniAppTransactionStore) GetMiniAppTransaction(userId string) (interface{}, error) {
-
+	startTime := time.Now()
 	transaction, err := model.FindMiniAppTransactionByUserID(s.db, userId)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 	pending := 0.0
@@ -51,6 +58,11 @@ func (s *MiniAppTransactionStore) GetMiniAppTransaction(userId string) (interfac
 
 	withdrawalList, err := model.GetWithdrawalByUser(s.db, userId)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 	for _, v := range withdrawalList {

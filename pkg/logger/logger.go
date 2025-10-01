@@ -22,43 +22,49 @@ func Init() {
 	var lvl zapcore.Level
 	_ = lvl.Set(logCfg.Level)
 
+	// Encoder config (common)
 	encCfg := zap.NewProductionEncoderConfig()
+	encCfg.TimeKey = "ts"
+	encCfg.LevelKey = "level"
+	encCfg.CallerKey = "caller"
+	encCfg.MessageKey = "msg"
 	encCfg.EncodeTime = zapcore.ISO8601TimeEncoder
-	encCfg.EncodeLevel = zapcore.CapitalColorLevelEncoder
 
-	var encoder zapcore.Encoder
-	if logCfg.Format == "json" {
-		encoder = zapcore.NewJSONEncoder(encCfg)
-	} else {
-		encoder = zapcore.NewConsoleEncoder(encCfg)
+	// ---------------------------
+	// File core (JSON, no colors)
+	// ---------------------------
+	logDir := filepath.Dir(logCfg.FilePath)
+	if _, err := os.Stat(logDir); os.IsNotExist(err) {
+		_ = os.MkdirAll(logDir, os.ModePerm)
 	}
 
-	var ws zapcore.WriteSyncer
-	if logCfg.Output == "file" {
-		// ensure folder exists
-		logDir := filepath.Dir(logCfg.FilePath)
-		if _, err := os.Stat(logDir); os.IsNotExist(err) {
-			_ = os.MkdirAll(logDir, os.ModePerm)
-		}
+	// generate date-based filename
+	date := time.Now().Format("2006-01-02")
+	filename := fmt.Sprintf("%s-%s.log", logDir+"/perkhub", date)
 
-		// generate date-based filename
-		date := time.Now().Format("2006-01-02")
-		filename := fmt.Sprintf("%s-%s.log", logDir+"/perkhub", date)
-
-		lumberjackLogger := &lumberjack.Logger{
-			Filename:   filename,
-			MaxSize:    logCfg.MaxSize,
-			MaxBackups: logCfg.MaxBackups,
-			MaxAge:     logCfg.MaxAge,
-			Compress:   logCfg.Compress,
-		}
-
-		ws = zapcore.AddSync(lumberjackLogger)
-	} else {
-		ws = zapcore.AddSync(os.Stdout)
+	lumberjackLogger := &lumberjack.Logger{
+		Filename:   filename,
+		MaxSize:    logCfg.MaxSize,
+		MaxBackups: logCfg.MaxBackups,
+		MaxAge:     logCfg.MaxAge,
+		Compress:   logCfg.Compress,
 	}
 
-	core := zapcore.NewCore(encoder, ws, lvl)
+	fileEncoder := zapcore.NewJSONEncoder(encCfg)
+	fileCore := zapcore.NewCore(fileEncoder, zapcore.AddSync(lumberjackLogger), lvl)
+
+	// ---------------------------
+	// Console core (colored text)
+	// ---------------------------
+	consoleEncCfg := encCfg
+	consoleEncCfg.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	consoleEncoder := zapcore.NewConsoleEncoder(consoleEncCfg)
+	consoleCore := zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), lvl)
+
+	// ---------------------------
+	// Combine file + console
+	// ---------------------------
+	core := zapcore.NewTee(fileCore, consoleCore)
 	log = zap.New(core, zap.AddCaller(), zap.AddCallerSkip(1))
 }
 

@@ -2,6 +2,7 @@ package stores
 
 import (
 	"PerkHub/model"
+	"PerkHub/pkg/logger"
 	"PerkHub/services"
 	"database/sql"
 	"errors"
@@ -23,6 +24,7 @@ func NewOffersStore(dbs *sql.DB) *OffersStore {
 }
 
 func (s *OffersStore) GetOffersRefresh() (interface{}, error) {
+	startTime := time.Now()
 	page := 1
 	perPage := 50
 	now := time.Now()
@@ -33,6 +35,11 @@ func (s *OffersStore) GetOffersRefresh() (interface{}, error) {
 		// Fetch campaigns for the current page
 		data, err := s.cueLinkService.RefreshAllOffers(startDate, endDate, 1, page, perPage)
 		if err != nil {
+			log := logger.LogData{
+				Message:   err.Error(),
+				StartTime: startTime,
+			}
+			logger.LogError(log)
 			return nil, err
 		}
 
@@ -44,11 +51,21 @@ func (s *OffersStore) GetOffersRefresh() (interface{}, error) {
 		for _, v := range data.Offers {
 			store, err := model.SearchMiniApps(s.db, v.CampaignName)
 			if err != nil {
+				log := logger.LogData{
+					Message:   err.Error(),
+					StartTime: startTime,
+				}
+				logger.LogError(log)
 				return nil, err
 			}
 			if len(store) > 0 {
 				isExist, err := model.OfferExists(s.db, strconv.Itoa(v.ID))
 				if err != nil {
+					log := logger.LogData{
+						Message:   err.Error(),
+						StartTime: startTime,
+					}
+					logger.LogError(log)
 					return nil, err
 				}
 				if !isExist {
@@ -73,6 +90,11 @@ func (s *OffersStore) GetOffersRefresh() (interface{}, error) {
 						EndDate:           v.EndDate,   // must be *time.Time
 					})
 					if err != nil {
+						log := logger.LogData{
+							Message:   err.Error(),
+							StartTime: startTime,
+						}
+						logger.LogError(log)
 						return nil, err
 					}
 
@@ -87,20 +109,37 @@ func (s *OffersStore) GetOffersRefresh() (interface{}, error) {
 }
 
 func (s *OffersStore) GetAllActiveOffersList(offerType string) ([]model.Offer, error) {
+	startTime := time.Now()
 	offers, err := model.GetAllOfferList(s.db, offerType)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 	return offers, nil
 }
 
 func (s *OffersStore) SearchOffersByStoreName(storeName string) ([]model.Offer, error) {
+	startTime := time.Now()
 	if storeName == "" {
+		log := logger.LogData{
+			Message:   "please pass store name",
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, errors.New("please pass store name")
 	}
 
 	offers, err := model.SearchOffersByStoreName(s.db, storeName)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
@@ -108,8 +147,14 @@ func (s *OffersStore) SearchOffersByStoreName(storeName string) ([]model.Offer, 
 }
 
 func (s *OffersStore) OffersForHomePage() (interface{}, error) {
+	startTime := time.Now()
 	offers, err := model.GetRandomOffers(s.db)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 	return offers, nil

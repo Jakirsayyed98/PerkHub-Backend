@@ -2,11 +2,13 @@ package stores
 
 import (
 	"PerkHub/model"
+	"PerkHub/pkg/logger"
 	"PerkHub/request"
 	"database/sql"
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -22,22 +24,38 @@ func NewAffiliatesStore(dbs *sql.DB) *AffiliatesStore {
 }
 
 func (s *AffiliatesStore) CueLinkCallBack(req *request.CueLinkCallBackRequest) (interface{}, error) {
+	startTime := time.Now()
 	UserCommisionPercentage := "70"
 	if req.Commission == "" {
 		req.Commission = "0"
 	}
 	commission, err := strconv.ParseFloat(req.Commission, 64)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
 	userCommissionPercentageInt, err := strconv.Atoi(UserCommisionPercentage)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
 	subIdData, err := model.GetDatabySubId(s.db, req.SubID, req.SubID2)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
@@ -45,6 +63,11 @@ func (s *AffiliatesStore) CueLinkCallBack(req *request.CueLinkCallBackRequest) (
 
 	request := model.NewMiniAppTransaction()
 	if err := request.Bind(req, fmt.Sprintf("%.2f", usercommision), subIdData.UserID, subIdData.StoreID); err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 	request.CommissionPercentage = UserCommisionPercentage
@@ -56,12 +79,27 @@ func (s *AffiliatesStore) CueLinkCallBack(req *request.CueLinkCallBackRequest) (
 
 	_, err = model.FindMiniAppTransactionBySubID(s.db, req)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		if err.Error() != "transaction not found" {
+			log := logger.LogData{
+				Message:   err.Error(),
+				StartTime: startTime,
+			}
+			logger.LogError(log)
 			return nil, err
 		}
 
 		err = model.InsertMiniAppTransaction(s.db, request)
 		if err != nil {
+			log := logger.LogData{
+				Message:   err.Error(),
+				StartTime: startTime,
+			}
+			logger.LogError(log)
 			return nil, err
 		}
 
@@ -71,6 +109,11 @@ func (s *AffiliatesStore) CueLinkCallBack(req *request.CueLinkCallBackRequest) (
 	}
 	err = model.UpdateMiniAppTransaction(s.db, req)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 	s.CashbackTrackedNotification(subIdData.UserID, miniAppData.Name, fmt.Sprintf("%.2f", usercommision), req.Status, miniAppData.Icon)
@@ -114,9 +157,15 @@ func (s *AffiliatesStore) CashbackTrackedNotification(userID, storeName, userCom
 }
 
 func (s *AffiliatesStore) CreateAffiliate(req *request.CreateAffiliateRequest) (interface{}, error) {
+	startTime := time.Now()
 	// Create a new affiliate in the database
 	err := model.CreateAffiliate(s.db, req)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
@@ -124,15 +173,25 @@ func (s *AffiliatesStore) CreateAffiliate(req *request.CreateAffiliateRequest) (
 }
 
 func (s *AffiliatesStore) UpdateAffiliate(req *request.CreateAffiliateRequest) (interface{}, error) {
-
+	startTime := time.Now()
 	id, err := uuid.Parse(req.Id)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, fmt.Errorf("invalid affiliate ID: %w", err)
 	}
 
 	// Update the affiliate in the database
 	err = model.UpdateAffiliate(s.db, req, id)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
@@ -140,13 +199,24 @@ func (s *AffiliatesStore) UpdateAffiliate(req *request.CreateAffiliateRequest) (
 }
 
 func (s *AffiliatesStore) DeleteAffiliate(id string) (interface{}, error) {
+	startTime := time.Now()
 	ids, err := uuid.Parse(id)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, fmt.Errorf("invalid affiliate ID: %w", err)
 	}
 	// Delete the affiliate from the database
 	err = model.DeleteAffiliate(s.db, ids)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
@@ -154,13 +224,24 @@ func (s *AffiliatesStore) DeleteAffiliate(id string) (interface{}, error) {
 }
 
 func (s *AffiliatesStore) UpdateAffiliateFlag(id string, status bool) (interface{}, error) {
+	startTime := time.Now()
 	ids, err := uuid.Parse(id)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, fmt.Errorf("invalid affiliate ID: %w", err)
 	}
 	// Update the affiliate flag in the database
 	err = model.UpdateAffiliateFlag(s.db, ids, status)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
@@ -168,17 +249,28 @@ func (s *AffiliatesStore) UpdateAffiliateFlag(id string, status bool) (interface
 }
 
 func (s *AffiliatesStore) ListAffiliates() (interface{}, error) {
+	startTime := time.Now()
 	affiliates, err := model.ListAffiliates(s.db)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 	return affiliates, nil
 }
 
 func (s *AffiliatesStore) GetAffiliateByID(id string) (interface{}, error) {
-
+	startTime := time.Now()
 	affiliate, err := model.GetAffiliateByID(s.db, id)
 	if err != nil {
+		log := logger.LogData{
+			Message:   err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
 		return nil, err
 	}
 
