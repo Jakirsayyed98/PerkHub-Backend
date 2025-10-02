@@ -8,15 +8,15 @@ import (
 )
 
 type PaymentMethod struct {
-	ID         uuid.UUID `db:"id"`
-	UserID     string    `db:"user_id"`
-	Type       string    `db:"type"` // 'upi' or 'bank'
-	Identifier string    `db:"identifier"`
-	BankName   *string   `db:"bank_name"`
-	IFSCCode   *string   `db:"ifsc_code"`
-	IsDefault  bool      `db:"is_default"`
-	CreatedAt  time.Time `db:"created_at"`
-	UpdatedAt  time.Time `db:"updated_at"`
+	ID         uuid.UUID `db:"id" json:"id"`
+	UserID     string    `db:"user_id" json:"user_id"`
+	Type       string    `db:"type" json:"type"` // 'upi' or 'bank'
+	Identifier string    `db:"identifier" json:"identifier"`
+	BankName   *string   `db:"bank_name" json:"bank_name"`
+	IFSCCode   *string   `db:"ifsc_code" json:"ifsc_code"`
+	IsDefault  bool      `db:"is_default" json:"is_default"`
+	CreatedAt  time.Time `db:"created_at" json:"created_at"`
+	UpdatedAt  time.Time `db:"updated_at" json:"updated_at"`
 }
 
 func NewAddPaymentMethodRequest() *PaymentMethod {

@@ -22,7 +22,7 @@ type MiniAppRequest struct {
 	CashbackRates        string    `db:"cashback_rates" json:"cashback_rates"`                 // Rates for cashback
 	Status               bool      `db:"status" json:"status"`                                 // Status: '0' for inactive, '1' for active
 	UrlType              string    `db:"url_type" json:"url_type"`                             // Type of URL
-	CBActive             bool      `db:"cb_active" json:"cb_active"`                           // Cashback active status
+	CBActive             bool      `db:"is_cb_active" json:"is_cb_active"`                     // Cashback active status
 	CBPercentage         string    `db:"cb_percentage" json:"cb_percentage"`                   // Cashback percentage
 	Url                  string    `db:"url" json:"url"`                                       // URL of the miniapp
 	Label                string    `db:"label" json:"label"`                                   // Label for the miniapp
@@ -104,10 +104,10 @@ func (req *MiniAppRequest) Bind(c *gin.Context, awsInstance *connection.Aws) err
 	}
 	req.Trending = trending
 
-	cbActiveStr := c.PostForm("cb_active")
+	cbActiveStr := c.PostForm("is_cb_active")
 	cbActive, err := strconv.ParseBool(cbActiveStr)
 	if err != nil {
-		return fmt.Errorf("invalid value for cb_active: %s", cbActiveStr)
+		return fmt.Errorf("invalid value for is_cb_active: %s", cbActiveStr)
 	}
 	req.CBActive = cbActive
 
