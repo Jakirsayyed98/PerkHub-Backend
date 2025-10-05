@@ -61,6 +61,25 @@ func (s *WithdrawalStore) RequestWithdrawal(req *request.WithdrawalRequest, user
 		return nil, err
 	}
 
+	withdrawalCount, err := model.PendingWithdrawalCount(s.db, userId)
+	if err != nil {
+		log := logger.LogData{
+			Message:   fmt.Sprintf("Error While Fetching Pending Withdrawal Count %s ", err.Error()),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
+		return nil, err
+	}
+
+	if withdrawalCount >= 1 {
+		log := logger.LogData{
+			Message:   "You have a pending withdrawal request. Please wait for it to be processed before making a new request.",
+			StartTime: startTime,
+		}
+		logger.LogError(log)
+		return nil, errors.New("You have a pending withdrawal request. Please wait for it to be processed before making a new request.")
+	}
+
 	id, err := model.InsertWithdrawalRequest(s.db, withdrawal)
 	if err != nil {
 		log := logger.LogData{

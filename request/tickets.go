@@ -1,8 +1,10 @@
 package request
 
 type CreateTicketRequest struct {
-	Subject string `json:"subject" binding:"required"`
-	Body    string `json:"body" binding:"required"`
+	Subject  string `json:"subject" binding:"required"`
+	Body     string `json:"body" binding:"required"`
+	Priority string `json:"priority" binding:"required"`
+	Category string `json:"category" binding:"required"`
 }
 
 type GetTicketRequest struct {

@@ -23,7 +23,7 @@ func NewTicketStore(dbs *sql.DB) *TicketStore {
 func (s *TicketStore) CreateTicket(req *request.CreateTicketRequest, userId string) (string, error) {
 	startTime := time.Now()
 	request := model.NewTicket()
-	err := request.Bind(userId, req.Subject)
+	err := request.Bind(userId, req.Subject, req.Priority, req.Category)
 	if err != nil {
 		log := logger.LogData{
 			Message:   err.Error(),

@@ -60,6 +60,16 @@ VALUES ($1, $2, $3)
 	return id, nil
 }
 
+func PendingWithdrawalCount(db *sql.DB, user_id string) (int, error) {
+	query := `SELECT COUNT(*) FROM withdrawal_requests WHERE status = 'pending' AND user_id = $1;`
+	var count int
+	err := db.QueryRow(query, user_id).Scan(&count)
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
 func GetWithdrawalByUser(db *sql.DB, userID string) ([]WithdrawalRequest, error) {
 	query := `SELECT id,user_id,requested_amt,processed_amt,payment_method_id, status,reason,txn_id,txn_time,created_at FROM withdrawal_requests WHERE user_id = $1 ORDER BY created_at DESC;`
 	rows, err := db.Query(query, userID)

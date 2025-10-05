@@ -8,20 +8,26 @@ import (
 )
 
 type Ticket struct {
-	ID        uuid.UUID `json:"id"`
-	UserID    string    `json:"user_id"`
-	Subject   string    `json:"subject"`
-	Status    string    `json:"status"`
-	CreatedAt time.Time `json:"created_at"`
+	ID              uuid.UUID `json:"id"`
+	UserID          string    `json:"user_id"`
+	Subject         string    `json:"subject"`
+	Status          string    `json:"status"`
+	Priority        string    `json:"priority"`
+	Category        string    `json:"category"`
+	LastMessage     string    `json:"last_message"`
+	LastMessageTime time.Time `json:"last_message_time"`
+	CreatedAt       time.Time `json:"created_at"`
 }
 
 func NewTicket() *Ticket {
 	return &Ticket{}
 }
 
-func (t *Ticket) Bind(userId, subject string) error {
+func (t *Ticket) Bind(userId, subject, priority, category string) error {
 	t.UserID = userId
 	t.Subject = subject
+	t.Priority = priority
+	t.Category = category
 	return nil
 }
 
@@ -43,9 +49,9 @@ func NewTicketMessage(ticketID, authorType, body string) *TicketMessage {
 
 func InsertTicket(db *sql.DB, ticket *Ticket) (string, error) {
 	// Implementation for inserting a ticket into the database
-	query := "INSERT INTO tickets (user_id, subject, status) VALUES ($1, $2, $3) RETURNING id;"
+	query := "INSERT INTO tickets (user_id, subject, status, priority, category) VALUES ($1, $2, $3, $4, $5) RETURNING id;"
 	var newID string
-	err := db.QueryRow(query, ticket.UserID, ticket.Subject, "open").Scan(&newID)
+	err := db.QueryRow(query, ticket.UserID, ticket.Subject, "open", ticket.Priority, ticket.Category).Scan(&newID)
 	if err != nil {
 		return "", err
 	}
@@ -62,9 +68,32 @@ func InsertTicketMessage(db *sql.DB, msg *TicketMessage) error {
 	_, err = db.Exec(query2, msg.TicketID)
 	return err
 }
-
 func GetTicketsByUserId(db *sql.DB, userId string) ([]*Ticket, error) {
-	query := "SELECT id, user_id, subject, status, created_at FROM tickets WHERE user_id = $1;"
+	query := `
+		SELECT 
+			t.id,
+			t.user_id,
+			t.subject,
+			t.status,
+			t.priority,
+			t.category,
+			t.created_at,
+			tm.body AS last_message,
+			tm.created_at AS last_message_time
+		FROM tickets t
+		LEFT JOIN LATERAL (
+			SELECT 
+				body,
+				created_at
+			FROM ticket_messages
+			WHERE ticket_id = t.id
+			ORDER BY created_at DESC
+			LIMIT 1
+		) tm ON true
+		WHERE t.user_id = $1
+		ORDER BY t.created_at DESC;
+	`
+
 	rows, err := db.Query(query, userId)
 	if err != nil {
 		return nil, err
@@ -74,11 +103,22 @@ func GetTicketsByUserId(db *sql.DB, userId string) ([]*Ticket, error) {
 	var tickets []*Ticket
 	for rows.Next() {
 		ticket := NewTicket()
-		if err := rows.Scan(&ticket.ID, &ticket.UserID, &ticket.Subject, &ticket.Status, &ticket.CreatedAt); err != nil {
+		if err := rows.Scan(
+			&ticket.ID,
+			&ticket.UserID,
+			&ticket.Subject,
+			&ticket.Status,
+			&ticket.Priority,
+			&ticket.Category,
+			&ticket.CreatedAt,
+			&ticket.LastMessage,
+			&ticket.LastMessageTime,
+		); err != nil {
 			return nil, err
 		}
 		tickets = append(tickets, ticket)
 	}
+
 	return tickets, nil
 }
 
