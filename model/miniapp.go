@@ -276,7 +276,7 @@ func SearchMiniApps(db *sql.DB, name string) ([]MiniApp, error) {
 }
 
 func GetStoresByCategory(db *sql.DB, categoryID string) ([]MiniApp, error) {
-	return GetMiniAppsByCondition(db, fmt.Sprintf("WHERE miniapp_category_id='%s' AND is_active=true", categoryID))
+	return GetMiniAppsByCondition(db, fmt.Sprintf("WHERE miniapp_category_id='%s' AND is_active=true ORDER BY is_cb_active DESC", categoryID))
 }
 
 // -------------------- Delete --------------------

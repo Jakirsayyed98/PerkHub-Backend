@@ -258,23 +258,25 @@ func (s *MiniAppStore) GenrateSubid(miniAppName, userID string) (interface{}, er
 	)
 
 	// url := fmt.Sprintf("%s&subid=%s&subid2=%s&subid3=%s", data[0].Url, subid1, subid2, subid3)
-
-	err = model.InsertGenratedSubId(s.db, data[0].ID, userID, subid, subid2)
-	if err != nil {
-		log := logger.LogData{
-			Message:   err.Error(),
-			StartTime: startTime,
+	if data[0].CBActive {
+		err = model.InsertGenratedSubId(s.db, data[0].ID, userID, subid, subid2)
+		if err != nil {
+			log := logger.LogData{
+				Message:   err.Error(),
+				StartTime: startTime,
+			}
+			logger.LogError(log)
+			return nil, err
 		}
-		logger.LogError(log)
-		return nil, err
+		// Wrap with your own domain (short redirect link)
+		// finalURL := fmt.Sprintf("https://api.perkhub.in/r?u=%s", url.QueryEscape(affiliateURL))
+		// finalURL := fmt.Sprintf("http://3.7.77.135:4215/r?u=%s", url.QueryEscape(affiliateURL))
+		// finalURL := fmt.Sprintf("http://localhost:4215/r?u=%s", url.QueryEscape(affiliateURL))
+		finalURL := fmt.Sprintf("https://blessed-pretty-mammal.ngrok-free.app/r?u=%s", url.QueryEscape(affiliateURL))
+		return finalURL, nil
 	}
-	// Wrap with your own domain (short redirect link)
-	// finalURL := fmt.Sprintf("https://api.perkhub.in/r?u=%s", url.QueryEscape(affiliateURL))
-	// finalURL := fmt.Sprintf("http://3.7.77.135:4215/r?u=%s", url.QueryEscape(affiliateURL))
-	// finalURL := fmt.Sprintf("http://localhost:4215/r?u=%s", url.QueryEscape(affiliateURL))
-	finalURL := fmt.Sprintf("https://blessed-pretty-mammal.ngrok-free.app/r?u=%s", url.QueryEscape(affiliateURL))
 
-	return finalURL, nil
+	return affiliateURL, nil
 }
 
 // func (s *MiniAppStore) GenrateSubid(miniAppName, userID string) (interface{}, error) {
