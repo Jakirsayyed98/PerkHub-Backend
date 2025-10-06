@@ -50,3 +50,25 @@ func (req *CueLinkCallBackRequest) Bind(c *gin.Context) error {
 
 	return nil
 }
+
+type CueLinkTransactionCheckRequest struct {
+	StartDate string `json:"start_date"`
+	EndDate   string `json:"end_date"`
+	SubID     string `json:"sub_id"`
+	Page      string `json:"page"`
+	PerPage   string `json:"per_page"`
+}
+
+func NewCueLinkTransactionCheckRequest() *CueLinkTransactionCheckRequest {
+	return &CueLinkTransactionCheckRequest{}
+}
+
+func (req *CueLinkTransactionCheckRequest) Bind(startDate, endDate, subId, pageNumber string) error {
+	req.StartDate = startDate
+	req.EndDate = endDate
+	req.SubID = subId
+	req.Page = pageNumber
+	req.PerPage = "1"
+
+	return nil
+}

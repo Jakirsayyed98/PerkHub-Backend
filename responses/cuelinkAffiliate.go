@@ -97,3 +97,36 @@ type Offer struct {
 	StartDate          string `json:"start_date"`
 	EndDate            string `json:"end_date"`
 }
+
+type AffiliateTransaction struct {
+	TotalCount   int           `json:"total_count"`
+	Transactions []Transaction `json:"transactions"`
+}
+
+type Transaction struct {
+	ID                     int     `json:"id"`
+	AffiliateSub           string  `json:"aff_sub"`
+	ReferrerURL            string  `json:"referrer_url"`
+	SaleAmount             float64 `json:"sale_amount"`
+	Currency               string  `json:"currency"`
+	UserCommission         float64 `json:"user_commission"`
+	Status                 string  `json:"status"`
+	StoreName              string  `json:"store_name"`
+	CampaignID             int     `json:"campaign_id"`
+	TransactionDate        string  `json:"transaction_date"`
+	ExtraInfo              string  `json:"extra_info"`
+	PubAffiliateID         *string `json:"pub_affiliate_id"` // null in JSON
+	SubID1                 string  `json:"subid1"`
+	SubID2                 string  `json:"subid2"`
+	SubID3                 string  `json:"subid3"`
+	SubID4                 string  `json:"subid4"`
+	SubID5                 string  `json:"subid5"`
+	PublisherInvoiceNumber *string `json:"publisher_invoice_number"`
+	OrderID                string  `json:"order_id"`
+	ProductName            string  `json:"product_name"`
+	Category               string  `json:"category"`
+}
+
+func NewAffiliateTransactionResponse() *AffiliateTransaction {
+	return &AffiliateTransaction{}
+}

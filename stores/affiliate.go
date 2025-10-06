@@ -4,6 +4,7 @@ import (
 	"PerkHub/model"
 	"PerkHub/pkg/logger"
 	"PerkHub/request"
+	"PerkHub/responses"
 	"database/sql"
 	"fmt"
 	"strconv"
@@ -154,6 +155,11 @@ func (s *AffiliatesStore) CashbackTrackedNotification(userID, storeName, userCom
 		"order_history",
 	)
 	return nil
+}
+
+func (s *AffiliatesStore) GetCashBackStatusFromAffiliate(req *request.CueLinkCallBackRequest) (*responses.Transaction, error) {
+
+	return nil, nil
 }
 
 func (s *AffiliatesStore) CreateAffiliate(req *request.CreateAffiliateRequest) (interface{}, error) {
