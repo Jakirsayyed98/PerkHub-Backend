@@ -1,6 +1,7 @@
 package services
 
 import (
+	"PerkHub/constants"
 	"PerkHub/request"
 	"PerkHub/settings"
 	"errors"
@@ -14,7 +15,7 @@ type GamesService struct {
 
 func NewGameService() *GamesService {
 	return &GamesService{
-		service: settings.NewHttpService("https://pub.gamezop.com/v3/games?id=4625"),
+		service: settings.NewHttpService(constants.GET_GAME_BASE_URL),
 	}
 }
 

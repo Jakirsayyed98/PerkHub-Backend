@@ -185,7 +185,7 @@ func (s *GamesStore) RefreshGames() (interface{}, error) {
 					fmt.Println("Error:= ", err.Error())
 				}
 				resu = append(resu, *res)
-				if err := res.InsertGames(s.db, res, "testID"); err != nil {
+				if err := res.InsertGames(s.db, res); err != nil {
 					fmt.Println("Error:= ", err.Error())
 				}
 			}

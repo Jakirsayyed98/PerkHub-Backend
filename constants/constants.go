@@ -81,6 +81,10 @@ func getFirebaseFilePath() string {
 	return settings.Config("FCM_FILE_PATH")
 }
 
+func getGames() string {
+	return settings.Config("GAME_BASE_URL")
+}
+
 func getGameCron() string {
 	return settings.Config("GAME_CRON")
 }
@@ -105,6 +109,7 @@ var (
 	FirebaseProjectID  = getFirebaseProjectID()
 	FireBaseFilePath   = getFirebaseFilePath()
 	GameCron           = getGameCron()
+	GET_GAME_BASE_URL  = getGames()
 )
 
 var StatusMap = map[string]string{

@@ -95,7 +95,7 @@ func (s *GamesResponse) Bind(data request.GameResponse, categoryId string) error
 	return nil
 }
 
-func (s *GamesResponse) InsertGames(db *sql.DB, item *GamesResponse, category_id string) error {
+func (s *GamesResponse) InsertGames(db *sql.DB, item *GamesResponse) error {
 	datas, err := json.Marshal(item.Assets)
 	if err != nil {
 		return err
