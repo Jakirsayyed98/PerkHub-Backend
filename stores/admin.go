@@ -8,6 +8,8 @@ import (
 	"database/sql"
 	"errors"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type AdminStore struct {
@@ -22,6 +24,8 @@ func NewAdminStoreStore(dbs *sql.DB) *AdminStore {
 
 func (s *AdminStore) AdminLogin(request *request.AdminLoginRequest) (*model.AdminUser, error) {
 	startTime := time.Now()
+
+	// Fetch admin by email
 	getAdmin, err := model.GetAdmin(s.db, request.Email)
 	if err != nil {
 		log := logger.LogData{
@@ -41,11 +45,9 @@ func (s *AdminStore) AdminLogin(request *request.AdminLoginRequest) (*model.Admi
 		return nil, errors.New("Invalid username or password")
 	}
 
-	// password, err := utils.Decrypt(getAdmin.Password)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	if request.Password != getAdmin.Password {
+	// Compare hashed password with request password
+	err = bcrypt.CompareHashAndPassword([]byte(getAdmin.Password), []byte(request.Password))
+	if err != nil {
 		log := logger.LogData{
 			Message:   "Invalid username or password",
 			StartTime: startTime,
@@ -67,6 +69,29 @@ func (s *AdminStore) AdminRegister(request *request.AdminRegister) (interface{},
 		logger.LogError(log)
 		return nil, errors.New("Invalid username or password")
 	}
+
+	existingAdmin, err := model.GetAdmin(s.db, request.Email)
+	if existingAdmin != nil {
+		log := logger.LogData{
+			Message:   "Email already registered",
+			StartTime: startTime,
+		}
+		logger.LogError(log)
+		return nil, errors.New("Email already registered")
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.DefaultCost)
+	if err != nil {
+		log := logger.LogData{
+			Message:   "Failed to encrypt password: " + err.Error(),
+			StartTime: startTime,
+		}
+		logger.LogError(log)
+		return nil, errors.New("Failed to encrypt password")
+	}
+
+	// Replace plain password with hashed password
+	request.Password = string(hashedPassword)
 
 	if err := model.RegisterAdmin(s.db, request); err != nil {
 		log := logger.LogData{

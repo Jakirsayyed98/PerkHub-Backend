@@ -1,6 +1,7 @@
 package stores
 
 import (
+	"PerkHub/constants"
 	"PerkHub/model"
 	"PerkHub/pkg/logger"
 	"PerkHub/request"
@@ -26,7 +27,7 @@ func NewAffiliatesStore(dbs *sql.DB) *AffiliatesStore {
 
 func (s *AffiliatesStore) CueLinkCallBack(req *request.CueLinkCallBackRequest) (interface{}, error) {
 	startTime := time.Now()
-	UserCommisionPercentage := "70"
+	UserCommisionPercentage := constants.GET_USER_COMMISION_PERCENTAGE
 	if req.Commission == "" {
 		req.Commission = "0"
 	}
