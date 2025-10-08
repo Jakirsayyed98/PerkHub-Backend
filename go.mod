@@ -15,6 +15,7 @@ require (
 	github.com/pressly/goose/v3 v3.22.1
 	github.com/robfig/cron/v3 v3.0.1
 	go.uber.org/zap v1.27.0
+	golang.org/x/crypto v0.40.0
 	golang.org/x/oauth2 v0.31.0
 	golang.org/x/sync v0.17.0
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1
@@ -50,7 +51,6 @@ require (
 	go.uber.org/mock v0.5.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/arch v0.20.0 // indirect
-	golang.org/x/crypto v0.40.0 // indirect
 	golang.org/x/mod v0.25.0 // indirect
 	golang.org/x/net v0.42.0 // indirect
 	golang.org/x/sys v0.35.0 // indirect

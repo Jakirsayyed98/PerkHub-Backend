@@ -43,7 +43,7 @@ func (s *TicketStore) CreateTicket(req *request.CreateTicketRequest, userId stri
 	}
 
 	ticketMsg := model.NewTicketMessage(ticketId, "user", req.Body)
-	err = model.InsertTicketMessage(s.db, ticketMsg)
+	err = model.InsertTicketMessage(s.db, ticketMsg, "open")
 	if err != nil {
 		log := logger.LogData{
 			Message:   err.Error(),
@@ -58,7 +58,7 @@ func (s *TicketStore) CreateTicket(req *request.CreateTicketRequest, userId stri
 func (s *TicketStore) SendTicketMessage(req *request.SendTicketMsg, userId string) (string, error) {
 	startTime := time.Now()
 	ticketMsg := model.NewTicketMessage(req.TicketId, "user", req.Message)
-	err := model.InsertTicketMessage(s.db, ticketMsg)
+	err := model.InsertTicketMessage(s.db, ticketMsg, "ongoing")
 	if err != nil {
 		log := logger.LogData{
 			Message:   err.Error(),
@@ -73,7 +73,7 @@ func (s *TicketStore) SendTicketMessage(req *request.SendTicketMsg, userId strin
 func (s *TicketStore) AdminSentTicketReply(req *request.AdminReplyTicketMsg, userId string) (string, error) {
 	startTime := time.Now()
 	ticketMsg := model.NewTicketMessage(req.TicketId, "admin", req.Message)
-	err := model.InsertTicketMessage(s.db, ticketMsg)
+	err := model.InsertTicketMessage(s.db, ticketMsg, "ongoing")
 	if err != nil {
 		log := logger.LogData{
 			Message:   err.Error(),
