@@ -93,6 +93,10 @@ func getUserCommisionPercentage() string {
 	return settings.Config("USER_COMMISION_PERCENTAGE")
 }
 
+func getCuelinksCID() string {
+	return settings.Config("Cuelinks_CID")
+}
+
 var (
 	Port                          = GetPortNumber()
 	PostgresHost                  = getPostgresHost()
@@ -115,6 +119,7 @@ var (
 	GameCron                      = getGameCron()
 	GET_GAME_BASE_URL             = getGames()
 	GET_USER_COMMISION_PERCENTAGE = getUserCommisionPercentage()
+	Cuelinks_CID                  = getCuelinksCID()
 )
 
 var StatusMap = map[string]string{

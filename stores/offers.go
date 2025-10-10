@@ -1,9 +1,11 @@
 package stores
 
 import (
+	"PerkHub/constants"
 	"PerkHub/model"
 	"PerkHub/pkg/logger"
 	"PerkHub/services"
+	"PerkHub/utils"
 	"database/sql"
 	"errors"
 	"strconv"
@@ -74,6 +76,8 @@ func (s *OffersStore) GetOffersRefresh() (interface{}, error) {
 						offerType = "coupon"
 					}
 
+					v.AffiliateUrl = v.AffiliateUrl + "&cid=" + constants.Cuelinks_CID
+
 					err = model.InsertOffer(s.db, &model.Offer{
 						OfferID:           strconv.Itoa(v.ID),
 						StoreID:           store[0].ID,
@@ -86,8 +90,8 @@ func (s *OffersStore) GetOffersRefresh() (interface{}, error) {
 						Type:              offerType,
 						Status:            v.Status == "live",
 						URL:               v.AffiliateUrl,
-						StartDate:         v.StartDate, // must be *time.Time
-						EndDate:           v.EndDate,   // must be *time.Time
+						StartDate:         utils.GetFormatedDate(v.StartDate), // must be *time.Time
+						EndDate:           utils.GetFormatedDate(v.EndDate),   // must be *time.Time
 					})
 					if err != nil {
 						log := logger.LogData{

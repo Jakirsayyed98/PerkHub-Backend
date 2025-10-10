@@ -10,6 +10,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	mathRand "math/rand"
 	"mime/multipart"
 	"path/filepath"
@@ -205,7 +206,7 @@ func UploadFileOnServer(files []*multipart.FileHeader, awsInstance *connection.A
 			return "", err
 		}
 		defer f.Close()
-		
+
 		image, err := awsInstance.UploadFile(f, fileHeader.Filename)
 		// image, err = utils.SaveFile(c, file)
 		if err != nil {
@@ -221,4 +222,13 @@ func ImageUrlGenerator(image string) string {
 		return ""
 	}
 	return constants.AWSCloudFrontURL + constants.AWSSecretAccessKey + "/" + image
+}
+
+func GetFormatedDate(apiDate string) time.Time {
+	layout := "2006-01-02" // Go's reference layout
+	parsedDate, err := time.Parse(layout, apiDate)
+	if err != nil {
+		log.Fatalf("Error parsing date: %v", err)
+	}
+	return parsedDate
 }

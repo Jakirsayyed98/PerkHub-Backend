@@ -19,8 +19,8 @@ type Offer struct {
 	Type              string    `db:"type" json:"type"` // must be "coupon" or "offer"
 	Status            bool      `db:"status" json:"status"`
 	URL               string    `db:"url" json:"url"`
-	StartDate         string    `db:"start_date" json:"start_date"`
-	EndDate           string    `db:"end_date" json:"end_date"`
+	StartDate         time.Time `db:"start_date" json:"start_date"`
+	EndDate           time.Time `db:"end_date" json:"end_date"`
 	CreatedAt         time.Time `db:"created_at" json:"created_at"`
 	UpdatedAt         time.Time `db:"updated_at" json:"updated_at"`
 }
@@ -122,13 +122,33 @@ func OfferExists(db *sql.DB, offerId string) (bool, error) {
 }
 
 func SearchOffersByStoreName(db *sql.DB, storeName string) ([]Offer, error) {
-	query := `SELECT id, offer_id, store_id, store_name, title, description,
-		       terms_and_condition, coupon_code, image, type, status,
-		       url, start_date, end_date, created_at, updated_at
-		FROM offers
-		WHERE status = true AND store_name = $1`
+	query := `SELECT 
+    id,
+    offer_id,
+    store_id,
+    store_name,
+    title,
+    description,
+    terms_and_condition,
+    coupon_code,
+    image,
+    type,
+    status,
+    url,
+    start_date,
+    end_date,
+    created_at,
+    updated_at
+FROM offers
+WHERE 
+    status = TRUE
+    AND store_name ILIKE '%' || $1 || '%'
+    AND start_date <= $2::date
+    AND end_date   >= $3::date
+ORDER BY start_date ASC;
+`
 
-	rows, err := db.Query(query, storeName)
+	rows, err := db.Query(query, storeName, time.Now(), time.Now())
 	if err != nil {
 		return nil, err
 	}
@@ -159,6 +179,7 @@ func SearchOffersByStoreName(db *sql.DB, storeName string) ([]Offer, error) {
 		if err != nil {
 			return nil, err
 		}
+
 		offers = append(offers, offer)
 	}
 
@@ -170,15 +191,32 @@ func SearchOffersByStoreName(db *sql.DB, storeName string) ([]Offer, error) {
 }
 
 func GetRandomOffers(db *sql.DB) ([]Offer, error) {
-	query := `SELECT id, offer_id, store_id, store_name, title, description,
-		       terms_and_condition, coupon_code, image, type, status,
-		       url, start_date, end_date, created_at, updated_at
-		FROM offers
-		WHERE status = true
-		ORDER BY RANDOM()
-		LIMIT 25`
+	query := `SELECT 
+    id,
+    offer_id,
+    store_id,
+    store_name,
+    title,
+    description,
+    terms_and_condition,
+    coupon_code,
+    image,
+    type,
+    status,
+    url,
+    start_date,
+    end_date,
+    created_at,
+    updated_at
+FROM offers
+WHERE 
+    status = TRUE
+    AND start_date <= $1::date
+    AND end_date   >= $2::date
+ORDER BY RANDOM()
+LIMIT 50;`
 
-	rows, err := db.Query(query)
+	rows, err := db.Query(query, time.Now(), time.Now())
 	if err != nil {
 		return nil, err
 	}
