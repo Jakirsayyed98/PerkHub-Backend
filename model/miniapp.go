@@ -240,6 +240,7 @@ func GetMiniAppsByCondition(db *sql.DB, condition string) ([]MiniApp, error) {
 		cashback_terms, is_cb_active, cb_percentage, url, url_type, macro_publisher,
 		is_active, is_popular, is_trending, is_top_cashback, created_at, updated_at
 		FROM miniapp_data ` + condition
+	fmt.Println(query)
 	rows, err := db.Query(query)
 	if err != nil {
 		return nil, err
@@ -272,7 +273,11 @@ func GetMiniAppsTopCashback(db *sql.DB) ([]MiniApp, error) {
 }
 
 func SearchMiniApps(db *sql.DB, name string) ([]MiniApp, error) {
-	return GetMiniAppsByCondition(db, fmt.Sprintf("WHERE name ILIKE '%%%s%%' AND is_active=true", name))
+	condition := fmt.Sprintf(
+		"WHERE (name ILIKE '%%%s%%' OR id::TEXT = '%s') AND is_active = true",
+		name, name,
+	)
+	return GetMiniAppsByCondition(db, condition)
 }
 
 func GetStoresByCategory(db *sql.DB, categoryID string) ([]MiniApp, error) {
